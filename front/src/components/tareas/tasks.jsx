@@ -79,6 +79,20 @@ const tasks = [
 const Tasks = () => {
     return (
         <TasksSection>
+
+            <TaskTeam>
+                
+                <h1>Team 1</h1>
+
+                {tasks.map((task, index) => (
+                    <Task key={index}>
+                        <h2>{task.title}</h2>
+                        <p>{task.description}</p>
+                        <p>{task.date}</p>
+                    </Task>
+                ))}
+            </TaskTeam>
+            
             
         </TasksSection>
     );

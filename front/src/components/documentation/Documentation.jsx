@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import { BiBlanket } from 'react-icons/bi';
 
 const Container = styled.div`
     display: flex;
@@ -29,7 +29,7 @@ const ListContainer = styled.div`
     justify-content: center;
     align-items: center;
     border-radius: 10px;
-    box-shadow: 7px 8px 23px 0px rgba(0,0,0,0.61);
+    border: 1px solid #ccc;
     width: 80%;
 `;
 const List = styled.div`
@@ -47,16 +47,17 @@ const ListItem = styled.div`
     height: 2rem;
     width: 80%;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
     border-radius: 10px;
-    box-shadow: 7px 8px 23px 0px rgba(0,0,0,0.61);
-    -webkit-box-shadow: 7px 8px 23px 0px rgba(0,0,0,0.61);
-    -moz-box-shadow: 7px 8px 23px 0px rgba(0,0,0,0.61);
+
+    border: 1px solid #ccc;
 
     &:hover {
         cursor:pointer;
         transition: ease 0.1s;
-        transform: scale(1.05);
+        transform: scale(1.02);
+        border: 1px solid #DBEEB4;
+        background-color: rgba(255, 255, 255, 0.1);
     }
 `;
 
@@ -72,15 +73,25 @@ const ProjectInfo = styled.div`
     flex-direction: row;
     gap: 1rem;
     align-items: center;
-    justify-content: space-between;
+    justify-content: left;
 `;
 const ProjectTitle = styled.h2`
     font-size: 1rem;
     font-weight: bold;
+    color: white;
 `;
 
 const ProjectDescription = styled.p`
     font-size: 1rem;
+    color: white;
+`;
+
+const ItemIcons = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
 `;
 
 const projects = [
@@ -129,6 +140,11 @@ const Documentation = () => {
                                 <ProjectTitle>{project.title}</ProjectTitle>
                                 <ProjectDescription>{project.description}</ProjectDescription>
                             </ProjectInfo>
+                            <ItemIcons>
+                                <BiBlanket />
+                               
+                                    
+                            </ItemIcons>
                         </ListItem>
                     ))}
                 </List>

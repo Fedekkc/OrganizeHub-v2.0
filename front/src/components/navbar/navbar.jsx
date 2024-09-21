@@ -35,11 +35,27 @@ const Navbar = () => {
                 <Item>
                     <ItemText href="/tasks">Tasks</ItemText>
                 </Item>
-                <Item href="/attendance" >Asistencia</Item>
-                <Item href="/documentation">Documentación  </Item>
-                <Item href="/teams" >Equipos</Item>
-                <Item href="/passwords" >Contraseñas</Item>
-                <Item>Salir</Item>
+                <Item>
+                    <ItemText href="/attendance">Attendance</ItemText>
+                </Item>
+                <Item>
+                    <ItemText href="/teams">Teams</ItemText>
+                </Item>
+
+                <Item>
+                    <ItemText href="/documentation">Documentation</ItemText>
+                </Item>
+
+                <Item>
+                    <ItemText href="/passwords">Passwords</ItemText>
+                </Item>
+
+                <Item>
+                    <ItemText href="/logout">Logout</ItemText>
+                </Item>
+
+
+
             </List>
         </NavbarContainer>
     );
