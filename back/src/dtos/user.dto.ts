@@ -1,29 +1,39 @@
-import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
+import { IsEmail, IsNumber, IsOptional, IsString, Length } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserDTO {
-    @ApiProperty({ description: 'The unique identifier of the user' })
-    @IsString()
-    id: string;
+    @ApiProperty({ description: 'Identificador único del usuario' })
+    @IsNumber()
+    userId: number;
 
-    @ApiProperty({ description: 'The name of the user', maxLength: 50 })
+    @ApiProperty({ description: 'Nombre del usuario', maxLength: 50 })
     @IsString()
     @Length(1, 50)
     name: string;
 
-    @ApiProperty({ description: 'The email of the user' })
+    @ApiProperty({ description: 'Apellido del usuario', maxLength: 50 })
+    @IsString()
+    @Length(1, 50)
+    surname: string;
+
+    @ApiProperty({ description: 'Nombre de usuario', maxLength: 50 })
+    @IsString()
+    @Length(1, 50)
+    username: string;
+
+    @ApiProperty({ description: 'Correo del usuario' })
     @IsEmail()
     email: string;
 
-    @ApiPropertyOptional({ description: 'The password of the user', minLength: 8, maxLength: 100 })
+    @ApiPropertyOptional({ description: 'Contraseña del usuario', minLength: 8, maxLength: 100 })
     @IsOptional()
     @IsString()
     @Length(8, 100)
     password?: string;
 
-    @ApiProperty({ description: 'The date the user was created' })
+    @ApiProperty({ description: 'Fecha de registro del usuario' })
     createdAt: Date;
 
-    @ApiProperty({ description: 'The date the user was last updated' })
+    @ApiProperty({ description: 'Fecha de actualizacion de datos del usuario' })
     updatedAt: Date;
 }
