@@ -21,8 +21,8 @@ export class UserService {
 
     async createUser(userDTO: UserDTO): Promise<User> {
         const user = new User();
-        user.firstName = userDTO.name;
-        user.lastName = userDTO.surname;
+        user.firstName = userDTO.firstName;
+        user.lastName = userDTO.lastName;
         user.username = userDTO.username;
         user.email = userDTO.email;
         user.password = await hash(userDTO.password, 10);
@@ -31,8 +31,8 @@ export class UserService {
 
     async updateUser(userId: number, userDTO: UserDTO): Promise<User> {
         const user = await this.userRepository.findOne( { where: {userId} } );
-        user.firstName = userDTO.name;
-        user.lastName = userDTO.surname;
+        user.firstName = userDTO.firstName;
+        user.lastName = userDTO.lastName;
         user.username = userDTO.username;
         user.email = userDTO.email;
         user.password = await hash(userDTO.password, 10);

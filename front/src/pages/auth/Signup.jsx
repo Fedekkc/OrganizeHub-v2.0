@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const SignupContainer = styled.div`
     display: flex;
@@ -55,23 +56,32 @@ const LoginText = styled.p`
 
 const Signup = () => {
     const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
         username: '',
         email: '',
         password: ''
     });
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: value
+            [e.target.name]: e.target.value  // Actualización correcta
         });
+
+        console.log(formData);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Handle form submission
-        console.log(formData);
+
+        axios.post('http://localhost:5000/users', formData)
+            .then((res) => {
+                console.log(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     return (
@@ -80,23 +90,34 @@ const Signup = () => {
                 <Title>Sign Up</Title>
                 <Input
                     type="text"
+                    name="firstName"
+                    placeholder="Name"
+                    onChange={handleChange}
+                />
+
+                <Input
+                    type="text"
+                    name="lastName"
+                    placeholder="Surname"
+                    onChange={handleChange}
+                />
+
+                <Input
+                    type="text"
                     name="username"
                     placeholder="Username"
-                    value={formData.username}
                     onChange={handleChange}
                 />
                 <Input
                     type="email"
                     name="email"
                     placeholder="Email"
-                    value={formData.email}
                     onChange={handleChange}
                 />
                 <Input
                     type="password"
                     name="password"
                     placeholder="Password"
-                    value={formData.password}
                     onChange={handleChange}
                 />
                 <Button type="submit">Sign Up</Button>

@@ -4,18 +4,19 @@ import { User } from 'src/entities/user.entity';
 
 export class UserDTO {
     @ApiProperty({ description: 'Identificador único del usuario' })
+    @IsOptional()
     @IsNumber()
-    userId: number;
+    userId?: number;
 
     @ApiProperty({ description: 'Nombre del usuario', maxLength: 50 })
     @IsString()
     @Length(1, 50)
-    name: string;
+    firstName: string;
 
     @ApiProperty({ description: 'Apellido del usuario', maxLength: 50 })
     @IsString()
     @Length(1, 50)
-    surname: string;
+    lastName: string;
 
     @ApiProperty({ description: 'Nombre de usuario', maxLength: 50 })
     @IsString()
