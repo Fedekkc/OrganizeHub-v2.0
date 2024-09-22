@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { BiBlanket } from 'react-icons/bi';
+import { BsDiagram2 } from 'react-icons/bs';
 
 const Container = styled.div`
     display: flex;
@@ -9,8 +10,6 @@ const Container = styled.div`
     align-items: center;
     padding: 1rem;
     gap: 1rem;
-
-
 `;
 
 const UsersContainer = styled.div`
@@ -32,6 +31,7 @@ const ListContainer = styled.div`
     border: 1px solid #ccc;
     width: 80%;
 `;
+
 const List = styled.div`
     display: flex;
     flex-direction: column;
@@ -39,6 +39,7 @@ const List = styled.div`
     width: 100%;
     align-items: center;
 `;
+
 const ListItem = styled.div`
     padding: 1rem;
     display: flex;
@@ -49,11 +50,10 @@ const ListItem = styled.div`
     align-items: center;
     justify-content: left;
     border-radius: 10px;
-
     border: 1px solid #ccc;
 
     &:hover {
-        cursor:pointer;
+        cursor: pointer;
         transition: ease 0.1s;
         transform: scale(1.02);
         border: 1px solid #DBEEB4;
@@ -75,6 +75,7 @@ const ProjectInfo = styled.div`
     align-items: center;
     justify-content: left;
 `;
+
 const ProjectTitle = styled.h2`
     font-size: 1rem;
     font-weight: bold;
@@ -94,6 +95,52 @@ const ItemIcons = styled.div`
     justify-content: space-between;
 `;
 
+const ItemInfoContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+`;
+
+const IconBiBlanket = styled(BiBlanket)`
+    color: white;
+    font-size: 1.5rem;
+
+    &:hover {
+        cursor: pointer;
+        transition: ease 0.1s;
+        transform: scale(1.02);
+        color: #DBEEB4;
+    }
+`;
+
+const IconBsDiagram2 = styled(BsDiagram2)`
+    color: white;
+    font-size: 1.5rem;
+
+    &:hover {
+        cursor: pointer;
+        transition: ease 0.1s;
+        transform: scale(1.02);
+        color: #DBEEB4;
+    }
+`;
+
+const InfoTooltip = styled.div`
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.4);
+    color: black;
+    padding: 0.5rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    top: 50px;
+    left: 0;
+    z-index: 10;
+    white-space: nowrap;
+`;
+
 const projects = [
     {
         title: 'Proyecto 1',
@@ -105,30 +152,24 @@ const projects = [
         description: 'Descripción del proyecto 2',
         logo: 'https://cinefilosoficial.com/wp-content/uploads/2020/11/michael-scott.jpg',
     },
-    {
-        title: 'Proyecto 3',
-        description: 'Descripción del proyecto 3',
-        logo: 'https://cinefilosoficial.com/wp-content/uploads/2020/11/michael-scott.jpg',
-    },
-    {
-        title: 'Proyecto 4',
-        description: 'Descripción del proyecto 4',
-        logo: 'https://cinefilosoficial.com/wp-content/uploads/2020/11/michael-scott.jpg',
-    },
-    {
-        title: 'Proyecto 5',
-        description: 'Descripción del proyecto 5',
-        logo: 'https://cinefilosoficial.com/wp-content/uploads/2020/11/michael-scott.jpg',
-    },
-    {
-        title: 'Proyecto 6',
-        description: 'Descripción del proyecto 6',
-        logo: 'https://cinefilosoficial.com/wp-content/uploads/2020/11/michael-scott.jpg',
-    },
+    // Otros proyectos...
 ];
 
-
 const Documentation = () => {
+    const [iconInfo, setIconInfo] = React.useState({ show: false, text: '', position: {} });
+
+    const handleIconInfo = (text, e) => {
+        const position = {
+            top: e.target.getBoundingClientRect().top + window.scrollY,
+            left: e.target.getBoundingClientRect().left + window.scrollX,
+        };
+        setIconInfo({ show: true, text, position });
+    };
+
+    const hideIconInfo = () => {
+        setIconInfo({ show: false, text: '', position: {} });
+    };
+
     return (
         <Container>
             <ListContainer>
@@ -136,45 +177,39 @@ const Documentation = () => {
                     {projects.map((project, index) => (
                         <ListItem key={index}>
                             <ProjectLogo src={project.logo} alt={project.title} />
-                            <ProjectInfo>
-                                <ProjectTitle>{project.title}</ProjectTitle>
-                                <ProjectDescription>{project.description}</ProjectDescription>
-                            </ProjectInfo>
-                            <ItemIcons>
-                                <BiBlanket />
-                               
-                                    
-                            </ItemIcons>
+                            <ItemInfoContainer>
+                                <ProjectInfo>
+                                    <ProjectTitle>{project.title}</ProjectTitle>
+                                    <ProjectDescription>{project.description}</ProjectDescription>
+                                </ProjectInfo>
+                                <ItemIcons>
+                                    <IconBiBlanket 
+                                        onMouseEnter={(e) => handleIconInfo('Documentación', e)} 
+                                        onMouseLeave={hideIconInfo} 
+                                    />
+                                    <IconBsDiagram2 
+                                        onMouseEnter={(e) => handleIconInfo('Diagramas', e)} 
+                                        onMouseLeave={hideIconInfo} 
+                                    />
+                                </ItemIcons>
+                            </ItemInfoContainer>
                         </ListItem>
                     ))}
                 </List>
             </ListContainer>
+            {iconInfo.show && (
+                <InfoTooltip style={{ top: iconInfo.position.top + 30, left: iconInfo.position.left }}  >
+                    {iconInfo.text}
+                </InfoTooltip>
+            )}
             <UsersContainer>
                 <h2>Usuarios</h2>
                 <List>
-                    <ListItem>
-                        <p>Usuario 1</p>
-                    </ListItem>
-                    <ListItem>
-                        <p>Usuario 2</p>
-                    </ListItem>
-                    <ListItem>
-                        <p>Usuario 3</p>
-                    </ListItem>
-                    <ListItem>
-                        <p>Usuario 4</p>
-                    </ListItem>
-                    <ListItem>
-                        <p>Usuario 5</p>
-                    </ListItem>
-                    <ListItem>
-                        <p>Usuario 6</p>
-                    </ListItem>
+                    {/* Lista de usuarios */}
                 </List>
             </UsersContainer>
         </Container>
     );
 };
-
 
 export default Documentation;

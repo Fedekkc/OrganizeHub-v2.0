@@ -1,10 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/navbar/Navbar';
-import Tasks from './components/tareas/Tasks';
-import Documentation from './components/documentation/Documentation';
-import AppRouter from './components/router/Router';
+import Tasks from './pages/tareas/Tasks';
+import Documentation from './pages/documentation/Documentation';
+import AppRouter from './router/Router';
 import styled, { createGlobalStyle } from 'styled-components';
+import { AppProvider } from './context/Context';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -27,11 +28,11 @@ const Container = styled.div`
 
 function App() {
   return (
-    <>
-      <GlobalStyle />
+    <AppProvider>
       <Navbar />
+      <GlobalStyle />
       <AppRouter />
-    </>
+    </AppProvider>
   );
 }
 
