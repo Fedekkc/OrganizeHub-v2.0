@@ -4,12 +4,27 @@ import { User } from "../entities/user.entity";
 import { UserDTO } from "../dtos/user.dto";
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { hash } from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
+
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(User) private readonly userRepository: Repository<User>
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private jwtService: JwtService
+        
     ) {}
+
+
+
+    async createJwtPayload(user: User) {
+        return {
+            userId: user.userId,
+            username: user.username,
+            email: user.email,
+            token: this.jwtService.sign({ userId: user.userId }) 
+        }
+    }
 
     async getAllUsers(): Promise<User[]> {
         try {
