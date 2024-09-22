@@ -5,7 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors(); // Habilitar CORS para permitir solicitudes desde cualquier origen
+  app.enableCors();
   app.useGlobalPipes( new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
@@ -18,7 +18,7 @@ async function bootstrap() {
     .setTitle('Documentación de la API')
     .setDescription('Documentación de la API para gestión de organizaciones')
     .setVersion('1.0')
-    //.addBearerAuth() // Si necesitas autenticación con JWT o cualquier método de autorización
+    //.addBearerAuth() // autenticación con JWT o cualquier método de autorización
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

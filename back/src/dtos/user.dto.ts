@@ -1,5 +1,6 @@
 import { IsEmail, IsNumber, IsOptional, IsString, Length } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { User } from 'src/entities/user.entity';
 
 export class UserDTO {
     @ApiProperty({ description: 'Identificador único del usuario' })
@@ -26,14 +27,21 @@ export class UserDTO {
     email: string;
 
     @ApiPropertyOptional({ description: 'Contraseña del usuario', minLength: 8, maxLength: 100 })
-    @IsOptional()
     @IsString()
     @Length(8, 100)
-    password?: string;
+    password: string;
 
     @ApiProperty({ description: 'Fecha de registro del usuario' })
-    createdAt: Date;
+    @IsOptional()
+    createdAt?: Date;
 
     @ApiProperty({ description: 'Fecha de actualizacion de datos del usuario' })
-    updatedAt: Date;
+    @IsOptional()
+    updatedAt?: Date;
 }
+
+export class PartialUserDTO extends PartialType(UserDTO) {
+    // Al extender de PartialType, todos los campos se vuelven opcionales
+
+}
+
