@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { Team } from './team.entity';
 import { Task } from './task.entity';
 import { Project } from './project.entity';
@@ -29,8 +29,12 @@ export class User {
     @Column({ default: true })
     isActive: boolean;
 
-    @ManyToMany(() => Task, task => task.assignedTo)
+    @OneToMany(() => Task, task => task.assignedTo)
     tasks: Task[];
+    
+
+    @OneToMany(() => Task, task => task.createdBy)
+    createdTasks: Task[];
 
     @ManyToMany(() => Project, project => project.users)
     projects: Project[];
