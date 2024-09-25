@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import CreateTask from '../.././components/admin/CreateTask';
 const TasksSection = styled.div`
     display: flex;
     flex-direction: column;
@@ -79,7 +79,8 @@ const tasks = [
 const Tasks = () => {
     return (
         <TasksSection>
-
+            <CreateTask />
+            
             <TaskTeam>
                 
                 <h1>Team 1</h1>

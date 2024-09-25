@@ -5,6 +5,7 @@ import { UserDTO } from "../dtos/user.dto";
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { hash } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
+import { compare } from "bcrypt";
 
 
 @Injectable()
@@ -54,11 +55,54 @@ export class UserService {
             user.username = userDTO.username;
             user.email = userDTO.email;
             user.password = await hash(userDTO.password, 10);
-            return await this.userRepository.save(user);
+            return await this.userRepository.save(user); 
         } catch (error) {
             throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    async getUserByEmail(email: string): Promise<User> {
+        try {
+            const user = await this.userRepository.findOne({ where: { email } });
+            if (!user) {
+                throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+            }
+            return user;
+        } catch (error) {
+            throw new HttpException('Failed to get user', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    // return un token de jwt
+    async login(email: string, password: string): Promise<any> { 
+        try {
+            const user = await this.userRepository.findOne({ where: { email } });
+            if (!user) {
+                throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+            }
+            if (await compare(password, user.password)) {
+                return this.createJwtPayload(user);
+            } else {
+                throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+            }
+        } catch (error) {
+            throw new HttpException('Failed to login', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+    async findByEmail(email: string): Promise<User> {
+        try {
+            const user = await this.userRepository.findOne({ where: { email: email } });
+            if (!user) {
+                throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+            }
+            return user;
+        } catch (error) {
+            throw new HttpException('Failed to get user', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 
     async updateUser(userId: number, userDTO: UserDTO): Promise<User> {
         try {

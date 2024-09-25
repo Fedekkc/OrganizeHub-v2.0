@@ -1,5 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import { AppContext } from '../../context/Context';
+import { useContext, useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginContainer = styled.div`
     display: flex;
@@ -49,12 +53,42 @@ const NotSignedUp = styled.p`
 `;
 
 const Login = () => {
+    const navigate = useNavigate();
+    const[formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
+
+    const { login } = useContext(AppContext);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        axios.post('http://localhost:5000/users/login', {
+            email: formData.email,
+            password: formData.password,
+        }).then((res) => {
+            login(res.data.token);
+            navigate('/documentation');
+        }).catch((err) => {
+            console.log(err);
+        });
+    }; 
+    const handleChange = (e) => {
+        e.preventDefault();
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    }
+
+
+
     return (
         <LoginContainer>
-            <LoginForm>
+            <LoginForm onSubmit={handleSubmit}>
                 <h2>Login</h2>
-                <Input type="text" placeholder="Username" />
-                <Input type="password" placeholder="Password" />
+                <Input type="text" placeholder="Email" name='email' value={formData.email} onChange={handleChange} />
+                <Input type="password" placeholder="Password" name='password'value={formData.password} onChange={handleChange} />
                 <Button type="submit">Login</Button>
                 <NotSignedUp>
                     Not signed up yet? <a href="/signup">Sign up</a>

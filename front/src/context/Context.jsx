@@ -1,27 +1,53 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
-// Create a Context
+// Crear el contexto
 export const AppContext = createContext();
 
-// Create a provider component
+// Proveedor del contexto
 export const AppProvider = ({ children }) => {
-    const [state, setState] = useState({
-        // Add your state properties here
-        user: null,
-        isAuthenticated: false,
-    });
+    const [authToken, setAuthToken] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const login = (user) => {
-        setState({ ...state, user, isAuthenticated: true });
+    // Verificar si el usuario ya está autenticado al cargar la aplicación
+    useEffect(() => {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            setAuthToken(token);
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    // Función para iniciar sesión
+    const login = (token) => {
+        localStorage.setItem('authToken', token);
+        setAuthToken(token);
+        setIsAuthenticated(true);
     };
 
+
+
+    // Función para cerrar sesión
     const logout = () => {
-        setState({ ...state, user: null, isAuthenticated: false });
+        localStorage.removeItem('authToken');
+        setAuthToken(null);
+        setIsAuthenticated(false);
     };
+
+    // Función para verificar si el usuario está autenticado
+    const isLoggedIn = () => !!authToken;
 
     return (
-        <AppContext.Provider value={{ state, login, logout }}>
+        <AppContext.Provider value={{ authToken, isAuthenticated, login, logout, isLoggedIn }}>
             {children}
         </AppContext.Provider>
     );
+};
+
+// Custom hook para usar el contexto
+export const useAuth = () => {
+    const context = React.useContext(AppContext);
+    if (!context) {
+        throw new Error('useAuth debe usarse dentro de AppProvider');
+    }
+    return context;
 };

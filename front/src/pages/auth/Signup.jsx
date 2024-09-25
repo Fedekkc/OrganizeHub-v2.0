@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { AppContext } from '../../context/Context';
 
 const SignupContainer = styled.div`
     display: flex;
@@ -63,21 +64,24 @@ const Signup = () => {
         password: ''
     });
 
+    const { login } = useContext(AppContext);  // Supone que `login` es una función que guarda el JWT
+
     const handleChange = (e) => {
+        e.preventDefault();
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value  // Actualización correcta
+            [e.target.name]: e.target.value
         });
-
-        console.log(formData);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
+        console.log(formData.email);
         axios.post('http://localhost:5000/users', formData)
             .then((res) => {
-                console.log(res.data);
+                if (res.data.token) {
+                    login(res.data.token);  // Usa el contexto o el estado global para manejar el inicio de sesión
+                }
             })
             .catch((err) => {
                 console.log(err);
@@ -94,14 +98,12 @@ const Signup = () => {
                     placeholder="Name"
                     onChange={handleChange}
                 />
-
                 <Input
                     type="text"
                     name="lastName"
                     placeholder="Surname"
                     onChange={handleChange}
                 />
-
                 <Input
                     type="text"
                     name="username"

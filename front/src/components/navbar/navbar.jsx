@@ -1,5 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAuth } from '../../context/Context';
+import { useNavigate } from 'react-router-dom';
 
 const NavbarContainer = styled.nav`
     background-color: #f2f2f2;
@@ -23,35 +26,45 @@ const Item = styled.li`
 
 `;
 
-const ItemText = styled.a`
+const ItemText = styled(Link)`
     text-decoration: none;
     color: black;
 `;
 
 const Navbar = () => {
+
+    const navigate = useNavigate();
+    const { logout } = useAuth();
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+        
+    }
+
+
     return (
         <NavbarContainer>
             <List>
                 <Item>
-                    <ItemText href="/tasks">Tasks</ItemText>
+                    <ItemText to="/tasks">Tasks</ItemText>
                 </Item>
                 <Item>
-                    <ItemText href="/attendance">Attendance</ItemText>
+                    <ItemText to="/attendance">Attendance</ItemText>
                 </Item>
                 <Item>
-                    <ItemText href="/teams">Teams</ItemText>
-                </Item>
-
-                <Item>
-                    <ItemText href="/documentation">Documentation</ItemText>
+                    <ItemText to="/teams">Teams</ItemText>
                 </Item>
 
                 <Item>
-                    <ItemText href="/passwords">Passwords</ItemText>
+                    <ItemText to="/documentation">Documentation</ItemText>
                 </Item>
 
                 <Item>
-                    <ItemText href="/logout">Logout</ItemText>
+                    <ItemText to="/passwords">Passwords</ItemText>
+                </Item>
+
+                <Item>
+                    <ItemText to="/logout" onClick={handleLogout} >Logout</ItemText>
                 </Item>
 
 

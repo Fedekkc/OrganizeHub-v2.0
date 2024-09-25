@@ -6,7 +6,7 @@ import { EntityNotFoundError } from "typeorm";
 
 @Controller('users')
 export class UserController {
-    constructor(private userService: UserService) {}
+    constructor(private userService: UserService) { }
 
     @SetMetadata('isPublic', false)
     @Get()
@@ -38,11 +38,24 @@ export class UserController {
         }
     }
 
+    @Post('login')
+    async login(@Body() body: { email: string, password: string } ): Promise<{ token: string }> {
+        try {
+            return this.userService.login(body.email, body.password);
+
+        } catch (error) {
+            throw new HttpException('Failed to login', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     @SetMetadata('isPublic', false)
     @Post()
-    async createUser(@Body() userDTO: UserDTO): Promise<User> {
+    async createUser(@Body() userDTO: UserDTO): Promise<{ token: string }> {
         try {
-            return await this.userService.createUser(userDTO);
+            const newUser = await this.userService.createUser(userDTO);
+            const jwtPayload = await this.userService.createJwtPayload(newUser);
+            return { token: jwtPayload.token };  // Retorna el token JWT
         } catch (error) {
             if (error instanceof EntityNotFoundError) {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -50,6 +63,7 @@ export class UserController {
             throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @SetMetadata('isPublic', false)
     @Put(':userId')
