@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { BiBlanket } from 'react-icons/bi';
 import { BsDiagram2 } from 'react-icons/bs';
+import { CiCirclePlus} from 'react-icons/ci';
 
 const Container = styled.div`
     display: flex;
@@ -140,6 +141,30 @@ const InfoTooltip = styled.div`
     z-index: 10;
     white-space: nowrap;
 `;
+const AddNewProject = styled.div`
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    height: 2rem;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+
+`;
+const Circle = styled(CiCirclePlus)`
+    color: white;
+    font-size: 2rem;
+
+    &:hover {
+        cursor: pointer;
+        transition: ease 0.1s;
+        transform: scale(1.02);
+        color: #DBEEB4;
+        
+    }
+`;
+
 
 const projects = [
     {
@@ -157,7 +182,7 @@ const projects = [
 
 const Documentation = () => {
     const [iconInfo, setIconInfo] = React.useState({ show: false, text: '', position: {} });
-    
+
 
     const handleIconInfo = (text, e) => {
         const position = {
@@ -194,8 +219,13 @@ const Documentation = () => {
                                     />
                                 </ItemIcons>
                             </ItemInfoContainer>
+
                         </ListItem>
                     ))}
+                    <ListItem>
+                        <AddNewProject> <Circle/> </AddNewProject>
+                        
+                    </ListItem>
                 </List>
             </ListContainer>
             {iconInfo.show && (
