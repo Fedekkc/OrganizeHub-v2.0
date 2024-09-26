@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Calendar from '../../components/Calendar';
 import moment from 'moment';
-import Modal from '../../components/AddTaskModal'; // Asegúrate de importar el modal
+import Modal from '../../components/AddTaskModal'; 
+import { CiCalendar } from 'react-icons/ci';
 
 const Container = styled.div`
   display: flex;
@@ -20,6 +21,7 @@ const Title = styled.h1`
 const Input = styled.input`
   padding: 10px;
   margin: 10px 0;
+  
   border: 1px solid #ccc;
   border-radius: 4px;
 `;
@@ -27,7 +29,7 @@ const Input = styled.input`
 const Button = styled.button`
   padding: 10px 20px;
   margin: 10px 0;
-  background-color: #007BFF;
+  background-color: #bbbbbb;
   color: white;
   border: none;
   border-radius: 4px;
@@ -38,23 +40,7 @@ const Button = styled.button`
   }
 `;
 
-const TasksContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  justify-content: center;
-  align-items: center;
-`;
 
-const MeetingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
-  justify-content: center;
-  align-items: center;
-`;
 
 const CalendarContainer = styled.div`
     display: flex;
@@ -65,42 +51,39 @@ const CalendarContainer = styled.div`
     align-items: center;
     width: 100%;
 `;
+const Select = styled.select`
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+`;
+
+const Titulo = styled.h2`
+    display: flex;
+    color: white;
+    justify-content: center;
+    align-items: center;
+`;
+
+const TitulosContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    
+`;
+
+
 
 const Attendance = () => {
-    const [task, setTask] = useState('');
-    const [meetingTitle, setMeetingTitle] = useState('');
-    const [meetingTime, setMeetingTime] = useState('');
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [type, setType] = useState('');
     const [events, setEvents] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [endingDate, setEndingDate] = useState(null);
+    const [project, setProject] = useState('');
 
-    const handleAddTask = () => {
-        if (task.trim()) {
-            const newEvent = {
-                title: task,
-                start: new Date(),
-                end: new Date(moment().add(1, 'hours').toDate()), // Define una duración por defecto de 1 hora
-                allDay: false,
-            };
-            setEvents([...events, newEvent]);
-            setTask('');
-        }
-    };
 
-    const handleAddMeeting = () => {
-        if (meetingTitle.trim() && meetingTime.trim()) {
-            const meetingDate = moment(meetingTime, "HH:mm").toDate();
-            const newEvent = {
-                title: meetingTitle,
-                start: meetingDate,
-                end: new Date(moment(meetingDate).add(1, 'hours').toDate()), // Duración de 1 hora
-                allDay: false,
-            };
-            setEvents([...events, newEvent]);
-            setMeetingTitle('');
-            setMeetingTime('');
-        }
-    };
 
     const handleDateSelect = (selectedDate) => {
         // Abrir el modal cuando se selecciona una fecha
@@ -109,18 +92,26 @@ const Attendance = () => {
     };
 
     const handleAddEvent = () => {
-        if (!selectedDate || task.trim() === '') return;
+        if (!selectedDate || title.trim() === '') return;
+        if (type === 'meeting' && !endingDate) return;
+        
 
         const newEvent = {
-            title: task,
+            title: title,
             start: selectedDate,
-            end: new Date(moment(selectedDate).add(1, 'hours').toDate()), // Duración de 1 hora
+            end: endingDate,
             allDay: false,
+            project: project,
+            type: type,
         };
 
         setEvents([...events, newEvent]);
-        setTask('');
-        setIsModalOpen(false); // Cerrar el modal después de agregar el evento
+        setTitle('');
+        setDescription('');
+        setSelectedDate(null);
+        setEndingDate(null);
+
+        setIsModalOpen(false); 
     };
 
     return (
@@ -133,46 +124,66 @@ const Attendance = () => {
                 />
             </CalendarContainer>
 
-            <div style={{ width: '30%' }}>
-                <TasksContainer>
-                    <Input
-                        type="text"
-                        value={task}
-                        onChange={(e) => setTask(e.target.value)}
-                        placeholder="Agregar tarea"
-                    />
-                    <Button onClick={handleAddTask}>Agregar Tarea</Button>
-                </TasksContainer>
-
-                <MeetingContainer>
-                    <Input
-                        type="text"
-                        value={meetingTitle}
-                        onChange={(e) => setMeetingTitle(e.target.value)}
-                        placeholder="Título de la reunión"
-                    />
-                    <Input
-                        type="time"
-                        value={meetingTime}
-                        onChange={(e) => setMeetingTime(e.target.value)}
-                        placeholder="Hora de la reunión"
-                    />
-                    <Button onClick={handleAddMeeting}>Agregar Reunión</Button>
-                </MeetingContainer>
-            </div>
-
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <h2>Agregar tarea el {moment(selectedDate).format('MMMM Do YYYY')}</h2>
+                <TitulosContainer>
+                <Titulo>Agregar Evento - {moment(selectedDate).format('DD/MM/YYYY')} <CiCalendar/> </Titulo>
+                
+                </TitulosContainer>
+                <Select onChange={(e) => setType(e.target.value)}>
+                    <option value="task">Tarea</option>
+                    <option value="meeting">Reunión</option>
+                </Select>
+
+                <Select onChange={(e) => setProject(e.target.value)}>
+                    <option value="project1">Proyecto 1</option>
+                    <option value="project2">Proyecto 2</option>
+                    <option value="project3">Proyecto 3</option>
+                </Select>
+                
                 <Input
                     type="text"
-                    value={task}
-                    onChange={(e) => setTask(e.target.value)}
-                    placeholder="Agregar tarea"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Agregar título"
                 />
+
+                <Input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Agregar descripción"
+                />
+                {type === 'meeting' ? (
+                    <Input
+                        type="time"
+                        onChange={(e) => {
+                            const endDate = new Date(selectedDate);
+                            const [hours, minutes] = e.target.value.split(':');
+                            endDate.setHours(hours);
+                            endDate.setMinutes(minutes);
+                            setEndingDate(endDate);
+                        }}
+                        placeholder="Seleccionar hora de finalización"
+                    />
+                ) : (
+                    <Input
+                        type="datetime-local"
+                        onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                        placeholder="Seleccionar fecha y hora de finalización"
+                    />
+                )}
+                <Select>
+                    <option value="low">Baja</option>
+                    <option value="medium">Media</option>
+                    <option value="high">Alta</option>
+                </Select>
+                
+
                 <Button onClick={handleAddEvent}>Agregar Evento</Button>
             </Modal>
         </Container>
     );
 };
+
 
 export default Attendance;

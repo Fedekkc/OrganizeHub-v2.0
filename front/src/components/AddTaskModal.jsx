@@ -17,25 +17,29 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: white;
+  background: #31322F;
   padding: 20px;
   border-radius: 10px;
   width: 400px;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: auto;
 `;
 
 const Button = styled.button`
   padding: 10px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+  background-color: transparent;
+  color: white;
+  
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #A5A5A5;
+    color: black;
   }
 `;
 

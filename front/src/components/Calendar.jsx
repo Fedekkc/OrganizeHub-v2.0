@@ -6,6 +6,8 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
+//seteamos en español el calendario
+moment.locale('es');
 
 const CalendarContainer = styled.div`
     display: flex;
@@ -48,9 +50,7 @@ const CustomCalendar = styled(BigCalendar)`
         color: white;
     }
 
-    .rbc-today {
-        background-color: #757575; /* Día actual resaltado */
-    }
+
 
     .rbc-row {
         color: white;
@@ -73,6 +73,23 @@ const CustomCalendar = styled(BigCalendar)`
             background-color: #757575;
         }
     }
+    .rbc-today {
+        background-color: #565755; /* Día actual resaltado */
+    }
+
+    .rbc-event {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: lightblue;
+        color: white;
+        border-radius: 2px;
+        padding: 2px;
+        cursor: pointer;
+        &:hover {
+            background-color: rgba(173, 216, 230, 0.8);
+        }
+
 `;
 
 const Calendar = ({ events, onDateSelect }) => {

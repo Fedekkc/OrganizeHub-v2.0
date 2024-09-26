@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMan
 import { Team } from './team.entity';
 import { Task } from './task.entity';
 import { Project } from './project.entity';
+import { Meeting } from './meeting.entity';
 
 @Entity()
 export class User {
@@ -31,7 +32,6 @@ export class User {
 
     @OneToMany(() => Task, task => task.assignedTo)
     tasks: Task[];
-    
 
     @OneToMany(() => Task, task => task.createdBy)
     createdTasks: Task[];
@@ -41,5 +41,11 @@ export class User {
 
     @ManyToMany(() => Team, team => team.users)
     teams: Team[];
+
+    @ManyToMany(() => Meeting, meeting => meeting.assignedTo)
+    meetings: Meeting[];
+
+    @OneToMany(() => Meeting, meeting => meeting.createdBy)
+    createdMeetings: Meeting[];
 
 }
