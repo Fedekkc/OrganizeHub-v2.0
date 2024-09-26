@@ -16,6 +16,14 @@ export class Task {
     @Column()
     status: string;
 
+    // limitamos a que solo se pueda establecer high, medium o low.
+    // para limitar los valores que se pueden establecer en una columna, podemos usar la propiedad enum de typeORM.
+    @Column({ type: 'enum', enum: ['high', 'medium', 'low'] })
+    priority: string;
+
+    @Column( { type: 'date' })
+    dueDate: Date;
+    
     @ManyToOne(() => User, user => user.tasks)
     assignedTo: User;
 

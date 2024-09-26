@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, SetMetadata } from "@nestjs/common";
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, SetMetadata, HttpCode } from "@nestjs/common";
 import { TaskDto } from "../dtos/task.dto";
 import { TaskService } from "../services/task.service";
 import { Task } from "../entities/task.entity";
@@ -10,6 +10,7 @@ export class TaskController {
 
     @SetMetadata('isPublic', false)
     @Get()
+    @HttpCode(HttpStatus.OK)
     async getAllTasks(): Promise<Task[]> {
         try {
             return await this.taskService.getAllTasks();
@@ -23,6 +24,7 @@ export class TaskController {
 
     @SetMetadata('isPublic', false)
     @Get(':taskId')
+    @HttpCode(HttpStatus.OK)
     async getTaskById(@Param('taskId') taskId: number): Promise<Task> {
         try {
             const task = await this.taskService.getTaskById(taskId);
@@ -40,6 +42,7 @@ export class TaskController {
 
     @SetMetadata('isPublic', false)
     @Post()
+    @HttpCode(HttpStatus.CREATED)
     async createTask(@Body() TaskDto: TaskDto): Promise<Task> {
         try {
             return await this.taskService.createTask(TaskDto);
@@ -50,6 +53,7 @@ export class TaskController {
 
     @SetMetadata('isPublic', false)
     @Put(':taskId')
+    @HttpCode(HttpStatus.OK)
     async updateTask(@Param('taskId') taskId: number, @Body() TaskDto: TaskDto): Promise<Task> {
         try {
             const task = await this.taskService.updateTask(taskId, TaskDto);
@@ -66,6 +70,7 @@ export class TaskController {
     }
 
     @Delete(':taskId')
+    @HttpCode(HttpStatus.NO_CONTENT)
     async deleteTask(@Param('taskId') taskId: number): Promise<void> {
         try {
             const result = await this.taskService.deleteTask(taskId);

@@ -1,12 +1,10 @@
-// Calendar.js
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const localizer = momentLocalizer(moment);
-//seteamos en español el calendario
 moment.locale('es');
 
 const CalendarContainer = styled.div`
@@ -35,7 +33,7 @@ const CustomCalendar = styled(BigCalendar)`
         border-radius: 10px;
         padding: 0.5rem;
         color: white;
-        
+
         button {
             color: white;
             cursor: pointer;
@@ -50,15 +48,11 @@ const CustomCalendar = styled(BigCalendar)`
         color: white;
     }
 
-
-
     .rbc-row {
         color: white;
-
         &:hover {
             cursor: pointer;
         }
-
     }
 
     .rbc-off-range {
@@ -68,11 +62,11 @@ const CustomCalendar = styled(BigCalendar)`
     .rbc-day-bg {
         background-color: #494A48;
         cursor: pointer;
-
         &:hover {
             background-color: #757575;
         }
     }
+
     .rbc-today {
         background-color: #565755; /* Día actual resaltado */
     }
@@ -89,15 +83,33 @@ const CustomCalendar = styled(BigCalendar)`
         &:hover {
             background-color: rgba(173, 216, 230, 0.8);
         }
-
+    }
 `;
 
-const Calendar = ({ events, onDateSelect }) => {
+const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
+    const [eventList, setEventList] = useState(events);
+
+    const handleEventResize = ({ event, start, end }) => {
+        const updatedEvents = eventList.map(existingEvent =>
+            existingEvent.id === event.id ? { ...existingEvent, start, end } : existingEvent
+        );
+        setEventList(updatedEvents);
+        if (onEventUpdate) onEventUpdate(updatedEvents);
+    };
+
+    const handleEventDrop = ({ event, start, end }) => {
+        const updatedEvents = eventList.map(existingEvent =>
+            existingEvent.id === event.id ? { ...existingEvent, start, end } : existingEvent
+        );
+        setEventList(updatedEvents);
+        if (onEventUpdate) onEventUpdate(updatedEvents);
+    };
+
     return (
         <CalendarContainer>
             <CustomCalendar
                 localizer={localizer}
-                events={events}
+                events={eventList}
                 startAccessor="start"
                 endAccessor="end"
                 views={['month', 'week', 'day']}
@@ -105,6 +117,9 @@ const Calendar = ({ events, onDateSelect }) => {
                 onSelectSlot={(slotInfo) => {
                     onDateSelect(slotInfo.start);
                 }}
+                onEventDrop={handleEventDrop}
+                onEventResize={handleEventResize}
+                resizable
             />
         </CalendarContainer>
     );

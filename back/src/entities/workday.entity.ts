@@ -17,7 +17,4 @@ export class Workday {
     @JoinTable()
     users: User[];
 
-
-    @OneToMany(() => Project, project => project.workday)
-    projects: Project[];
 }
