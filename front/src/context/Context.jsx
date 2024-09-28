@@ -7,6 +7,7 @@ export const AppContext = createContext();
 export const AppProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [events, setEvents] = useState([]); // Estado para los eventos
 
     // Verificar si el usuario ya está autenticado al cargar la aplicación
     useEffect(() => {
@@ -24,8 +25,6 @@ export const AppProvider = ({ children }) => {
         setIsAuthenticated(true);
     };
 
-
-
     // Función para cerrar sesión
     const logout = () => {
         localStorage.removeItem('authToken');
@@ -36,8 +35,35 @@ export const AppProvider = ({ children }) => {
     // Función para verificar si el usuario está autenticado
     const isLoggedIn = () => !!authToken;
 
+    // Función para agregar un evento
+    const addEvent = (newEvent) => {
+        setEvents((prevEvents) => [...prevEvents, newEvent]);
+    };
+
+    // Función para actualizar un evento
+    const updateEvent = (updatedEvent) => {
+        setEvents((prevEvents) => 
+            prevEvents.map(event => event.id === updatedEvent.id ? updatedEvent : event)
+        );
+    };
+
+    // Función para eliminar un evento
+    const deleteEvent = (eventId) => {
+        setEvents((prevEvents) => prevEvents.filter(event => event.id !== eventId));
+    };
+
     return (
-        <AppContext.Provider value={{ authToken, isAuthenticated, login, logout, isLoggedIn }}>
+        <AppContext.Provider value={{
+            authToken, 
+            isAuthenticated, 
+            login, 
+            logout, 
+            isLoggedIn,
+            events, // Comparte los eventos
+            addEvent, // Comparte la función para agregar eventos
+            updateEvent, // Comparte la función para actualizar eventos
+            deleteEvent // Comparte la función para eliminar eventos
+        }}>
             {children}
         </AppContext.Provider>
     );

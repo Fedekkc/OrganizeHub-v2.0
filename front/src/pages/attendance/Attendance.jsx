@@ -6,7 +6,7 @@ import moment from 'moment';
 import Modal from '../../components/AddTaskModal'; 
 import { CiCalendar } from 'react-icons/ci';
 import axios from 'axios';
-
+import { useAuth } from '../../context/Context';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -22,9 +22,10 @@ const Title = styled.h1`
 const Input = styled.input`
   padding: 10px;
   margin: 10px 0;
-  
+  background-color: transparent;
   border: 1px solid #ccc;
   border-radius: 4px;
+  color: #ccc;
 `;
 
 const Button = styled.button`
@@ -57,6 +58,34 @@ const Select = styled.select`
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: transparent;
+    color: #ccc; 
+
+    &:focus {
+        outline: none;
+        
+
+    }
+
+
+
+
+`;
+
+const Option = styled.option`
+    outline: none;
+    overflow: hidden;    
+    
+    background-color: #676767;
+    color: black;
+
+    &:hover {
+        appearance: none;
+        background-color: #757575;
+        background: #757575;
+        color: white;
+    }
+
 `;
 
 const Titulo = styled.h2`
@@ -65,6 +94,7 @@ const Titulo = styled.h2`
     justify-content: center;
     align-items: center;
 `;
+
 
 const TitulosContainer = styled.div`
     display: flex;
@@ -75,10 +105,10 @@ const TitulosContainer = styled.div`
 
 
 const Attendance = () => {
+    const { events, addEvent, updateEvent } = useAuth();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [type, setType] = useState('task');
-    const [events, setEvents] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [endingDate, setEndingDate] = useState(null);
@@ -88,8 +118,8 @@ const Attendance = () => {
 
     const handleDateSelect = (selectedDate) => {
         // Abrir el modal cuando se selecciona una fecha
-        setSelectedDate(selectedDate);
         setIsModalOpen(true);
+        setSelectedDate(selectedDate || moment().toDate().format('DD/MM/YYYY'));
     };
 
     const handleAddEvent = () => {
@@ -126,8 +156,7 @@ const Attendance = () => {
                 });
         }
 
-        setEvents([...events, newEvent]);
-        console.log(events);
+        addEvent(newEvent);
         setTitle('');
         setDescription('');
         setSelectedDate(null);
@@ -136,9 +165,9 @@ const Attendance = () => {
         setIsModalOpen(false); 
     };
 
-    const onEventUpdate = (updatedEvents) => {
-        setEvents(updatedEvents);
-    };
+
+
+    
 
     return (
         <Container>
@@ -147,6 +176,7 @@ const Attendance = () => {
                 <Calendar
                     events={events}
                     onDateSelect={handleDateSelect} // Pasa la función de selección de fecha
+                    onEventUpdate={updateEvent} // Pasa la función de actualización de
                 />
             </CalendarContainer>
 
@@ -156,14 +186,14 @@ const Attendance = () => {
                 
                 </TitulosContainer>
                 <Select onChange={(e) => setType(e.target.value)}>
-                    <option value="task">Tarea</option>
-                    <option value="meeting">Reunión</option>
+                    <Option value="task">Tarea</Option>
+                    <Option value="meeting">Reunión</Option>
                 </Select>
 
                 <Select onChange={(e) => setProject(e.target.value)}>
-                    <option value="project1">Proyecto 1</option>
-                    <option value="project2">Proyecto 2</option>
-                    <option value="project3">Proyecto 3</option>
+                    <Option value="project1">Proyecto 1</Option>
+                    <Option value="project2">Proyecto 2</Option>
+                    <Option value="project3">Proyecto 3</Option>
                 </Select>
                 
                 <Input
@@ -190,6 +220,7 @@ const Attendance = () => {
                             setEndingDate(endDate);
                         }}
                         placeholder="Seleccionar hora de finalización"
+                        value={endingDate ? moment(endingDate).format('HH:mm') : ''}
                     />
                 ) : (
                     <Input

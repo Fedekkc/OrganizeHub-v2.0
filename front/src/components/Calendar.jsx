@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -89,6 +89,10 @@ const CustomCalendar = styled(BigCalendar)`
 const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
     const [eventList, setEventList] = useState(events);
 
+    useEffect(() => {
+        setEventList(events);
+    }, [events]);
+
     const handleEventResize = ({ event, start, end }) => {
         const updatedEvents = eventList.map(existingEvent =>
             existingEvent.id === event.id ? { ...existingEvent, start, end } : existingEvent
@@ -120,6 +124,7 @@ const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
                 onEventDrop={handleEventDrop}
                 onEventResize={handleEventResize}
                 resizable
+                draggableAccessor={() => true} // Permitir arrastrar todos los eventos
             />
         </CalendarContainer>
     );
