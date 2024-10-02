@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import { useAuth } from '../context/Context';
 
 const localizer = momentLocalizer(moment);
 moment.locale('es');
+
+const DnDCalendar = withDragAndDrop(BigCalendar);
 
 const CalendarContainer = styled.div`
     display: flex;
@@ -17,7 +22,7 @@ const CalendarContainer = styled.div`
     width: 100%;
 `;
 
-const CustomCalendar = styled(BigCalendar)`
+const CustomCalendar = styled(DnDCalendar)`
     padding: 1rem;
     border-radius: 10px;
     border: 1px solid #ccc;
@@ -88,32 +93,24 @@ const CustomCalendar = styled(BigCalendar)`
 
 const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
     const [eventList, setEventList] = useState(events);
+    const { addEvent, updateEvent, deleteEvent } = useAuth();
 
-    useEffect(() => {
-        setEventList(events);
-    }, [events]);
+
 
     const handleEventResize = ({ event, start, end }) => {
-        const updatedEvents = eventList.map(existingEvent =>
-            existingEvent.id === event.id ? { ...existingEvent, start, end } : existingEvent
-        );
-        setEventList(updatedEvents);
-        if (onEventUpdate) onEventUpdate(updatedEvents);
+        updateEvent({ ...event, start, end });
+
     };
 
     const handleEventDrop = ({ event, start, end }) => {
-        const updatedEvents = eventList.map(existingEvent =>
-            existingEvent.id === event.id ? { ...existingEvent, start, end } : existingEvent
-        );
-        setEventList(updatedEvents);
-        if (onEventUpdate) onEventUpdate(updatedEvents);
+        updateEvent({ ...event, start, end });
     };
 
     return (
         <CalendarContainer>
             <CustomCalendar
                 localizer={localizer}
-                events={eventList}
+                events={events}
                 startAccessor="start"
                 endAccessor="end"
                 views={['month', 'week', 'day']}
