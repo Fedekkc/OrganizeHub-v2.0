@@ -89,6 +89,10 @@ const CustomCalendar = styled(DnDCalendar)`
             background-color: rgba(173, 216, 230, 0.8);
         }
     }
+
+    
+
+
 `;
 
 const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
@@ -113,6 +117,8 @@ const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
                 events={events}
                 startAccessor="start"
                 endAccessor="end"
+                timeslots={1}
+                step={60}
                 views={['month', 'week', 'day']}
                 selectable
                 onSelectSlot={(slotInfo) => {
