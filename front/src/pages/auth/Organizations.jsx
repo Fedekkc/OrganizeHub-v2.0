@@ -24,7 +24,7 @@ const AssignOrg = () => {
     const [orgId, setOrgId] = useState('');
 
     const handleSearch = () => {
-        axios.post('http://localhost:5000/organizations', { orgId })
+        axios.get('http://localhost:5000/organizations', { orgId })
             .then((res) => {
                 console.log(res.data);
             })
@@ -42,11 +42,11 @@ const AssignOrg = () => {
             <Title>Join or Create an Organization</Title>
             <SearcherContainer>
                 <input type="text" placeholder="Organization ID" value={orgId} onChange={(e) => setOrgId(e.target.value)} />
-                <button>Search</button>
+                <button onClick={handleSearch}>Search</button>
                 
             </SearcherContainer>
             OR... 
-            <button onClick={handleSearch} >Create a new organization</button>
+            <button >Create a new organization</button>
 
             
 
