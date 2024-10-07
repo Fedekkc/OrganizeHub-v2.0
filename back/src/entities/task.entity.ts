@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from './user.entity';
 import { Project } from './project.entity';
+import { Team } from './team.entity';
 
 @Entity()
 export class Task {
@@ -26,6 +27,9 @@ export class Task {
     
     @ManyToOne(() => User, user => user.tasks)
     assignedTo: User;
+
+    @ManyToOne(() => Team, team => team.tasks)
+    assignedTeam: Team;
 
     @ManyToOne(() => Project, project => project.tasks)
     project: Project;

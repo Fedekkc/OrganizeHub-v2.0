@@ -107,6 +107,7 @@ const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
     };
 
     const handleEventDrop = ({ event, start, end }) => {
+        console.log(event);
         updateEvent({ ...event, start, end });
     };
 
