@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { AppContext } from '../../context/Context';
+import { useNavigate } from 'react-router-dom';
 
 const SignupContainer = styled.div`
     display: flex;
@@ -65,6 +66,7 @@ const Signup = () => {
     });
 
     const { login } = useContext(AppContext);  // Supone que `login` es una función que guarda el JWT
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -81,6 +83,8 @@ const Signup = () => {
             .then((res) => {
                 if (res.data.token) {
                     login(res.data.token);  // Usa el contexto o el estado global para manejar el inicio de sesión
+                    navigate('/organizations');
+                    
                 }
             })
             .catch((err) => {

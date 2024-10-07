@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, Or } from 'typeorm';
 import { Team } from './team.entity';
 import { Task } from './task.entity';
 import { Project } from './project.entity';
 import { Meeting } from './meeting.entity';
+import { Organization } from './organization.entity';
 
 @Entity()
 export class User {
@@ -29,6 +30,9 @@ export class User {
 
     @Column({ default: true })
     isActive: boolean;
+
+    @ManyToOne(() => Organization, organization => organization.users)
+    organization: Organization;
 
     @OneToMany(() => Task, task => task.assignedTo)
     tasks: Task[];

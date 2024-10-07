@@ -80,13 +80,13 @@ const CustomCalendar = styled(DnDCalendar)`
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: lightblue;
+        background-color: #918b8b;
         color: white;
         border-radius: 2px;
         padding: 2px;
         cursor: pointer;
         &:hover {
-            background-color: rgba(173, 216, 230, 0.8);
+            background-color: rgba(200, 180, 180, 0.8);
         }
     }
 

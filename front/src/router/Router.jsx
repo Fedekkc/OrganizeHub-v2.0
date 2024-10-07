@@ -9,6 +9,7 @@ import PrivateRoute from './PrivateRoute';
 import Tasks from '../pages/tareas/Tasks';
 import Login from '../pages/auth/Login';
 import Signup from '../pages/auth/Signup';
+import Organizations from '../pages/auth/Organizations';
 import { useAuth } from '../context/Context';
 
 const AppRouter = () => {
@@ -31,6 +32,16 @@ const AppRouter = () => {
                     </PrivateRoute>
                 } 
             />
+
+            <Route
+                path="/organizations"
+                element={
+                    <PrivateRoute isAuthenticated={isAuthenticated}>
+                        <Organizations />
+                    </PrivateRoute>
+                }
+            />
+
             <Route 
                 path="/attendance" 
                 element={
