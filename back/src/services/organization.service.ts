@@ -1,43 +1,61 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { OrganizationDto } from '../dtos/organization.dto';
+import { Organization } from '../entities/organization.entity';
+import { UserService } from './user.service';
+import { TaskService } from './task.service';
 
 @Injectable()
 export class OrganizationService {
-    private organizations: OrganizationDto[] = [];
+    constructor(
+        @InjectRepository(Organization)
+        private organizationRepository: Repository<Organization>,
+        private userService: UserService,
+        private taskService: TaskService,
+    ) {}
 
-    createOrganization(organizationDto: OrganizationDto): OrganizationDto {
-        const newOrganization = { ...organizationDto, organizationId: this.organizations.length + 1 };
-        this.organizations.push(newOrganization);
-        return newOrganization;
+    async createOrganization(organizationDto: OrganizationDto): Promise<Organization> {
+
+
+        const organization = this.organizationRepository.create(organizationDto);
+        return this.organizationRepository.save(organization);
     }
 
-    getAllOrganizations(): OrganizationDto[] {
-        return this.organizations;
+    async getAllOrganizations(): Promise<Organization[]> {
+        return this.organizationRepository.find({ relations: ['users'] });
     }
 
-    getOrganizationById(organizationId: number): OrganizationDto {
-        const organization = this.organizations.find(proj => proj.organizationId === organizationId);
+    async getOrganizationById(id: number): Promise<Organization> {
+        const organization = await this.organizationRepository.findOne({
+            where: { organizationId: id },
+            relations: ['users'],
+        });
         if (!organization) {
-            throw new NotFoundException(`Organization with ID ${organizationId} not found`);
+            throw new NotFoundException(`Organization with ID ${id} not found`);
         }
         return organization;
     }
 
-    updateOrganization(organizationId: number, updateData: Partial<OrganizationDto>): OrganizationDto {
-        const organizationIndex = this.organizations.findIndex(proj => proj.organizationId === organizationId);
-        if (organizationIndex === -1) {
-            throw new NotFoundException(`Organization with ID ${organizationId} not found`);
-        }
-        const updatedOrganization = { ...this.organizations[organizationIndex], ...updateData };
-        this.organizations[organizationIndex] = updatedOrganization;
-        return updatedOrganization;
+    async updateOrganization(id: number, organizationDto: OrganizationDto): Promise<Organization> {
+            
+
+        await this.organizationRepository.update(id, organizationDto);
+        return this.getOrganizationById(id);
     }
 
-    deleteOrganization(organizationId: number): void {
-        const organizationIndex = this.organizations.findIndex(proj => proj.organizationId === organizationId);
-        if (organizationIndex === -1) {
-            throw new NotFoundException(`Organization with ID ${organizationId} not found`);
+    async deleteOrganization(id: number): Promise<boolean> {
+        const result = await this.organizationRepository.delete(id);
+        return result.affected > 0;
+    }
+
+    async addUsersToOrganization(organizationId: number, userIds: number[]): Promise<Organization> {
+        const organization = await this.getOrganizationById(organizationId);
+        if (!organization) {
+            throw new NotFoundException('Organization not found');
         }
-        this.organizations.splice(organizationIndex, 1);
+        const users = await this.userService.getUsersByIds(userIds);
+        organization.users = [...organization.users, ...users];
+        return this.organizationRepository.save(organization);
     }
 }

@@ -35,3 +35,7 @@ export class OrganizationDto {
     @Length(0, 255)
     address?: string;
 }
+
+export class PartialOrganizationDto extends OrganizationDto {
+        
+    }

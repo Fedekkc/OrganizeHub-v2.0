@@ -32,7 +32,7 @@ export class ProjectController {
     @Put(':id')
     @HttpCode(HttpStatus.OK)
     @UsePipes(new ValidationPipe({ transform: true }))
-    updateProject(@Param('id') id: number, @Body() updateData: Partial<ProjectDto>) {
+    updateProject(@Param('id') id: number, @Body() updateData: ProjectDto) {
         return this.projectService.updateProject(id, updateData);
     }
 

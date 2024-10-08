@@ -32,7 +32,9 @@ export class OrganizationController {
     @Put(':id')
     @HttpCode(HttpStatus.OK)
     @UsePipes(new ValidationPipe({ transform: true }))
-    updateOrganization(@Param('id') id: number, @Body() updateData: Partial<OrganizationDto>) {
+    updateOrganization(@Param('id') id: number, @Body() updateData: OrganizationDto) {
+        
+
         return this.organizationService.updateOrganization(id, updateData);
     }
 
