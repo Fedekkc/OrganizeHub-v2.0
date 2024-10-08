@@ -13,7 +13,7 @@ import Organizations from '../pages/auth/Organizations';
 import { useAuth } from '../context/Context';
 
 const AppRouter = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isInOrg } = useAuth();
 
     return (
         <Routes>
@@ -27,16 +27,16 @@ const AppRouter = () => {
             <Route 
                 path="/tasks" 
                 element={
-                    <PrivateRoute isAuthenticated={isAuthenticated}>
+                    <PrivateRoute isAuthenticated={isAuthenticated} isInOrg={isInOrg}>
                         <Tasks />
                     </PrivateRoute>
                 } 
             />
 
             <Route
-                path="/organizations"
+                path="/organization"
                 element={
-                    <PrivateRoute isAuthenticated={isAuthenticated}>
+                    <PrivateRoute isAuthenticated={isAuthenticated} isInOrg={isInOrg}>
                         <Organizations />
                     </PrivateRoute>
                 }
@@ -45,7 +45,7 @@ const AppRouter = () => {
             <Route 
                 path="/attendance" 
                 element={
-                    <PrivateRoute isAuthenticated={isAuthenticated}>
+                    <PrivateRoute isAuthenticated={isAuthenticated} isInOrg={isInOrg}>
                         <Attendance />
                     </PrivateRoute>
                 } 
@@ -53,7 +53,7 @@ const AppRouter = () => {
             <Route 
                 path="/teams" 
                 element={
-                    <PrivateRoute isAuthenticated={isAuthenticated}>
+                    <PrivateRoute isAuthenticated={isAuthenticated} isInOrg={isInOrg}>
                         <Teams />
                     </PrivateRoute>
                 } 
@@ -61,7 +61,7 @@ const AppRouter = () => {
             <Route 
                 path="/documentation" 
                 element={
-                    <PrivateRoute isAuthenticated={isAuthenticated}>
+                    <PrivateRoute isAuthenticated={isAuthenticated} isInOrg={isInOrg}>
                         <Documentation />
                     </PrivateRoute>
                 } 
@@ -69,7 +69,7 @@ const AppRouter = () => {
             <Route 
                 path="/passwords" 
                 element={
-                    <PrivateRoute isAuthenticated={isAuthenticated}>
+                    <PrivateRoute isAuthenticated={isAuthenticated} isInOrg={isInOrg}>
                         <Passwords />
                     </PrivateRoute>
                 } 

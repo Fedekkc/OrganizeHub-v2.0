@@ -10,7 +10,7 @@ const ormConfig: DataSourceOptions = {
     type: 'mysql',
     logging: ['error'],
     entities: ["dist/**/*.entity{.ts,.js}"],
-    synchronize: false
+    synchronize: false,
     
 };
 

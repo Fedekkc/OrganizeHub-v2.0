@@ -16,6 +16,13 @@ export const AppProvider = ({ children }) => {
         if (token) {
             setAuthToken(token);
             setIsAuthenticated(true);
+            const organization = localStorage.getItem('organization');
+            if (organization) {
+                setOrganization(organization);
+                
+            }
+
+
 
         }
 
@@ -32,6 +39,7 @@ export const AppProvider = ({ children }) => {
         setIsAuthenticated(true);
         if (user.organization) {
             setOrganization(user.organization);
+            localStorage.setItem('organization', user.organization);
         }
         
     };
@@ -43,10 +51,11 @@ export const AppProvider = ({ children }) => {
         setIsAuthenticated(false);
     };
 
-    const isInOrganization = () => !!organization;
+    const isInOrg = () => !!organization;
 
     // Función para verificar si el usuario está autenticado
     const isLoggedIn = () => !!authToken;
+
 
     // Función para agregar un evento
     const addEvent = (newEvent) => {

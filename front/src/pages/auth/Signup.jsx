@@ -83,7 +83,7 @@ const Signup = () => {
             .then((res) => {
                 if (res.data.token) {
                     login(res.data.token);  // Usa el contexto o el estado global para manejar el inicio de sesión
-                    navigate('/organizations');
+                    navigate('/organization');
                     
                 }
             })
