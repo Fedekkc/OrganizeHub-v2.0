@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from '../entities/task.entity';
 import { TaskDto } from '../dtos/task.dto';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class TaskService {
@@ -10,6 +11,18 @@ export class TaskService {
         @InjectRepository(Task)
         private taskRepository: Repository<Task>,
     ) {}
+
+    async getTasksByIds(taskIds: number[]): Promise<Task[]> {
+        const tasks = [];
+        for (const taskId of taskIds) {
+            const task = await this.taskRepository.findOne({ where: { taskId } });
+            if (!task) {
+                throw new NotFoundException(`Task with ID ${taskId} not found`);
+            }
+            tasks.push(task);
+        }
+        return tasks;
+    }
 
     async createTask(taskDto: TaskDto): Promise<Task> {
         const task = this.taskRepository.create(taskDto);

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -21,6 +22,7 @@ const SearcherContainer = styled.div`
 
 
 const AssignOrg = () => {
+    const navigate = useNavigate();
     const [orgId, setOrgId] = useState('');
 
     const handleSearch = () => {
@@ -32,10 +34,11 @@ const AssignOrg = () => {
                 console.log(err);
             });
 
-
-
     }
 
+    const handleCreate = () => {
+        navigate('/organization/create');
+    }
 
     return (
         <Container>
@@ -46,7 +49,7 @@ const AssignOrg = () => {
                 
             </SearcherContainer>
             OR... 
-            <button >Create a new organization</button>
+            <button onClick={handleCreate}>Create a new organization</button>
 
             
 

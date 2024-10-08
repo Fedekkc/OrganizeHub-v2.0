@@ -10,6 +10,7 @@ import Tasks from '../pages/tareas/Tasks';
 import Login from '../pages/auth/Login';
 import Signup from '../pages/auth/Signup';
 import Organizations from '../pages/auth/Organizations';
+import Create from '../pages/org/Create';
 import { useAuth } from '../context/Context';
 
 const AppRouter = () => {
@@ -74,6 +75,16 @@ const AppRouter = () => {
                     </PrivateRoute>
                 } 
             />
+
+            <Route
+                path="/organization/create"
+                element={
+                    <PrivateRoute isAuthenticated={isAuthenticated} isInOrg={isInOrg}>
+                        <Create />
+                    </PrivateRoute>
+                }
+            />
+
         </Routes>
     );
 };

@@ -2,9 +2,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { UserDTO } from "../dtos/user.dto";
-import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
 import { hash } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
+
 import { compare } from "bcrypt";
 
 
@@ -17,6 +18,17 @@ export class UserService {
     ) {}
 
 
+    async getUsersByIds(userIds: number[]): Promise<User[]> {
+        const users = [];
+        for (const userId of userIds) {
+            const user = await this.userRepository.findOne({ where: { userId } });
+            if (!user) {
+                throw new NotFoundException(`User with ID ${userId} not found`);
+            }
+            users.push(user);
+        }
+        return users;
+    }
 
     async createJwtPayload(user: User) {
         return {

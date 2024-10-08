@@ -1,5 +1,6 @@
 import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
 
 export class ProjectDto {
     @ApiProperty({ required: false })
@@ -31,4 +32,8 @@ export class ProjectDto {
     @IsNumber({}, { each: true })
     @IsOptional()
     tasks?: number[];
+}
+
+export class PartialProjectDto extends PartialType(ProjectDto) {
+   
 }

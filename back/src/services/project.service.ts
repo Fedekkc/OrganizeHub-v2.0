@@ -1,43 +1,77 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProjectDto } from '../dtos/project.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Project } from '../entities/project.entity';
+import { UserService } from './user.service';
+import { TaskService } from './task.service';
 
 @Injectable()
 export class ProjectService {
-    private projects: ProjectDto[] = [];
+    constructor(
+        @InjectRepository(Project)
+        private projectRepository: Repository<Project>,
+        private userService: UserService,
+        private taskService: TaskService,
 
-    createProject(projectDto: ProjectDto): ProjectDto {
-        const newProject = { ...projectDto, projectId: this.projects.length + 1 };
-        this.projects.push(newProject);
-        return newProject;
+    ) {}
+
+
+
+
+    async createProject(projectDto: ProjectDto): Promise<Project> {
+        const users = await this.userService.getUsersByIds(projectDto.users);
+        const tasks = await this.taskService.getTasksByIds(projectDto.tasks);
+    
+        const projectData = {
+            ...projectDto,
+            users: users, 
+            tasks: tasks,
+        };
+    
+        const project = this.projectRepository.create(projectData);
+        return this.projectRepository.save(project);
     }
 
-    getAllProjects(): ProjectDto[] {
-        return this.projects;
+    async getAllProjects(): Promise<Project[]> {
+        return this.projectRepository.find({ relations: ['users'] });
     }
 
-    getProjectById(projectId: number): ProjectDto {
-        const project = this.projects.find(proj => proj.projectId === projectId);
+    async getProjectById(id: number): Promise<Project> {
+        return this.projectRepository.findOne({ where: { projectId: id }, relations: ['users'] });
+    }
+
+    async updateProject(id: number, projectDto: ProjectDto): Promise<Project> {
+        const projectData = {
+            ...projectDto,
+            users: await this.userService.getUsersByIds(projectDto.users),
+            tasks: await this.taskService.getTasksByIds(projectDto.tasks),
+        };
+
+        await this.projectRepository.update(id, projectData);
+        return this.getProjectById(id);
+    }
+
+    async deleteProject(id: number): Promise<boolean> {
+        const result = await this.projectRepository.delete(id);
+        return result.affected > 0;
+        
+    }
+
+    async getProjectsByUserId(userId: number): Promise<Project[]> {
+        return this.projectRepository.createQueryBuilder('project')
+            .leftJoin('project.users', 'user')
+            .where('user.userId = :userId', { userId })
+            .getMany();
+    }
+
+    async addUsersToProject(projectId: number, userIds: number[]): Promise<Project> {
+        const project = await this.getProjectById(projectId);
         if (!project) {
-            throw new NotFoundException(`Project with ID ${projectId} not found`);
+            throw new NotFoundException('Project not found');
         }
-        return project;
-    }
-
-    updateProject(projectId: number, updateData: Partial<ProjectDto>): ProjectDto {
-        const projectIndex = this.projects.findIndex(proj => proj.projectId === projectId);
-        if (projectIndex === -1) {
-            throw new NotFoundException(`Project with ID ${projectId} not found`);
-        }
-        const updatedProject = { ...this.projects[projectIndex], ...updateData };
-        this.projects[projectIndex] = updatedProject;
-        return updatedProject;
-    }
-
-    deleteProject(projectId: number): void {
-        const projectIndex = this.projects.findIndex(proj => proj.projectId === projectId);
-        if (projectIndex === -1) {
-            throw new NotFoundException(`Project with ID ${projectId} not found`);
-        }
-        this.projects.splice(projectIndex, 1);
+        const users = await this.userService.getUsersByIds(userIds);
+        project.users = [...project.users, ...users];
+        return this.projectRepository.save(project);
     }
 }
