@@ -6,8 +6,8 @@ import { UserController } from '../controllers/user.controller';
 import { JwtModule } from '@nestjs/jwt';
 @Module({
     imports: [TypeOrmModule.forFeature([User]),JwtModule.register({
-        secret: 'secret',
-        signOptions: { expiresIn: '1d' }
+        secret: 'secret', 
+        signOptions: { expiresIn: '9h' }
     })],
     providers: [UserService],
     controllers: [UserController],
