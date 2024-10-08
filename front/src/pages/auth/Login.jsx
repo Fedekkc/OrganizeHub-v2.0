@@ -67,7 +67,7 @@ const Login = () => {
             email: formData.email,
             password: formData.password,
         }).then((res) => {
-            login(res.data.token);
+            login(res.data);
             navigate('/documentation');
         }).catch((err) => {
             console.log(err);

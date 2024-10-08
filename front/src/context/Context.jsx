@@ -7,6 +7,7 @@ export const AppContext = createContext();
 export const AppProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [organization, setOrganization] = useState(false); // Estado para la organización
     const [events, setEvents] = useState([]); // Estado para los eventos
 
     // Verificar si el usuario ya está autenticado al cargar la aplicación
@@ -15,14 +16,24 @@ export const AppProvider = ({ children }) => {
         if (token) {
             setAuthToken(token);
             setIsAuthenticated(true);
+
         }
+
+        
+
     }, []);
 
+
+
     // Función para iniciar sesión
-    const login = (token) => {
-        localStorage.setItem('authToken', token);
-        setAuthToken(token);
+    const login = (user) => {
+        localStorage.setItem('authToken', user.token);
+        setAuthToken(user.token);
         setIsAuthenticated(true);
+        if (user.organization) {
+            setOrganization(user.organization);
+        }
+        
     };
 
     // Función para cerrar sesión
@@ -31,6 +42,8 @@ export const AppProvider = ({ children }) => {
         setAuthToken(null);
         setIsAuthenticated(false);
     };
+
+    const isInOrganization = () => !!organization;
 
     // Función para verificar si el usuario está autenticado
     const isLoggedIn = () => !!authToken;

@@ -35,6 +35,7 @@ const Navbar = () => {
 
     const navigate = useNavigate();
     const { logout } = useAuth();
+    const { isAuthenticated } = useAuth();
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -63,9 +64,24 @@ const Navbar = () => {
                     <ItemText to="/passwords">Passwords</ItemText>
                 </Item>
 
+                {isAuthenticated 
+                ?
+                
                 <Item>
                     <ItemText to="/logout" onClick={handleLogout} >Logout</ItemText>
                 </Item>
+
+                : null
+                }
+
+                {!isAuthenticated &&
+
+                <Item>
+                    <ItemText to="/login">Login</ItemText>
+                </Item>
+                
+                }
+
 
 
 
