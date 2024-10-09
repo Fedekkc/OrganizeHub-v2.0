@@ -19,11 +19,13 @@ export const AppProvider = ({ children }) => {
             const organization = localStorage.getItem('organization');
             if (organization) {
                 setOrganization(organization);
-                
             }
-
-
-
+            else {
+                setOrganization(null);
+            }
+        }
+        else {
+            setIsAuthenticated(false);
         }
 
         

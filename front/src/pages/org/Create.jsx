@@ -2,8 +2,10 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import PhoneInput from 'react-phone-number-input';
+import { jwtDecode } from 'jwt-decode';
 
 import 'react-phone-number-input/style.css'
+import { useAuth } from '../../context/Context';
 
 
 const FormContainer = styled.div`
@@ -53,6 +55,9 @@ const Button = styled.button`
 `;
 
 const CreateOrganization = () => {
+
+
+
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -68,9 +73,14 @@ const CreateOrganization = () => {
             [name]: value,
         });
     };
-
+    const authToken = useAuth();
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        
+        const userId = jwtDecode(authToken).id;
+        console.log(userId);
+
         axios.post('http://localhost:5000/organizations', formData)
             .then((res) => {
                 console.log("CREADO");

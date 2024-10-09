@@ -16,7 +16,10 @@ export class OrganizationService {
     ) {}
 
     async createOrganization(organizationDto: OrganizationDto): Promise<Organization> {
-
+        const orgData = {
+            ...organizationDto,
+            owner: this.userService.getUserById(organizationDto.ownerId),
+        }
 
         const organization = this.organizationRepository.create(organizationDto);
         return this.organizationRepository.save(organization);

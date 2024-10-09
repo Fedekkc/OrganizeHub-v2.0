@@ -1,9 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, Or } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, Or, OneToOne } from 'typeorm';
 import { Team } from './team.entity';
 import { Task } from './task.entity';
 import { Project } from './project.entity';
 import { Meeting } from './meeting.entity';
 import { Organization } from './organization.entity';
+import { IsOptional } from 'class-validator';
 
 @Entity()
 export class User {
@@ -39,6 +40,10 @@ export class User {
 
     @OneToMany(() => Task, task => task.createdBy)
     createdTasks: Task[];
+
+    @OneToOne(() => Organization, organization => organization.owner)
+    @IsOptional()
+    ownedOrganization?: Organization;
 
     @ManyToMany(() => Project, project => project.users)
     projects: Project[];

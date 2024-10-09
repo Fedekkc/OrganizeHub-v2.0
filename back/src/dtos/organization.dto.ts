@@ -14,6 +14,10 @@ export class OrganizationDto {
 
     @ApiProperty({ required: false })
     @IsOptional()
+    ownerId?: number;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
     @IsString()
     @Length(0, 255)
     description?: string;

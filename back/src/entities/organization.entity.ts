@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne } from 'typeorm';
 import { Team } from './team.entity';
 import { Project } from './project.entity';
 import { User } from './user.entity';
@@ -9,6 +9,12 @@ export class Organization {
 
     @Column({ length: 100 })
     name: string;
+
+    
+    @OneToOne(() => User, user => user.ownedOrganization)
+    owner: User;
+    
+
 
     @Column({ length: 255, nullable: true })
     description: string;
