@@ -63,7 +63,8 @@ const CreateOrganization = () => {
         description: '',
         email: '',
         phone: '',
-        address: ''
+        address: '',
+        ownerId: null,
     });
 
     const handleChange = (e) => {
@@ -78,8 +79,12 @@ const CreateOrganization = () => {
         e.preventDefault();
         
         
-        const userId = jwtDecode(authToken).id;
-        console.log(userId);
+        const userId = jwtDecode(authToken.authToken).userId;
+        setFormData({
+            ...formData,
+            ownerId: userId,
+        });
+        
 
         axios.post('http://localhost:5000/organizations', formData)
             .then((res) => {

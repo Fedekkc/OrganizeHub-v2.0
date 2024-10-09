@@ -27,6 +27,11 @@ const Container = styled.div`
 `;
 
 function App() {
+ window.onload = () => {
+    localStorage.removeItem('authToken');
+ }
+        
+
   return (
     <AppProvider>
       <Navbar />

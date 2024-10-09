@@ -1,15 +1,22 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, SetMetadata } from "@nestjs/common";
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, SetMetadata, UseGuards, Request } from "@nestjs/common";
 import { UserDTO } from "../dtos/user.dto";
 import { UserService } from "../services/user.service";
 import { User } from "../entities/user.entity";
 import { EntityNotFoundError } from "typeorm";
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService) { }
 
-    @SetMetadata('isPublic', false)
+    @UseGuards(JwtAuthGuard)
+    @Post('validate-token')
+    validateToken(@Request() req: any) {
+        return { status: 'Token is valid', user: req.user };
+    }
+
     @Get()
+    @UseGuards(JwtAuthGuard) // Protege esta ruta
     async getAllUsers(): Promise<User[]> {
         try {
             return await this.userService.getAllUsers();
@@ -21,8 +28,8 @@ export class UserController {
         }
     }
 
-    @SetMetadata('isPublic', false)
     @Get(':userId')
+    @UseGuards(JwtAuthGuard) // Protege esta ruta
     async getUserById(@Param('userId') userId: number): Promise<User> {
         try {
             const user = await this.userService.getUserById(userId);
@@ -39,23 +46,20 @@ export class UserController {
     }
 
     @Post('login')
-    async login(@Body() body: { email: string, password: string } ): Promise<{ token: string }> {
+    async login(@Body() body: { email: string, password: string }): Promise<{ token: string }> {
         try {
-            return this.userService.login(body.email, body.password);
-
+            return await this.userService.login(body.email, body.password);
         } catch (error) {
             throw new HttpException('Failed to login', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
-    @SetMetadata('isPublic', false)
     @Post()
     async createUser(@Body() userDTO: UserDTO): Promise<{ token: string }> {
         try {
             const newUser = await this.userService.createUser(userDTO);
             const jwtPayload = await this.userService.createJwtPayload(newUser);
-            return { token: jwtPayload.token };  // Retorna el token JWT
+            return { token: jwtPayload.token }; // Retorna el token JWT
         } catch (error) {
             if (error instanceof EntityNotFoundError) {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -64,9 +68,8 @@ export class UserController {
         }
     }
 
-
-    @SetMetadata('isPublic', false)
     @Put(':userId')
+    @UseGuards(JwtAuthGuard) // Protege esta ruta
     async updateUser(@Param('userId') userId: number, @Body() userDTO: UserDTO): Promise<User> {
         try {
             const user = await this.userService.updateUser(userId, userDTO);
@@ -83,6 +86,7 @@ export class UserController {
     }
 
     @Delete(':userId')
+    @UseGuards(JwtAuthGuard) // Protege esta ruta
     async deleteUser(@Param('userId') userId: number): Promise<void> {
         try {
             const result = await this.userService.deleteUser(userId);
