@@ -7,6 +7,8 @@ import Modal from '../../components/AddTaskModal';
 import { CiCalendar } from 'react-icons/ci';
 import axios from 'axios';
 import { useAuth } from '../../context/Context';
+import TaskListApp from '../../components/tasks/taskList';
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -171,12 +173,13 @@ const Attendance = () => {
 
     return (
         <Container>
+            <TaskListApp/>
              <CalendarContainer>
                 <Title>Attendance Tracker con Calendario</Title>
                 <Calendar
                     events={events}
-                    onDateSelect={handleDateSelect} // Pasa la función de selección de fecha
-                    onEventUpdate={updateEvent} // Pasa la función de actualización de
+                    onDateSelect={handleDateSelect} 
+                    onEventUpdate={updateEvent} 
                 />
             </CalendarContainer>
 
