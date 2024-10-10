@@ -6,6 +6,7 @@ import Documentation from './pages/documentation/Documentation';
 import AppRouter from './router/Router';
 import styled, { createGlobalStyle } from 'styled-components';
 import { AppProvider } from './context/Context';
+import { useAuth } from './context/Context';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -27,10 +28,16 @@ const Container = styled.div`
 `;
 
 function App() {
+  const { authToken, setAuthToken, setIsAuthenticated, setOrganization } = useAuth();
+
  window.onload = () => {
     localStorage.removeItem('authToken');
+    setAuthToken(null);
+    setIsAuthenticated(false);
+    setOrganization(null);
  }
-        
+
+
 
   return (
     <AppProvider>

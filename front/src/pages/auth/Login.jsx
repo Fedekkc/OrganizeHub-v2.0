@@ -59,7 +59,7 @@ const Login = () => {
         password: '',
     });
 
-    const { login } = useContext(AppContext);
+    const { login, checkUserStatus, setOrganization } = useContext(AppContext);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -68,6 +68,7 @@ const Login = () => {
             password: formData.password,
         }).then((res) => {
             login(res.data);
+            checkUserStatus();
             navigate('/documentation');
         }).catch((err) => {
             console.log(err);

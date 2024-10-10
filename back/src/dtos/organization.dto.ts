@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, Length, IsPhoneNumber } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Length, IsPhoneNumber, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class OrganizationDto {
@@ -13,8 +13,8 @@ export class OrganizationDto {
     name: string;
 
     @ApiProperty({ required: false })
-    @IsOptional()
-    ownerId?: number;
+    @IsNumber()
+    owner: number;
 
     @ApiProperty({ required: false })
     @IsOptional()

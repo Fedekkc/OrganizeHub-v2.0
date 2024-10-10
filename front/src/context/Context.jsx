@@ -1,40 +1,47 @@
 import React, { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
-// Crear el contexto
 export const AppContext = createContext();
 
-// Proveedor del contexto
 export const AppProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [organization, setOrganization] = useState(false); // Estado para la organización
-    const [events, setEvents] = useState([]); // Estado para los eventos
+    const [organization, setOrganization] = useState(null);
+    const [events, setEvents] = useState([]);
 
-    // Verificar si el usuario ya está autenticado al cargar la aplicación
-    useEffect(() => {
+    const checkUserStatus = async () => {
         const token = localStorage.getItem('authToken');
         if (token) {
             setAuthToken(token);
-            setIsAuthenticated(true);
-            const organization = localStorage.getItem('organization');
-            if (organization) {
-                setOrganization(organization);
-            }
-            else {
+            try {
+                const response = await axios.post('http://localhost:5000/users/validate-token', {}, {
+                    headers: { Authorization: `Bearer ${token}` },
+                }).catch((err) => {
+                    console.log(err);
+                });
+                if (response.status === 201) {
+                    setIsAuthenticated(true);
+                    if(response.data.user.organization !== null) {
+                        setOrganization(true);
+                    }
+
+                }
+
+                
+            } catch (error) {
+                setIsAuthenticated(false);
                 setOrganization(null);
+                localStorage.removeItem('authToken');
             }
-        }
-        else {
+        } else {
             setIsAuthenticated(false);
         }
+    };
 
-        
-
+    useEffect(() => {
+        checkUserStatus();
     }, []);
 
-
-
-    // Función para iniciar sesión
     const login = (user) => {
         localStorage.setItem('authToken', user.token);
         setAuthToken(user.token);
@@ -43,50 +50,34 @@ export const AppProvider = ({ children }) => {
             setOrganization(user.organization);
             localStorage.setItem('organization', user.organization);
         }
-        
     };
 
-    // Función para cerrar sesión
     const logout = () => {
         localStorage.removeItem('authToken');
         setAuthToken(null);
         setIsAuthenticated(false);
+        setOrganization(null);
     };
 
     const isInOrg = () => !!organization;
 
-    // Función para verificar si el usuario está autenticado
     const isLoggedIn = () => !!authToken;
 
-
-    // Función para agregar un evento
-    const addEvent = (newEvent) => {
-        setEvents((prevEvents) => [...prevEvents, newEvent]);
-    };
-
-    // Función para actualizar un evento
-    const updateEvent = (updatedEvent) => {
-        setEvents((prevEvents) => 
-            prevEvents.map(event => event.id === updatedEvent.id ? updatedEvent : event)
-        );
-    };
-
-    // Función para eliminar un evento
-    const deleteEvent = (eventId) => {
-        setEvents((prevEvents) => prevEvents.filter(event => event.id !== eventId));
-    };
 
     return (
         <AppContext.Provider value={{
             authToken, 
+            organization,
+            setAuthToken,
+            setOrganization,
+            setIsAuthenticated,
             isAuthenticated, 
+            checkUserStatus,
             login, 
             logout, 
             isLoggedIn,
-            events, // Comparte los eventos
-            addEvent, // Comparte la función para agregar eventos
-            updateEvent, // Comparte la función para actualizar eventos
-            deleteEvent // Comparte la función para eliminar eventos
+            isInOrg,
+            events, 
         }}>
             {children}
         </AppContext.Provider>

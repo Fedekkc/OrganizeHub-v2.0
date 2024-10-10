@@ -23,8 +23,8 @@ const Description = styled.p`
 const Home = () => {
     return (
         <HomeContainer>
-            <Title>Welcome to Home</Title>
-            <Description>This is the home page of our application.</Description>
+            <Title>Home Page</Title>
+            <Description>[Accesos directos a las funciones más usadas]</Description>
         </HomeContainer>
     );
 };

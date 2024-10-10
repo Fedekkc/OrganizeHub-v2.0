@@ -2,22 +2,26 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { UserDTO } from "../dtos/user.dto";
+import { PartialUserDTO } from "../dtos/user.dto";
 import { Injectable, HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
 import { hash } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-
 import { compare } from "bcrypt";
-
+import { Organization } from "src/entities/organization.entity";
+import { OrganizationService } from "./organization.service";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private organizationService: OrganizationService,
         private jwtService: JwtService
         
     ) {}
 
-
+    async decodeToken(token: string) {
+        return this.jwtService.decode(token);
+    }
     async getUsersByIds(userIds: number[]): Promise<User[]> {
         const users = [];
         for (const userId of userIds) {
@@ -35,6 +39,7 @@ export class UserService {
             userId: user.userId,
             username: user.username,
             email: user.email,
+            organization: user.organization,
             token: this.jwtService.sign({ userId: user.userId }) 
         }
     }
@@ -49,7 +54,7 @@ export class UserService {
 
     async getUserById(userId: number): Promise<User> {
         try {
-            const user = await this.userRepository.findOne({ where: { userId } });
+            const user = await this.userRepository.findOne({ where: { userId }, relations: ['organization'] });
             if (!user) {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
             }
@@ -61,6 +66,10 @@ export class UserService {
 
     async createUser(userDTO: UserDTO): Promise<User> {
         try {
+            if (await this.userRepository.findOne({ where: { email: userDTO.email } })) {
+                throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+            }
+
             const user = new User();
             user.firstName = userDTO.firstName;
             user.lastName = userDTO.lastName;
@@ -87,7 +96,7 @@ export class UserService {
     // return un token de jwt
     async login(email: string, password: string): Promise<any> { 
         try {
-            const user = await this.userRepository.findOne({ where: { email } });
+            const user = await this.userRepository.findOne({ where: { email }, relations: ['organization'] });
             if (!user) {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
             }
@@ -117,22 +126,29 @@ export class UserService {
 
     
 
-    async updateUser(userId: number, userDTO: UserDTO): Promise<User> {
+    async updateUser(userId: number, userDTO: PartialUserDTO): Promise<User> {
         try {
-            const user = await this.userRepository.findOne({ where: { userId } });
+            const user = await this.userRepository.findOne({ where: { userId: userId } });
             if (!user) {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
             }
-            user.firstName = userDTO.firstName;
-            user.lastName = userDTO.lastName;
-            user.username = userDTO.username;
-            user.email = userDTO.email;
-            user.password = await hash(userDTO.password, 10);
+            if (userDTO.firstName) user.firstName = userDTO.firstName;
+            if (userDTO.lastName) user.lastName = userDTO.lastName;
+            if (userDTO.username) user.username = userDTO.username;
+            if (userDTO.email) user.email = userDTO.email;
+            if (userDTO.organization) {
+                user.organization = await this.organizationService.getOrganizationById(userDTO.organization);
+            }
+            if (userDTO.password) {
+                user.password = await hash(userDTO.password, 10);
+            }
+
             return await this.userRepository.save(user);
         } catch (error) {
-            throw new HttpException('Failed to update user', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException('Failed to update user: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     async deleteUser(userId: number): Promise<boolean> {
         try {

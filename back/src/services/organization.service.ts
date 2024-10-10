@@ -1,32 +1,76 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrganizationDto } from '../dtos/organization.dto';
 import { Organization } from '../entities/organization.entity';
 import { UserService } from './user.service';
 import { TaskService } from './task.service';
+import { Inject, forwardRef } from '@nestjs/common';
 
 @Injectable()
 export class OrganizationService {
     constructor(
         @InjectRepository(Organization)
         private organizationRepository: Repository<Organization>,
+        @Inject(forwardRef(() => UserService))
         private userService: UserService,
         private taskService: TaskService,
     ) {}
 
     async createOrganization(organizationDto: OrganizationDto): Promise<Organization> {
-        const orgData = {
-            ...organizationDto,
-            owner: this.userService.getUserById(organizationDto.ownerId),
-        }
+        try {
+            const owner = await this.userService.getUserById(organizationDto.owner);
+            if (!owner) {
+                throw new HttpException('Owner not found', HttpStatus.NOT_FOUND);
+            }
+            if (owner.organization) {
+                throw new HttpException('User already has an organization', HttpStatus.BAD_REQUEST);
+            }
+            
+            const test = await this.getOrganizationByEmail(organizationDto.email);
+            if ( test!= null) {
+                throw new HttpException( `Email already in use`, HttpStatus.BAD_REQUEST);
+            }
 
-        const organization = this.organizationRepository.create(organizationDto);
-        return this.organizationRepository.save(organization);
+            const orgData = {
+                ...organizationDto,
+                owner,
+            };
+            const organization = this.organizationRepository.create(orgData);
+            await this.organizationRepository.save(organization);
+
+            await this.userService.updateUser(owner.userId, { organization: organization.organizationId });
+
+            return organization;
+        } catch (error) {
+            throw new HttpException('Failed to create organization: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     async getAllOrganizations(): Promise<Organization[]> {
         return this.organizationRepository.find({ relations: ['users'] });
+    }
+
+    async getOrganizationByName(name: string): Promise<Organization> {
+        const organization = await this.organizationRepository.findOne({
+            where: { name },
+            relations: ['users'],
+        });
+        if (!organization) {
+            throw new NotFoundException(`Organization with name ${name} not found`);
+        }
+        return organization
+    }
+
+    async getOrganizationByEmail(email: string): Promise<Organization> {
+        const organization = await this.organizationRepository.findOne({
+            where: { email },
+            relations: ['users'],
+        });
+        if (!organization) {
+            return null;
+        }
+        return organization;
     }
 
     async getOrganizationById(id: number): Promise<Organization> {
@@ -41,9 +85,12 @@ export class OrganizationService {
     }
 
     async updateOrganization(id: number, organizationDto: OrganizationDto): Promise<Organization> {
-            
+        const orgData = {
+            ...organizationDto,
+            owner: await this.userService.getUserById(organizationDto.owner),
+        }            
 
-        await this.organizationRepository.update(id, organizationDto);
+        await this.organizationRepository.update(id, orgData);
         return this.getOrganizationById(id);
     }
 

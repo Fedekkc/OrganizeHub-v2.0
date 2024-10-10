@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, Or, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, Or, OneToOne, JoinColumn } from 'typeorm';
 import { Team } from './team.entity';
 import { Task } from './task.entity';
 import { Project } from './project.entity';
@@ -33,6 +33,7 @@ export class User {
     isActive: boolean;
 
     @ManyToOne(() => Organization, organization => organization.users)
+    @JoinColumn()
     organization: Organization;
 
     @OneToMany(() => Task, task => task.assignedTo)
@@ -42,8 +43,7 @@ export class User {
     createdTasks: Task[];
 
     @OneToOne(() => Organization, organization => organization.owner)
-    @IsOptional()
-    ownedOrganization?: Organization;
+    ownedOrganization: Organization;
 
     @ManyToMany(() => Project, project => project.users)
     projects: Project[];

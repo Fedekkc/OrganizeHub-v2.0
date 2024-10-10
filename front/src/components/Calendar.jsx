@@ -120,6 +120,7 @@ const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
                 endAccessor="end"
                 timeslots={1}
                 step={60}
+                defaultView="week"
                 views={['month', 'week', 'day']}
                 selectable
                 onSelectSlot={(slotInfo) => {

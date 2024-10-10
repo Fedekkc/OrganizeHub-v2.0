@@ -39,10 +39,17 @@ export class UserDTO {
     @ApiProperty({ description: 'Fecha de actualizacion de datos del usuario' })
     @IsOptional()
     updatedAt?: Date;
+
+    @ApiProperty({ description: 'Organización a la que pertenece el usuario' })
+    @IsOptional()
+    @IsNumber()
+    organization?: number;
+
 }
 
 export class PartialUserDTO extends PartialType(UserDTO) {
     // Al extender de PartialType, todos los campos se vuelven opcionales
+    
 
 }
 

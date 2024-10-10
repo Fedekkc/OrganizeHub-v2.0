@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
@@ -6,8 +6,10 @@ import { UserController } from '../controllers/user.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from '../guards/jwt.strategy';
+import { OrganizationModule } from './organization.module';
 @Module({
     imports: [PassportModule,
+        forwardRef(() => OrganizationModule),
         TypeOrmModule.forFeature([User]),
         JwtModule.register({
         secret: 'secret', 

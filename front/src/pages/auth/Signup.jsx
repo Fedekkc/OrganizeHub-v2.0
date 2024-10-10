@@ -82,7 +82,8 @@ const Signup = () => {
         axios.post('http://localhost:5000/users', formData)
             .then((res) => {
                 if (res.data.token) {
-                    login(res.data.token);  // Usa el contexto o el estado global para manejar el inicio de sesión
+                    console.log(res.data.token);
+                    login(res.data);  // Usa el contexto o el estado global para manejar el inicio de sesión
                     navigate('/organization');
                     
                 }

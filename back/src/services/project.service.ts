@@ -40,7 +40,7 @@ export class ProjectService {
     async getProjectById(id: number): Promise<Project> {
         return this.projectRepository.findOne({ where: { projectId: id }, relations: ['users'] });
     }
-
+ 
     async updateProject(id: number, projectDto: ProjectDto): Promise<Project> {
         const projectData = {
             ...projectDto,

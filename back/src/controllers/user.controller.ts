@@ -12,7 +12,16 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Post('validate-token')
     validateToken(@Request() req: any) {
-        return { status: 'Token is valid', user: req.user };
+
+        // decode the token
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = this.userService.decodeToken(token);
+        if (!decoded) {
+            throw new HttpException('Token is invalid', HttpStatus.UNAUTHORIZED);
+        }
+        
+
+        return { status: 200, user: req.user };
     }
 
     @Get()

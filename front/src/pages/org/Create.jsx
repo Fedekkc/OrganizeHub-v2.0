@@ -1,12 +1,12 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import PhoneInput from 'react-phone-number-input';
 import { jwtDecode } from 'jwt-decode';
 
 import 'react-phone-number-input/style.css'
 import { useAuth } from '../../context/Context';
-
+import { useNavigate } from 'react-router-dom';
 
 const FormContainer = styled.div`
     display: flex;
@@ -55,7 +55,11 @@ const Button = styled.button`
 `;
 
 const CreateOrganization = () => {
-
+    const navigate = useNavigate();
+    const { checkUserStatus } = useAuth();
+    useEffect(() => {
+        checkUserStatus();
+    }, []);
 
 
     const [formData, setFormData] = useState({
@@ -64,10 +68,11 @@ const CreateOrganization = () => {
         email: '',
         phone: '',
         address: '',
-        ownerId: null,
+        owner: '',
     });
 
     const handleChange = (e) => {
+        
         const { name, value } = e.target;
         setFormData({
             ...formData,
@@ -75,28 +80,32 @@ const CreateOrganization = () => {
         });
     };
     const authToken = useAuth();
+    const { setOrganization } = useAuth();
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        
         const userId = jwtDecode(authToken.authToken).userId;
-        setFormData({
-            ...formData,
-            ownerId: userId,
-        });
         
-
-        axios.post('http://localhost:5000/organizations', formData)
+        const updatedFormData = {
+            ...formData,
+            owner: userId,
+        };
+        
+        console.log(updatedFormData); // Verifica el valor de updatedFormData antes de enviarlo
+    
+        axios.post('http://localhost:5000/organizations', updatedFormData)
             .then((res) => {
-                console.log("CREADO");
-                console.log(res.data);
+                if (res.status === 201 || res.status === 200) {
+                    
+                    setOrganization(true);
+                    navigate('/home');  
+                    
+                }
             })
             .catch((err) => {
                 console.log(err);
             });
-
-        
-        };
+    };
 
     return (
         <FormContainer>
