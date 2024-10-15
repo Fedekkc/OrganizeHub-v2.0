@@ -58,6 +58,19 @@ export const AppProvider = ({ children }) => {
         }
     };
 
+    const addEvent = (event) => {
+        setEvents((prevEvents) => [...prevEvents, event]);
+    }
+    const updateEvent = (event) => {
+        setEvents((prevEvents) => {
+            const index = prevEvents.findIndex((e) => e.id === event.id);
+            if (index === -1) return prevEvents;
+            const newEvents = [...prevEvents];
+            newEvents[index] = event;
+            return newEvents;
+        });
+    }
+
     const logout = () => {
         localStorage.removeItem('authToken');
         setAuthToken(null);
@@ -74,6 +87,8 @@ export const AppProvider = ({ children }) => {
         <AppContext.Provider value={{
             authToken, 
             organization,
+            addEvent,
+            updateEvent,
             setAuthToken,
             userId,
             setOrganization,
