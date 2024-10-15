@@ -8,6 +8,7 @@ export const AppProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [organization, setOrganization] = useState(null);
     const [events, setEvents] = useState([]);
+    const [userId, setUserId] = useState(null);
 
     const checkUserStatus = async () => {
         const token = localStorage.getItem('authToken');
@@ -21,8 +22,11 @@ export const AppProvider = ({ children }) => {
                 });
                 if (response.status === 201) {
                     setIsAuthenticated(true);
+                    setUserId(response.data.user.userId);
                     if(response.data.user.organization !== null) {
                         setOrganization(true);
+                        console.log(response.data.user.organization);
+                        localStorage.setItem('organization', response.data.user.organization.organizationId);
                     }
 
                 }
@@ -31,6 +35,8 @@ export const AppProvider = ({ children }) => {
             } catch (error) {
                 setIsAuthenticated(false);
                 setOrganization(null);
+                setAuthToken(null);
+                setUserId(null);
                 localStorage.removeItem('authToken');
             }
         } else {
@@ -69,6 +75,7 @@ export const AppProvider = ({ children }) => {
             authToken, 
             organization,
             setAuthToken,
+            userId,
             setOrganization,
             setIsAuthenticated,
             isAuthenticated, 

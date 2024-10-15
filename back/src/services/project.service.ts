@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ProjectDto } from '../dtos/project.dto';
+import { PartialProjectDto, ProjectDto } from '../dtos/project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from '../entities/project.entity';
 import { UserService } from './user.service';
 import { TaskService } from './task.service';
+import { OrganizationService } from './organization.service';
+import { HttpException } from '@nestjs/common/exceptions/http.exception';
+import { HttpStatus } from '@nestjs/common/enums/http-status.enum';
+
 
 @Injectable()
 export class ProjectService {
@@ -13,24 +17,36 @@ export class ProjectService {
         private projectRepository: Repository<Project>,
         private userService: UserService,
         private taskService: TaskService,
+        private organizationService: OrganizationService
 
     ) {}
 
 
 
 
-    async createProject(projectDto: ProjectDto): Promise<Project> {
-        const users = await this.userService.getUsersByIds(projectDto.users);
-        const tasks = await this.taskService.getTasksByIds(projectDto.tasks);
-    
-        const projectData = {
-            ...projectDto,
-            users: users, 
-            tasks: tasks,
-        };
-    
-        const project = this.projectRepository.create(projectData);
-        return this.projectRepository.save(project);
+    async createProject(projectDto: PartialProjectDto): Promise<Project> {
+        try {
+            var users = [];
+            var tasks = [];
+            if (projectDto.users) {
+                users = await this.userService.getUsersByIds(projectDto.users);
+            }
+            if (projectDto.tasks) {
+                tasks = await this.taskService.getTasksByIds(projectDto.tasks);
+            }
+
+            const organization = await this.organizationService.getOrganizationById(projectDto.organizationId);
+            if (!organization) {
+                throw new NotFoundException('Organization not found');
+            }
+
+
+            const project = this.projectRepository.create({ ...projectDto, organization, users, tasks });
+
+            return this.projectRepository.save(project);
+        } catch (error) {
+            throw new HttpException('Failed to create project: ' + error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     async getAllProjects(): Promise<Project[]> {

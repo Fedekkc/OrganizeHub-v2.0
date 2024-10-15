@@ -5,10 +5,11 @@ import { Project } from 'src/entities/project.entity';
 import { ProjectService } from 'src/services/project.service';
 import { UserModule } from './user.module';
 import { TaskModule } from './task.module';
+import { OrganizationModule } from './organization.module';
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Project]), UserModule, TaskModule],
+    imports: [TypeOrmModule.forFeature([Project]), UserModule, TaskModule,OrganizationModule],
     providers: [ProjectService],
     controllers: [ProjectController],
     exports: [ProjectService]

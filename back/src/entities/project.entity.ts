@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMan
 import { Task } from './task.entity';
 import { User } from './user.entity';
 import { Organization } from './organization.entity';
-import { Workday } from './workday.entity';
+
 
 @Entity()
 export class Project {
@@ -17,13 +17,16 @@ export class Project {
 
     @ManyToMany(() => User, user => user.projects)
     @JoinTable()
-    users: User[];
+    users?: User[];
+
+    @Column()
+    logo: string;
 
     @ManyToOne(() => Organization, organization => organization.projects)
     organization: Organization;
 
     @OneToMany(() => Task, task => task.project)
-    tasks: Task[];
+    tasks?: Task[];
 
 
 }

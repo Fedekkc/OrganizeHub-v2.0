@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { BiBlanket } from 'react-icons/bi';
 import { BsDiagram2 } from 'react-icons/bs';
 import { CiCirclePlus} from 'react-icons/ci';
+import { useAuth } from '../../context/Context';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Container = styled.div`
     display: flex;
@@ -182,6 +185,17 @@ const projects = [
 
 const Documentation = () => {
     const [iconInfo, setIconInfo] = React.useState({ show: false, text: '', position: {} });
+    const Navigate = useNavigate();
+    const { userId } = useAuth();
+    useEffect(() => {
+        axios.get(`http://localhost:5000/projects/${userId}`)
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
 
 
     const handleIconInfo = (text, e) => {
@@ -194,6 +208,11 @@ const Documentation = () => {
 
     const hideIconInfo = () => {
         setIconInfo({ show: false, text: '', position: {} });
+    };
+
+    const handleAddProject = () => {
+        console.log('Agregar nuevo proyecto');
+        Navigate('/projects/create');
     };
 
     return (
@@ -223,7 +242,7 @@ const Documentation = () => {
                         </ListItem>
                     ))}
                     <ListItem>
-                        <AddNewProject> <Circle/> </AddNewProject>
+                        <AddNewProject onClick={handleAddProject} > <Circle/> </AddNewProject>
                         
                     </ListItem>
                 </List>
