@@ -69,7 +69,7 @@ const Login = () => {
         }).then((res) => {
             login(res.data);
             checkUserStatus();
-            navigate('/documentation');
+            navigate('/home');
         }).catch((err) => {
             console.log(err);
         });

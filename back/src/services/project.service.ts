@@ -43,7 +43,8 @@ export class ProjectService {
 
             const project = this.projectRepository.create({ ...projectDto, organization, users, tasks });
 
-            return this.projectRepository.save(project);
+            const savedProject = await this.projectRepository.save(project);
+            return savedProject;
         } catch (error) {
             throw new HttpException('Failed to create project: ' + error, HttpStatus.INTERNAL_SERVER_ERROR);
         }

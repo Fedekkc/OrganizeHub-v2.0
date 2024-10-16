@@ -1,6 +1,7 @@
 import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class ProjectDto {
     @ApiProperty({ required: false })
@@ -21,6 +22,7 @@ export class ProjectDto {
     @ApiProperty({required:false, type: [Number] })
     @IsNumber({}, { each: true })
     @IsOptional()
+    @Type(() => Number)
     users?: number[];
 
     @ApiProperty({type: Number})
@@ -34,7 +36,6 @@ export class ProjectDto {
     tasks?: number[];
 
     @ApiProperty({ required: false })
-    @IsString()
     @IsOptional()
     logo?: string;
 }
@@ -55,6 +56,7 @@ export class PartialProjectDto extends PartialType(ProjectDto) {
     @ApiProperty({type: Number})
     @IsNumber()
     @IsNotEmpty()
+    @Type(() => Number)
     organizationId: number;
 
 

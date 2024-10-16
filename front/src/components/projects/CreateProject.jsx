@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useAuth } from '../../context/Context';
+import { jwtDecode } from 'jwt-decode';
 
 const Container = styled.div`
     display: flex;
@@ -36,11 +38,16 @@ const Button = styled.button`
 
 const CreateProject = () => {
     const [image, setImage] = useState(null);
+    const authToken = useAuth();
+    const userId = jwtDecode(authToken.authToken).userId;
+    const users = []
+    users.push(userId);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         organizationId: parseInt(localStorage.getItem('organization'), 10),
         logo: '',
+        users: users,
     });
     
     const handleImageChange = (e) => {
@@ -63,9 +70,12 @@ const CreateProject = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        
         setFormData((prevFormData) => ({
             ...prevFormData,
             logo: image,
+            users: users,
         }));
         
         console.log(formData);
@@ -74,6 +84,7 @@ const CreateProject = () => {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
+
             });
             console.log(response.data);
         } catch (error) {

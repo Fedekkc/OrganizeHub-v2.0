@@ -1,5 +1,5 @@
 // Attendance.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Calendar from '../../components/Calendar';
 import moment from 'moment';
@@ -8,6 +8,7 @@ import { CiCalendar } from 'react-icons/ci';
 import axios from 'axios';
 import { useAuth } from '../../context/Context';
 import TaskListApp from '../../components/tasks/taskList';
+import { jwtDecode } from 'jwt-decode';
 
 
 const Container = styled.div`
@@ -115,8 +116,24 @@ const Attendance = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [endingDate, setEndingDate] = useState(null);
+    const [projects, setProjects] = useState([]);
     const [project, setProject] = useState(1);
-    const [priority, setPriority] = useState('low');
+    const authToken = useAuth();
+    const userId = jwtDecode(authToken.authToken).userId;
+
+        useEffect(() => {
+        getProjects();
+        }, []); 
+    const getProjects = () => {
+        axios.get(`http://localhost:5000/projects/all/${userId}`)
+        .then((response) => {
+            console.log(response.data);
+            setProjects(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    };
 
 
     const handleDateSelect = (selectedDate) => {
@@ -137,7 +154,6 @@ const Attendance = () => {
             end: endingDate,
             allDay: false,
             project: project,
-            priority: priority,
             type: type,
         };
         console.log(newEvent);
@@ -146,9 +162,9 @@ const Attendance = () => {
             axios.post('http://localhost:5000/tasks', {
                 title: title,
                 description: description,
-                projectId: '1',
-                createdById: '1',
-                assignedToId: '1',
+                projectId: project,
+                createdById: userId,
+                assignedToId: userId,
                 priority: 'low',
                 status: 'pending',
                 dueDate: endingDate,
@@ -168,9 +184,6 @@ const Attendance = () => {
         setIsModalOpen(false); 
     };
 
-
-
-    
 
     return (
         <Container>
@@ -194,10 +207,10 @@ const Attendance = () => {
                     <Option value="meeting">Reunión</Option>
                 </Select>
 
-                <Select onChange={(e) => setProject(e.target.value)}>
-                    <Option value="project1">Proyecto 1</Option>
-                    <Option value="project2">Proyecto 2</Option>
-                    <Option value="project3">Proyecto 3</Option>
+                <Select onChange={(e) => setProject(parseInt(e.target.value))}>
+                    {projects.map((project) => (
+                        <Option key={project.projectId} value={project.projectId}>{project.name}</Option>
+                    ))}
                 </Select>
                 
                 <Input
@@ -233,13 +246,7 @@ const Attendance = () => {
                         placeholder="Seleccionar fecha y hora de finalización"
                     />
                 )}
-                <Select onChange={(e) => setPriority(e.target.value)}>
-                    <option value="low">Baja</option>
-                    <option value="medium">Media</option>
-                    <option value="high">Alta</option>
-                </Select>
                 
-
                 <Button onClick={handleAddEvent}>Agregar Evento</Button>
             </Modal>
         </Container>

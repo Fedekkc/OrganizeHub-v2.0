@@ -20,20 +20,30 @@ import {
   import { ProjectService } from '../services/project.service';
   import { ProjectDto, PartialProjectDto } from '../dtos/project.dto';
   import { Multer } from 'multer';
+  import { Logger } from '@nestjs/common';
   
   @Controller('projects')
   export class ProjectController {
-    constructor(private readonly projectService: ProjectService) {}
+    constructor(private readonly projectService: ProjectService,
+    ) {}
+    private logger: Logger = new Logger('ProjectController')
+
   
     @Post()
     @HttpCode(HttpStatus.CREATED)
-    async createProject(
-      @Body() projectDto: PartialProjectDto,
-      @UploadedFile() file: Express.Multer.File,
-    ) {
+    @UseInterceptors(FileInterceptor('logo', {
+      storage: diskStorage({
+        destination: './images',  
+        filename: (req, file, callback) => {
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);  
+          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+    }))    
+    async createProject( @Body() projectDto: PartialProjectDto, @UploadedFile() file: Express.Multer.File) {
       try {
-        const logoUri = file ? `/images/${file.filename}` : null; 
-        const newProject = { ...projectDto, logo: logoUri }; 
+        const newProject = { ...projectDto, logo: file.filename }; 
         return await this.projectService.createProject(newProject);
       } catch (error) {
         throw new NotFoundException('Error creating project: ' + error.message);
@@ -45,6 +55,22 @@ import {
     getAllProjects() {
       return this.projectService.getAllProjects();
     }
+
+    @Get('/all/:id')
+    @HttpCode(HttpStatus.OK)
+    async getProjectsByUserId(@Param('id') id: number) {
+      const projects = await this.projectService.getProjectsByUserId(id);
+      if (!projects) {
+        throw new NotFoundException(`Projects not found`);
+      }
+      //obtener el archivo de imagen y enviarlo al cliente
+      projects.forEach(project => {
+        project.logo = `http://localhost:5000/${project.logo}`;
+      });
+      this.logger.log(`projects: ${projects}`);
+      return projects;
+    }
+
   
     @Get(':id')
     @HttpCode(HttpStatus.OK)

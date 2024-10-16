@@ -169,28 +169,19 @@ const Circle = styled(CiCirclePlus)`
 `;
 
 
-const projects = [
-    {
-        title: 'Proyecto 1',
-        description: 'Descripción del proyecto 1',
-        logo: 'https://cinefilosoficial.com/wp-content/uploads/2020/11/michael-scott.jpg',
-    },
-    {
-        title: 'Proyecto 2',
-        description: 'Descripción del proyecto 2',
-        logo: 'https://cinefilosoficial.com/wp-content/uploads/2020/11/michael-scott.jpg',
-    },
-    // Otros proyectos...
-];
 
 const Documentation = () => {
     const [iconInfo, setIconInfo] = React.useState({ show: false, text: '', position: {} });
+    const [projects, setProjects] = React.useState([]);
     const Navigate = useNavigate();
     const { userId } = useAuth();
     useEffect(() => {
-        axios.get(`http://localhost:5000/projects/${userId}`)
+        axios.get(`http://localhost:5000/projects/all/${userId}`)
             .then((response) => {
                 console.log(response.data);
+                setProjects(response.data);
+                console.log(projects);
+
             })
             .catch((error) => {
                 console.log(error);
@@ -221,10 +212,10 @@ const Documentation = () => {
                 <List>
                     {projects.map((project, index) => (
                         <ListItem key={index}>
-                            <ProjectLogo src={project.logo} alt={project.title} />
+                            <ProjectLogo src={project.logo} alt={project.name} />
                             <ItemInfoContainer>
                                 <ProjectInfo>
-                                    <ProjectTitle>{project.title}</ProjectTitle>
+                                    <ProjectTitle>{project.name}</ProjectTitle>
                                     <ProjectDescription>{project.description}</ProjectDescription>
                                 </ProjectInfo>
                                 <ItemIcons>
@@ -240,7 +231,8 @@ const Documentation = () => {
                             </ItemInfoContainer>
 
                         </ListItem>
-                    ))}
+                    )) 
+                    }
                     <ListItem>
                         <AddNewProject onClick={handleAddProject} > <Circle/> </AddNewProject>
                         
