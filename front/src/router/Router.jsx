@@ -13,6 +13,7 @@ import Organizations from '../pages/auth/Organizations';
 import Create from '../pages/org/Create';
 import { useAuth } from '../context/Context';
 import CreateProject from '../components/projects/CreateProject';
+import Project from '../pages/documentation/Project';
 
 const AppRouter = () => {
     const { isAuthenticated, isInOrg } = useAuth();
@@ -89,6 +90,12 @@ const AppRouter = () => {
             <Route path="/projects/create" element={
                 <PrivateRoute isAuthenticated={isAuthenticated && isInOrg()} >
                     <CreateProject />
+                </PrivateRoute>
+            } />
+
+            <Route path="/projects/:projectId" element={
+                <PrivateRoute isAuthenticated={isAuthenticated && isInOrg()} >
+                    <Project/>
                 </PrivateRoute>
             } />
 

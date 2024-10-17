@@ -206,12 +206,17 @@ const Documentation = () => {
         Navigate('/projects/create');
     };
 
+    const handleProjectClick = (projectId) => {
+        console.log('Ir a proyecto', projectId);
+        Navigate(`/projects/${projectId}`, { state: { projectId } });
+    };
+
     return (
         <Container>
             <ListContainer>
                 <List>
                     {projects.map((project, index) => (
-                        <ListItem key={index}>
+                        <ListItem key={index} onClick={() => handleProjectClick(project.projectId)}>
                             <ProjectLogo src={project.logo} alt={project.name} />
                             <ItemInfoContainer>
                                 <ProjectInfo>

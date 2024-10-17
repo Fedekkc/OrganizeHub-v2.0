@@ -145,6 +145,7 @@ const Attendance = () => {
     const handleAddEvent = () => {
         if (!selectedDate || title.trim() === '') return;
         if (type === 'meeting' && !endingDate) return;
+        if (endingDate && moment(endingDate).isBefore(selectedDate)) return;
         
 
         const newEvent = {
@@ -232,6 +233,7 @@ const Attendance = () => {
                         onChange={(e) => {
                             const endDate = new Date(selectedDate);
                             const [hours, minutes] = e.target.value.split(':');
+                            
                             endDate.setHours(hours);
                             endDate.setMinutes(minutes);
                             setEndingDate(endDate);
@@ -244,6 +246,7 @@ const Attendance = () => {
                         type="datetime-local"
                         onChange={(e) => setEndingDate(new Date(e.target.value))}
                         placeholder="Seleccionar fecha y hora de finalización"
+                        min={moment().format('YYYY-MM-DDTHH:mm')}
                     />
                 )}
                 
