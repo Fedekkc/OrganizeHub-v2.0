@@ -14,6 +14,7 @@ import Create from '../pages/org/Create';
 import { useAuth } from '../context/Context';
 import CreateProject from '../components/projects/CreateProject';
 import Project from '../pages/documentation/Project';
+import Management from '../pages/admin/Management';
 
 const AppRouter = () => {
     const { isAuthenticated, isInOrg } = useAuth();
@@ -98,6 +99,14 @@ const AppRouter = () => {
                     <Project/>
                 </PrivateRoute>
             } />
+
+
+            <Route path="/admin" element={
+                <PrivateRoute isAuthenticated={isAuthenticated} >
+                    <Management />
+                </PrivateRoute>
+            } />
+
 
         </Routes>
     );

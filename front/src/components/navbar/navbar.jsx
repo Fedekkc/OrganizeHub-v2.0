@@ -39,54 +39,65 @@ const Navbar = () => {
     const handleLogout = () => {
         logout();
         navigate('/login');
-        
+
     }
 
 
     return (
-        <NavbarContainer>
-            <List>
-                <Item>
-                    <ItemText to="/tasks">Tasks</ItemText>
-                </Item>
-                <Item>
-                    <ItemText to="/attendance">Attendance</ItemText>
-                </Item>
-                <Item>
-                    <ItemText to="/teams">Teams</ItemText>
-                </Item>
+        <>
 
-                <Item>
-                    <ItemText to="/documentation">Documentation</ItemText>
-                </Item>
+            <NavbarContainer>
+                <List>
+                    <Item>
+                        <ItemText to="/tasks">Tasks</ItemText>
+                    </Item>
+                    <Item>
+                        <ItemText to="/attendance">Attendance</ItemText>
+                    </Item>
+                    <Item>
+                        <ItemText to="/teams">Teams</ItemText>
+                    </Item>
 
-                <Item>
-                    <ItemText to="/passwords">Passwords</ItemText>
-                </Item>
+                    <Item>
+                        <ItemText to="/documentation">Documentation</ItemText>
+                    </Item>
 
-                {isAuthenticated 
-                ?
-                
-                <Item>
-                    <ItemText to="/logout" onClick={handleLogout} >Logout</ItemText>
-                </Item>
+                    <Item>
+                        <ItemText to="/passwords">Passwords</ItemText>
+                    </Item>
 
-                : null
-                }
+                    {isAuthenticated
+                        ?
+                        <>
+                            <Item>
+                                <ItemText to="/logout" onClick={handleLogout} >Logout</ItemText>
+                            </Item>
+                            <Item>
+                                <ItemText to="/admin">Admin</ItemText>
+                            </Item>
+                        </>
 
-                {!isAuthenticated &&
+                        : null
+                    }
 
-                <Item>
-                    <ItemText to="/login">Login</ItemText>
-                </Item>
-                
-                }
+                    {!isAuthenticated &&
+                        <>
+                            <Item>
+                                <ItemText to="/login">Login</ItemText>
+                            </Item>
+
+
+                        </>
+
+
+                    }
 
 
 
 
-            </List>
-        </NavbarContainer>
+                </List>
+            </NavbarContainer>
+        </>
     );
 };
 
