@@ -60,6 +60,7 @@ const Management = () => {
 
     useEffect(() => {
         getRoles(); // Cargar roles al inicio
+        getPermissions(); // Cargar permisos al inicio
     }, []);
 
     const getRoles = async () => {
@@ -68,6 +69,15 @@ const Management = () => {
             console.log(`Roles: ${response.data}`);
         } catch (error) {
             console.error(`Error getting roles: ${error}`);
+        }
+    };
+
+    const getPermissions = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/permissions');
+            console.log(`Permissions: ${response.data}`);
+        } catch (error) {
+            console.error(`Error getting permissions: ${error}`);
         }
     };
 
@@ -135,14 +145,7 @@ const Management = () => {
 
             <Section>
                 <SectionTitle>Permissions</SectionTitle>
-                {/* Aquí puedes agregar un componente para gestionar los permisos */}
-                <div>
-                    <label>
-                        <input type="checkbox" onChange={() => setPermissions([...permissions, 'admin'])} />
-                        Administrador
-                    </label>
-                    {/* Agrega más permisos según sea necesario */}
-                </div>
+
             </Section>
         </Container>
     );
