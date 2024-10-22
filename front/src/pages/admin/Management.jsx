@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const Container = styled.div`
     display: flex;
@@ -51,6 +52,16 @@ const Button = styled.button`
     }
 `;
 
+
+
+const inviteUser = async (email) => {
+    try {
+        const response = await axios.post('/api/invite', { email });
+        console.log(`User invited successfully: ${response.data}`);
+    } catch (error) {
+        console.error(`Error inviting user: ${error}`);
+    }
+};
 const Management = () => {
     return (
         <Container>
