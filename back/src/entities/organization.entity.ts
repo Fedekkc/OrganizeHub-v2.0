@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { Team } from './team.entity';
 import { Project } from './project.entity';
 import { User } from './user.entity';
+import { Role } from './role.entity';
 @Entity()
 export class Organization {
     @PrimaryGeneratedColumn()
@@ -32,6 +33,9 @@ export class Organization {
 
     @OneToMany(() => Project , project => project.organization)
     projects: Project[];
+
+    @OneToMany(() => Role, role => role.organization)
+    roles?: Role[];
 
     @OneToMany(() => User, user => user.organization)
     users: User[];

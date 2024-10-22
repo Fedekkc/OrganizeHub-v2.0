@@ -5,6 +5,7 @@ import { Project } from './project.entity';
 import { Meeting } from './meeting.entity';
 import { Organization } from './organization.entity';
 import { IsOptional } from 'class-validator';
+import { Role } from './role.entity';
 
 @Entity()
 export class User {
@@ -56,5 +57,9 @@ export class User {
 
     @OneToMany(() => Meeting, meeting => meeting.createdBy)
     createdMeetings: Meeting[];
+
+    @ManyToMany(() => Role, role => role.users)
+    roles: Role[];
+
 
 }

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import ReactFlow, { MiniMap, Controls } from 'react-flow-renderer';
 import { CiCirclePlus } from 'react-icons/ci';
 import { CiMail } from "react-icons/ci";
 import { CgSlack } from "react-icons/cg";
