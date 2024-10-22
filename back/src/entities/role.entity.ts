@@ -6,19 +6,19 @@ import { Organization } from './organization.entity';
 @Entity()
 export class Role {
     @PrimaryGeneratedColumn()
-    id: number;
+    roleId?: number;
 
     @Column()
     name: string;
 
     @ManyToMany(() => User, user => user.roles)
-    users: User[];
+    users?: User[];
 
     @ManyToOne(() => Organization, organization => organization.roles)
     organization: Organization;
 
     @ManyToMany(() => Permission, permission => permission.roles)
-    permissions: Permission[];
+    permissions?: Permission[];
 
     
 

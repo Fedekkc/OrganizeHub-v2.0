@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
@@ -52,37 +52,97 @@ const Button = styled.button`
     }
 `;
 
-
-
-const inviteUser = async (email) => {
-    try {
-        const response = await axios.post('/api/invite', { email });
-        console.log(`User invited successfully: ${response.data}`);
-    } catch (error) {
-        console.error(`Error inviting user: ${error}`);
-    }
-};
 const Management = () => {
+    const organizationId = localStorage.getItem('organization');
+    const [roleName, setRoleName] = useState('');
+    const [roleDescription, setRoleDescription] = useState('');
+    const [permissions, setPermissions] = useState([]);
+
+    useEffect(() => {
+        getRoles(); // Cargar roles al inicio
+    }, []);
+
+    const getRoles = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/roles/organization/${organizationId}`);
+            console.log(`Roles: ${response.data}`);
+        } catch (error) {
+            console.error(`Error getting roles: ${error}`);
+        }
+    };
+
+    const createRole = async (e) => {
+        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+
+        const formData = new FormData();
+        formData.append('roleName', roleName);
+        formData.append('roleDescription', roleDescription);
+        formData.append('organizationId', organizationId);
+        formData.append('permissions', JSON.stringify(permissions));
+
+        try {
+            const response = await axios.post('http://localhost:5000/roles', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            console.log(`Role created successfully: ${response.data}`);
+            // Resetear los campos después de crear el rol
+            setRoleName('');
+            setRoleDescription('');
+            setPermissions([]);
+        } catch (error) {
+            console.error(`Error creating role: ${error}`);
+        }
+    };
+
     return (
         <Container>
             <Title>Management</Title>
-            
+
             <Section>
                 <SectionTitle>Create Role</SectionTitle>
-                <Input type="text" placeholder="Role Name" />
-                <Button>Create Role</Button>
+                <form onSubmit={createRole}>
+                    <Input 
+                        type="text" 
+                        placeholder="Role Name" 
+                        value={roleName}
+                        onChange={(e) => setRoleName(e.target.value)} 
+                        required 
+                    />
+                    <Input 
+                        type="text" 
+                        placeholder="Role Description" 
+                        value={roleDescription}
+                        onChange={(e) => setRoleDescription(e.target.value)} 
+                        required 
+                    />
+                    <Button type="submit">Create Role</Button>
+                </form>
             </Section>
-            
+
             <Section>
                 <SectionTitle>Create Team</SectionTitle>
                 <Input type="text" placeholder="Team Name" />
                 <Button>Create Team</Button>
             </Section>
-            
+
             <Section>
                 <SectionTitle>Invite User</SectionTitle>
                 <Input type="email" placeholder="User Email" />
                 <Button>Invite User</Button>
+            </Section>
+
+            <Section>
+                <SectionTitle>Permissions</SectionTitle>
+                {/* Aquí puedes agregar un componente para gestionar los permisos */}
+                <div>
+                    <label>
+                        <input type="checkbox" onChange={() => setPermissions([...permissions, 'admin'])} />
+                        Administrador
+                    </label>
+                    {/* Agrega más permisos según sea necesario */}
+                </div>
             </Section>
         </Container>
     );

@@ -1,9 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsOptional } from "class-validator";
 
 
 export class RoleDto {
     
     @ApiProperty({ required: false })
+    @IsOptional()
     roleId?: number;
 
     @ApiProperty()
@@ -16,6 +18,6 @@ export class RoleDto {
     organizationId: number;
 
     @ApiProperty()
-    permissions: number[];
+    permissions?: number[];
 
 }

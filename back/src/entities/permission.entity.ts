@@ -5,7 +5,7 @@ import { Organization } from './organization.entity';
 @Entity()
 export class Permission {
     @PrimaryGeneratedColumn()
-    id: number;
+    permissionId?: number;
 
     @Column()
     name: string;
@@ -13,9 +13,12 @@ export class Permission {
     @Column()
     description: string;
 
+    @Column()
+    category: string;
+
 
 
     @ManyToMany(() => Role, role => role.permissions)
     @JoinTable()
-    roles: Role[];
+    roles?: Role[];
 }
