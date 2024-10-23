@@ -6,6 +6,7 @@ import { RoleDto } from '../dtos/role.dto';
 import { NotFoundException } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { PermissionService } from './permission.service';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class RoleService {
@@ -16,36 +17,43 @@ export class RoleService {
         private permissionService: PermissionService
     ) {}
 
+    private readonly logger = new Logger(RoleService.name);
+
 
 
     async createRole(roleDto: RoleDto): Promise<Role> {
-        var role = new Role();
-        const organization = await this.organizationService.getOrganizationById(roleDto.organizationId);
-        if (!organization) {
-            throw new NotFoundException('Organization not found');
-        }
-
-
-        for (const permissionId of roleDto.permissions) {
-            const permission = await this.permissionService.getPermissionById(permissionId);
-            if (!permission) {
-                throw new NotFoundException('Permission not found');
+        try {
+            var role = new Role();
+            role.permissions = [];
+            const organization = await this.organizationService.getOrganizationById(roleDto.organizationId);
+            if (!organization) {
+                throw new NotFoundException('Organization not found');
             }
-            role.permissions.push(permission);
-        }
-        role = { 
-            ...roleDto, 
-            organization: organization,
-            permissions: []
-        };
 
-        return this.roleRepository.save(role);
+            for (const permissionId of roleDto.permissions) {
+                const permission = await this.permissionService.getPermissionById(permissionId);
+                if (!permission) {
+                    throw new NotFoundException('Permission not found');
+                }
+                role.permissions.push(permission);
+            }
+            role = { 
+                ...roleDto, 
+                organization: organization,
+                permissions: []
+            };
+
+            return await this.roleRepository.save(role);
+        } catch (error) {
+            throw new Error(`Failed to create role: ${error.message}`);
+        }
     }
     async getAllOrganizationRoles(organizationId: number): Promise<Role[]> {
         const organization = await this.organizationService.getOrganizationById(organizationId);
         if (!organization) {
             throw new NotFoundException('Organization not found');
         }
+        this.logger.log('Getting all roles for organization');
         return this.roleRepository.find({ where: { organization: organization } });
     }
 
