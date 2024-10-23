@@ -53,8 +53,14 @@ export class RoleService {
         if (!organization) {
             throw new NotFoundException('Organization not found');
         }
-        this.logger.log('Getting all roles for organization');
-        return this.roleRepository.find({ where: { organization: organization } });
+        this.logger.log('Getting all roles for organization: ', organization.organizationId);
+        const roles = await this.roleRepository
+        .createQueryBuilder('role')
+        .innerJoinAndSelect('role.organization', 'organization')
+        .where('organization.organizationId = :organizationId', { organizationId: organization.organizationId })
+        .getMany();
+            this.logger.log('Roles found: ', roles.length);
+        return roles;
     }
 
     async getRoleById(id: number): Promise<Role> {

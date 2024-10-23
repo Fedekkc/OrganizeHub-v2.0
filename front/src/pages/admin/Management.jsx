@@ -18,11 +18,11 @@ const Title = styled.h1`
 
 const Section = styled.div`
     width: 100%;
-    
-    margin: 20px 0;
-    padding: 20px;
+    margin: 2rem 0;
+    padding: 2rem;
     border: 1px solid #ddd;
     border-radius: 5px;
+    gap: 2rem;
 `;
 
 const SectionTitle = styled.h2`
@@ -54,16 +54,45 @@ const Button = styled.button`
     }
 `;
 
-const Checkbox = styled.input`
-    display: none;
-    width: 100%;
+const PermissionsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    
+
 `;
 
-const PermissionSection = styled(Section)`
+
+const Permission = styled(Section)`
     display: flex;
-    flex-wrap: row;
+    flex-direction: row;
     justify-content: left;
-    width: 50%;
+    align-items: center;
+    padding: 10px;
+    width: 70%;
+    height: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    
+    background-color: ${(props) => (props.isSelected ? 'grey' : '#f9f9f9')};
+    color: #333;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    &:hover {
+        background-color: ${(props) => (props.isSelected ? '#f9f9f9' : 'grey')};
+    }
+    margin: 0 0 15px 0;
+`;
+
+const Role = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
     align-items: center;
     padding: 10px;
     border: 1px solid #ddd;
@@ -76,22 +105,17 @@ const PermissionSection = styled(Section)`
     cursor: pointer;
     transition: background-color 0.3s;
     text-align: left;
+    width: 50%;
 
     &:hover {
-        background-color: #f0f0f0;
+        background-color: grey;
     }
-`;
-
-const Label = styled.label`
-    width: 100%;
-    
-    cursor: pointer;
 `;
 
 const Management = () => {
     const organizationId = localStorage.getItem('organization');
     const [roles, setRoles] = useState([]);
-    const [permissions, setPermissions] = useState([]);
+    const [permissions, setPermissions] = useState(new Set());
     const [existingPermissions, setExistingPermissions] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
@@ -106,21 +130,17 @@ const Management = () => {
     }, []);
 
     const handleChange = (e) => {
-        
         const { name, value } = e.target;
         setFormData((prevFormData) => ({
             ...prevFormData,
             [name]: value,
         }));
-
     };
 
     const getRoles = async () => {
         try {
             const response = await axios.get(`http://localhost:5000/roles/organization/${organizationId}`);
             setRoles(response.data);
-            console.log(organizationId);
-            console.log(response.data);
         } catch (error) {
             console.error(`Error getting roles: ${error}`);
         }
@@ -136,129 +156,100 @@ const Management = () => {
     };
 
     const createRole = async (e) => {
-        e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-                        
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            permissions: permissions.map((permission) => parseInt(permission, 10)),
-        }));
+        e.preventDefault();
 
-        
-
-        console.log(formData);
+        const newRoleData = {
+            ...formData,
+            organizationId: parseInt(organizationId, 10),
+            permissions: Array.from(permissions).map((perm) => parseInt(perm, 10)),
+        };
 
         try {
-            const response = await axios.post('http://localhost:5000/roles', formData, {
+            const response = await axios.post('http://localhost:5000/roles', newRoleData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-            console.log(`Role created successfully: ${response.data}`);
             setFormData({
                 name: '',
                 description: '',
                 permissions: [],
             });
-            setPermissions([]);
+            setPermissions(new Set());
+            setRoles([...roles, response.data]);
         } catch (error) {
             console.log(error);
-
         }
     };
 
-    const handlePermissionChange = (e) => {
-        if (e.target.checked) {
-            setPermissions([...permissions, e.target.value]);
-            
-            e.target.parentElement.style.backgroundColor = 'grey';
-            console.log(e.target.parentElement);
-        } else {
-            setPermissions(permissions.filter((permission) => permission !== e.target.value));
-            e.target.parentElement.style.backgroundColor = '#f9f9f9';
-        }
-    }
+    const handlePermissionClick = (permissionId) => {
+        setPermissions((prevPermissions) => {
+            const updatedPermissions = new Set(prevPermissions);
+            if (updatedPermissions.has(permissionId.toString())) {
+                updatedPermissions.delete(permissionId.toString());
+            } else {
+                updatedPermissions.add(permissionId.toString());
+            }
+            return updatedPermissions;
+        });
+    };
 
     return (
         <Container>
             <Title>Management</Title>
-            <Section style={
-                {
-                    display: 'flex',
-                    width: '80%',
-                    flexDirection: 'row',
-                    
+            <Section style={{ display: 'flex', width: '80%', flexDirection: 'row' }}>
+                <Section>
+                    <SectionTitle>Create Role</SectionTitle>
+                    <form onSubmit={createRole}>
+                        <Input
+                            type="text"
+                            placeholder="Role Name"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            required
+                        />
+                        <Input
+                            type="text"
+                            placeholder="Role Description"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            required
+                        />
+                        <PermissionsContainer>
+                            <SectionTitle>Permissions</SectionTitle>
+                            {existingPermissions.length > 0 ? (
+                                existingPermissions.map((permission) => (
+                                    <Permission
+                                        key={permission.permissionId}
+                                        isSelected={permissions.has(permission.permissionId.toString())}
+                                        onClick={() => handlePermissionClick(permission.permissionId)}
+                                    >
+                                        {permission.name}
+                                    </Permission>
+                                ))
+                            ) : (
+                                <p>No hay permisos, problema en la base de datos</p>
+                            )}
+                        </PermissionsContainer>
 
-                }
-            }>
-            <Section>
-                <SectionTitle>Create Role</SectionTitle>
-                <form onSubmit={createRole}>
-                    <Input 
-                        type="text" 
-                        placeholder="Role Name" 
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required 
-                    />
-                    <Input 
-                        type="text" 
-                        placeholder="Role Description" 
-                        name="description"
-                        value={formData.description}
-                        onChange={ handleChange} 
-                        required 
-                    />
-                    <Section>
-                        <SectionTitle>Permissions</SectionTitle>
-                        {existingPermissions.length > 0 ? (
-                            existingPermissions.map((permission) => (
-                                <PermissionSection key={permission.permissionId}>
-                                    <Checkbox 
-                                        type="checkbox" 
-                                        id={permission.permissionId} 
-                                        name={permission.permissionName} 
-                                        value={permission.permissionId}
-                                        onChange={(e) => {
-                                            handlePermissionChange(e);
-                                        }}
-                                    />
-                                    <Label htmlFor={permission.permissionId}>{permission.name}</Label>
-                                </PermissionSection>
-                            ))
-                        ) : (
-                            <p>No hay permisos, problema en la base de datos</p>
-                        )}
-                    </Section>
-
-                    <Button type="submit">Create Role</Button>
-                </form>
-            </Section>
-            <Section>
-                <SectionTitle>Roles</SectionTitle>
-                {roles.length > 0 ? (
-                    roles.map((role) => (
-                        <Section key={role.roleId}>
-                            <SectionTitle>{role.name}</SectionTitle>
-                            <p>{role.description}</p>
-                            <p>Permissions:</p>
-                            <ul>
-                                {role.permissions.map((permission) => (
-                                    <li key={permission.permissionId}>{permission.name}</li>
-                                ))}
-                            </ul>
-                        </Section>
-                    ))
-                ) : (
-                    <p>No roles found</p>
-                )}
-
-
-                
-            </Section>
-
-
-
+                        <Button type="submit">Create Role</Button>
+                    </form>
+                </Section>
+                <Section>
+                    <SectionTitle>Roles</SectionTitle>
+                    {roles.length > 0 ? (
+                        roles.map((role) => (
+                            <Role key={role.roleId}>
+                                <p>{role.name}</p>
+                                <p>{role.description}</p>
+                            </Role>
+                        ))
+                    ) : (
+                        <p>No roles found</p>
+                    )}
+                </Section>
             </Section>
 
             <Section>
@@ -271,11 +262,6 @@ const Management = () => {
                 <SectionTitle>Invite User</SectionTitle>
                 <Input type="email" placeholder="User Email" />
                 <Button>Invite User</Button>
-            </Section>
-
-            <Section>
-                <SectionTitle>Permissions</SectionTitle>
-
             </Section>
         </Container>
     );
