@@ -17,6 +17,11 @@ export class TeamController {
         return this.teamService.getAllTeams();
     }
 
+    @Get('/organization/:id')
+    async getTeamsByOrganization(@Param('id') id: number): Promise<Team[]> {
+        return this.teamService.getTeamsByOrganization(id);
+    }
+
     @Get(':id')
     async getTeamById(@Param('id') id: number): Promise<Team> {
         return this.teamService.getTeamById(id);

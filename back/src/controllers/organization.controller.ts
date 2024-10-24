@@ -19,6 +19,16 @@ export class OrganizationController {
         return this.organizationService.getAllOrganizations();
     }
 
+    @Get(':id/users')
+    @HttpCode(HttpStatus.OK)
+    async getOrganizationUsers(@Param('id') id: number){
+        const organization = await this.organizationService.getOrganizationById(id);
+        if (!organization) {
+            throw new NotFoundException(`Organization with ID ${id} not found`);
+        }
+        return this.organizationService.getOrganizationUsers(organization);
+    }
+
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     getOrganizationById(@Param('id') id: number) {

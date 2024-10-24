@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import Modal from '../../components/Modal';
+import Button from '../../components/Button';
+import CreateTeam from '../../components/admin/CreateTeam';
 
 const Container = styled.div`
     display: flex;
@@ -39,20 +42,7 @@ const Input = styled.input`
     border-radius: 5px;
 `;
 
-const Button = styled.button`
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-top: 20px;
 
-    &:hover {
-        background-color: #0056b3;
-    }
-`;
 
 const PermissionsContainer = styled.div`
     display: flex;
@@ -112,11 +102,17 @@ const Role = styled.div`
     }
 `;
 
+const Button2 = styled(Button)`
+    width: 100%;
+
+`;
+
 const Management = () => {
     const organizationId = localStorage.getItem('organization');
     const [roles, setRoles] = useState([]);
     const [permissions, setPermissions] = useState(new Set());
     const [existingPermissions, setExistingPermissions] = useState([]);
+    const [users, setUsers] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -127,6 +123,7 @@ const Management = () => {
     useEffect(() => {
         getRoles(); // Cargar roles al inicio
         getPermissions(); // Cargar permisos al inicio
+        getOrganizationUsers(); // Cargar usuarios al inicio
     }, []);
 
     const handleChange = (e) => {
@@ -145,6 +142,18 @@ const Management = () => {
             console.error(`Error getting roles: ${error}`);
         }
     };
+
+    const getOrganizationUsers = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/organizations/${organizationId}/users`);
+            setUsers(response.data);
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+
 
     const getPermissions = async () => {
         try {
@@ -181,6 +190,9 @@ const Management = () => {
             console.log(error);
         }
     };
+
+    
+
 
     const handlePermissionClick = (permissionId) => {
         setPermissions((prevPermissions) => {
@@ -234,9 +246,10 @@ const Management = () => {
                             )}
                         </PermissionsContainer>
 
-                        <Button type="submit">Create Role</Button>
+                        <Button2 type="submit">Create Role</Button2>
                     </form>
                 </Section>
+
                 <Section>
                     <SectionTitle>Roles</SectionTitle>
                     {roles.length > 0 ? (
@@ -251,12 +264,8 @@ const Management = () => {
                     )}
                 </Section>
             </Section>
+            <CreateTeam users={users} organizationId={organizationId} />
 
-            <Section>
-                <SectionTitle>Create Team</SectionTitle>
-                <Input type="text" placeholder="Team Name" />
-                <Button>Create Team</Button>
-            </Section>
 
             <Section>
                 <SectionTitle>Invite User</SectionTitle>

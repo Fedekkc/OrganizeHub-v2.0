@@ -22,6 +22,20 @@ export class UserService {
     async decodeToken(token: string) {
         return this.jwtService.decode(token);
     }
+
+    async getUsersByOrganization(organization: Organization): Promise<User[]> {
+        try {
+            const query = this.userRepository.createQueryBuilder('user');
+            query.where('user.organization = :organization', { organization: organization.organizationId });
+            return await query.getMany();
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException('Failed to get users by organization', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     async getUsersByIds(userIds: number[]): Promise<User[]> {
         const users = [];
         for (const userId of userIds) {

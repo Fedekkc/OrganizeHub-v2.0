@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Calendar from '../../components/Calendar';
 import moment from 'moment';
-import Modal from '../../components/AddTaskModal'; 
+import Modal from '../../components/Modal'; 
 import { CiCalendar } from 'react-icons/ci';
 import axios from 'axios';
 import { useAuth } from '../../context/Context';

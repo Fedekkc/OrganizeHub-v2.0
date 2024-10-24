@@ -10,6 +10,7 @@ import { PermissionModule } from './modules/permission.module';
 import { RoleModule } from './modules/role.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module';
+import { TeamModule } from './modules/team.module';
 
 @Module({
   imports: [ DatabaseModule,
@@ -19,6 +20,7 @@ import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module
       OrganizationModule,
       PermissionModule,
       RoleModule,
+      TeamModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'images'),
     }

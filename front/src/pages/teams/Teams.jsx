@@ -1,5 +1,3 @@
-// /c:/Users/fede1/Desktop/Trabajo Naza/front/src/pages/teams/Teams.jsx
-
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -27,35 +25,56 @@ const TeamName = styled.h2`
     color: #333;
 `;
 
-const TeamDescription = styled.p`
-    font-size: 1em;
-    color: #666;
-`;
-
 const Teams = () => {
     const [teams, setTeams] = useState([]);
+    const [loading, setLoading] = useState(true);  // Para manejar el estado de carga
+    const [organizationId, setOrganizationId] = useState(null);
 
     useEffect(() => {
-        axios.get('https://api.example.com/teams')
-            .then(response => {
-                setTeams(response.data);
-            })
-            .catch(error => {
-                console.error('There was an error fetching the teams!', error);
-            });
+        // Intentar obtener el organizationId desde el localStorage
+        const storedOrganizationId = localStorage.getItem('organization');
+
+        if (storedOrganizationId) {
+            setOrganizationId(storedOrganizationId);
+        } else {
+            // Si no está disponible inmediatamente, puedes establecer un mecanismo de espera o dar un mensaje.
+            console.log(storedOrganizationId);
+            console.error('No se encontró el organizationId en localStorage');
+            setLoading(false);  // Dejar de cargar si no se encuentra el ID
+        }
     }, []);
 
+    useEffect(() => {
+        if (organizationId) {
+            console.log('Obteniendo equipos para la organización', organizationId);
+            axios.get(`http://localhost:5000/teams/organization/${organizationId}`)
+                .then(response => {
+                    console.log('Equipos obtenidos:', response.data);
+                    setTeams(response.data);
+                    setLoading(false);  // Ya no estamos cargando
+                })
+                .catch(error => {
+                    console.error('Hubo un error al obtener los equipos', error);
+                    setLoading(false);
+                });
+        }
+    }, [organizationId]);  // Este efecto se ejecutará solo cuando organizationId tenga un valor
 
+    if (loading) {
+        return <p>Cargando equipos...</p>;
+    }
 
     return (
         <TeamsContainer>
-
-            {teams.map(team => (
-                <TeamCard key={team.id}>
-                    <TeamName>{team.name}</TeamName>
-                    <TeamDescription>{team.description}</TeamDescription>
-                </TeamCard>
-            ))}
+            {teams.length > 0 ? (
+                teams.map(team => (
+                    <TeamCard key={team.teamId}>
+                        <TeamName>{team.name}</TeamName>
+                    </TeamCard>
+                ))
+            ) : (
+                <p>No se encontraron equipos para la organización.</p>
+            )}
         </TeamsContainer>
     );
 };

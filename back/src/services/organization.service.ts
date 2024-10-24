@@ -6,6 +6,7 @@ import { Organization } from '../entities/organization.entity';
 import { UserService } from './user.service';
 import { TaskService } from './task.service';
 import { Inject, forwardRef } from '@nestjs/common';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class OrganizationService {
@@ -61,6 +62,18 @@ export class OrganizationService {
         }
         return organization
     }
+
+    async getOrganizationUsers(organization: Organization): Promise<User[]> {
+        try {
+            return await this.userService.getUsersByOrganization(organization);
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw new HttpException('Users not found for the organization', HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Failed to get users for the organization: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     async getOrganizationByEmail(email: string): Promise<Organization> {
         const organization = await this.organizationRepository.findOne({

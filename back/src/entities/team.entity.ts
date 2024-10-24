@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { Organization } from './organization.entity';
 import { User } from './user.entity';
 import { Task } from './task.entity';
@@ -6,16 +6,19 @@ import { Task } from './task.entity';
 @Entity()
 export class Team {
     @PrimaryGeneratedColumn()
-    teamId: number;
+    teamId?: number;
 
     @Column()
     name: string;
 
-    @ManyToMany(() => Organization, organization => organization.teams)
+    @ManyToOne(() => Organization, organization => organization.teams)
+    @JoinColumn(
+        { name: 'organization' }
+    )
     organization: Organization;
 
     @OneToMany(() => Task, task => task.assignedTeam)
-    tasks: Task[];
+    tasks?: Task[];
 
     @ManyToMany(() => User, user => user.teams)
     users: User[];
