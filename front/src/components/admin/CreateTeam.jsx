@@ -29,7 +29,7 @@ const Input = styled.input`
 
 const Title = styled.h1`
     font-size: 2em;
-    color: #333;
+    color: white;
 `;
 
 const CreateTeam = ({ users, organizationId }) => {
@@ -41,19 +41,14 @@ const CreateTeam = ({ users, organizationId }) => {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const addSelectedUser = (userId) => {
-        // Verificar que no se seleccione la opción "Select User"
-        console.log(userId.userId);
+    const addSelectedUser = (userId) => {   
         if (userId !== "" && userId !== "select-user") {
-            if (selectedUsers.includes(userId)) {
-                setSelectedUsers(selectedUsers.filter((user) => user !== userId));
+            if (selectedUsers.includes(parseInt(userId))) {
+                setSelectedUsers(selectedUsers.filter((id) => id !== parseInt(userId)));
             } else {
-
-            setSelectedUsers([...selectedUsers, userId]);
-
+                setSelectedUsers([...selectedUsers, parseInt(userId)]);
             }
         }
-        console.log(selectedUsers);
     };
 
     const handleInputChange = (e) => {
@@ -68,14 +63,31 @@ const CreateTeam = ({ users, organizationId }) => {
             ...formData,
             users: selectedUsers,
         });
+        console.log(selectedUsers);
+        const updatedFormData = {
+            ...formData,
+            users: selectedUsers,
+        };
+        
 
-        axios.post("http://localhost:5000/teams", formData)
+        axios.post("http://localhost:5000/teams", updatedFormData)
             .then((response) => {
-                console.log(response.data);
+            console.log(response.data);
+            setIsModalOpen(false);  // Close the modal on success
             })
             .catch((error) => {
-                console.error(error);
+            console.error(error);
             });
+
+        setSelectedUsers([]);
+
+        
+        setFormData({
+            name: "",
+            users: [],
+            organization: parseInt(organizationId, 10),
+        });
+
     };
 
     return (
@@ -86,20 +98,20 @@ const CreateTeam = ({ users, organizationId }) => {
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <Title>Add Team</Title>
                 <Input type="text" name="name" placeholder="Team Name" onChange={handleInputChange} />
-                <select onChange={(e) => {addSelectedUser(e.target.value);
-                console.log(e.target.value.firstName);
-                e.target.value = "select-user";  // Resetear el valor del select
+                <select onChange={(e) => {
+                    addSelectedUser(e.target.value);
+                    e.target.value = "select-user";  // Resetear el valor del select
                 }}>
-                    <option value="select-user">Select User</option> {/* Opción que no actualizará selectedUsers */}
+                    <option value="select-user">Select User</option>
                     {users.map((user) => (
-                        <option key={user.userId} value={user}>
+                        <option key={user.userId} value={user.userId}>
                             {user.email}
                         </option>
                     ))}
                 </select>
                 <ul>
-                    {selectedUsers.map((user) => (
-                        <li key={user}>{user.firstName}</li>
+                    {selectedUsers.map((userId) => (
+                        <li key={userId}>{users.find( (user) => user.userId == userId)?.email}</li>
                     ))}
                 </ul>
 

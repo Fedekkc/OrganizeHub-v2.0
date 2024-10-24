@@ -4,6 +4,7 @@ import axios from 'axios';
 import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 import CreateTeam from '../../components/admin/CreateTeam';
+import AdminUsers from '../../components/admin/AdminUsers';
 
 const Container = styled.div`
     display: flex;
@@ -272,6 +273,8 @@ const Management = () => {
                 <Input type="email" placeholder="User Email" />
                 <Button>Invite User</Button>
             </Section>
+            <AdminUsers />
+
         </Container>
     );
 };

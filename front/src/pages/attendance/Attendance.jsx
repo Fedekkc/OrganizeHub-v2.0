@@ -188,9 +188,9 @@ const Attendance = () => {
 
     return (
         <Container>
-            <TaskListApp/>
+            
              <CalendarContainer>
-                <Title>Attendance Tracker con Calendario</Title>
+                <Title>Calendario + Tareas</Title>
                 <Calendar
                     events={events}
                     onDateSelect={handleDateSelect} 

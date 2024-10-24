@@ -89,7 +89,7 @@ export class OrganizationService {
     async getOrganizationById(id: number): Promise<Organization> {
         const organization = await this.organizationRepository.findOne({
             where: { organizationId: id },
-            relations: ['users'],
+            relations: ['users','teams','roles'],
         });
         if (!organization) {
             throw new NotFoundException(`Organization with ID ${id} not found`);

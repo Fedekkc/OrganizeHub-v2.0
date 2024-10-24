@@ -37,15 +37,22 @@ export class UserService {
     }
 
     async getUsersByIds(userIds: number[]): Promise<User[]> {
-        const users = [];
-        for (const userId of userIds) {
-            const user = await this.userRepository.findOne({ where: { userId } });
-            if (!user) {
-                throw new NotFoundException(`User with ID ${userId} not found`);
+        try {
+            const users = [];
+            for (const userId of userIds) {
+                const user = await this.userRepository.findOne({ where: { userId } });
+                if (!user) {
+                    throw new NotFoundException(`User with ID ${userId} not found`);
+                }
+                users.push(user);
             }
-            users.push(user);
+            return users;
+        } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return users;
     }
 
     async createJwtPayload(user: User) {
@@ -68,7 +75,7 @@ export class UserService {
 
     async getUserById(userId: number): Promise<User> {
         try {
-            const user = await this.userRepository.findOne({ where: { userId }, relations: ['organization'] });
+            const user = await this.userRepository.findOne({ where: { userId }, relations: ['organization', 'task'] });
             if (!user) {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
             }

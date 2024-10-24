@@ -17,6 +17,11 @@ const TeamCard = styled.div`
     margin: 10px;
     width: 300px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+
+    &:hover .user-list {
+        display: block;
+    }
 `;
 
 const TeamName = styled.h2`
@@ -25,40 +30,55 @@ const TeamName = styled.h2`
     color: #333;
 `;
 
+const UserList = styled.ul`
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    list-style-type: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    z-index: 1;
+`;
+
+const UserListItem = styled.li`
+    margin-bottom: 5px;
+    color: #555;
+`;
+
 const Teams = () => {
     const [teams, setTeams] = useState([]);
-    const [loading, setLoading] = useState(true);  // Para manejar el estado de carga
+    const [loading, setLoading] = useState(true);
     const [organizationId, setOrganizationId] = useState(null);
 
     useEffect(() => {
-        // Intentar obtener el organizationId desde el localStorage
         const storedOrganizationId = localStorage.getItem('organization');
 
         if (storedOrganizationId) {
             setOrganizationId(storedOrganizationId);
         } else {
-            // Si no está disponible inmediatamente, puedes establecer un mecanismo de espera o dar un mensaje.
-            console.log(storedOrganizationId);
             console.error('No se encontró el organizationId en localStorage');
-            setLoading(false);  // Dejar de cargar si no se encuentra el ID
+            setLoading(false);
         }
     }, []);
 
     useEffect(() => {
         if (organizationId) {
-            console.log('Obteniendo equipos para la organización', organizationId);
             axios.get(`http://localhost:5000/teams/organization/${organizationId}`)
                 .then(response => {
-                    console.log('Equipos obtenidos:', response.data);
                     setTeams(response.data);
-                    setLoading(false);  // Ya no estamos cargando
+                    setLoading(false);
                 })
                 .catch(error => {
                     console.error('Hubo un error al obtener los equipos', error);
                     setLoading(false);
                 });
         }
-    }, [organizationId]);  // Este efecto se ejecutará solo cuando organizationId tenga un valor
+    }, [organizationId]);
 
     if (loading) {
         return <p>Cargando equipos...</p>;
@@ -70,6 +90,15 @@ const Teams = () => {
                 teams.map(team => (
                     <TeamCard key={team.teamId}>
                         <TeamName>{team.name}</TeamName>
+                        <UserList className="user-list">
+                            {team.users && team.users.length > 0 ? (
+                                team.users.map(user => (
+                                    <UserListItem key={user.userId}>{user.firstName} {user.lastName}</UserListItem>
+                                ))
+                            ) : (
+                                <UserListItem>No hay usuarios en este equipo.</UserListItem>
+                            )}
+                        </UserList>
                     </TeamCard>
                 ))
             ) : (

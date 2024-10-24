@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useAuth } from '../../context/Context';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
     display: flex;
@@ -41,6 +42,7 @@ const CreateProject = () => {
     const authToken = useAuth();
     const userId = jwtDecode(authToken.authToken).userId;
     const users = []
+    const navigate = useNavigate();
     users.push(userId);
     const [formData, setFormData] = useState({
         name: '',
@@ -86,6 +88,9 @@ const CreateProject = () => {
                 },
 
             });
+            navigate('/documentation');
+            
+
             console.log(response.data);
         } catch (error) {
             console.error(error);

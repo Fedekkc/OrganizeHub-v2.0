@@ -5,7 +5,9 @@ import { Team } from '../entities/team.entity';
 import { PartialTeamDto, TeamDto } from '../dtos/team.dto';
 import { User } from '../entities/user.entity';
 import { UserService } from './user.service';
-import { OrganizationService } from './organization.service';
+import { OrganizationService } from './organization.service'
+import { NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class TeamService {
@@ -15,16 +17,32 @@ export class TeamService {
         private userService: UserService,
         private organizationService: OrganizationService,
     ) {}
+    private readonly logger = new Logger(TeamService.name);
 
     async createTeam(teamDto: TeamDto): Promise<Team> {
-        const users = await this.userService.getUsersByIds(teamDto.users);
-        const team = this.teamRepository.create({
-            ...teamDto,
-            users,
-            organization: await this.organizationService.getOrganizationById(teamDto.organization),
-        });
+        try {
+            const users = await this.userService.getUsersByIds(teamDto.users);
+            const organization = await this.organizationService.getOrganizationById(teamDto.organization);
 
-        return this.teamRepository.save(team);
+            if (!organization) {
+                throw new NotFoundException(`Organization with ID ${teamDto.organization} not found`);
+            }
+
+            const team = this.teamRepository.create({
+                ...teamDto,
+                users,
+                organization,
+            });
+            this.logger.log("trying to create")
+            const createdTeam = await this.teamRepository.save(team);
+            this.logger.log(`Team with ID ${createdTeam.teamId} created`);
+            return createdTeam;
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException(error);
+        }
     }
 
     async getAllTeams(): Promise<Team[]> {
@@ -38,7 +56,8 @@ export class TeamService {
     async getTeamsByOrganization(id: number): Promise<Team[]> {
         
         const query = this.teamRepository.createQueryBuilder('team');
-        query.where('organization = :organization', { organization: id });
+        query.where('team.organization = :organization', { organization: id });
+        query.leftJoinAndSelect('team.users', 'users');
         return await query.getMany();
 
 

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
@@ -19,6 +19,7 @@ export class Meeting {
     assignedTo: User[];
 
     @ManyToOne(() => User, user => user.createdMeetings)
+    @JoinColumn()
     createdBy: User;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

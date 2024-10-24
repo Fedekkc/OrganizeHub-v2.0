@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus } from '@nestjs/common';
+import { EntityNotFoundError } from 'typeorm';
 import { TeamService } from '../services/team.service';
 import { TeamDto } from '../dtos/team.dto';
 import { Team } from '../entities/team.entity';
@@ -9,31 +10,76 @@ export class TeamController {
 
     @Post()
     async createTeam(@Body() teamDto: TeamDto): Promise<Team> {
-        return this.teamService.createTeam(teamDto);
+        try {
+            return await this.teamService.createTeam(teamDto);
+        }
+            catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+
+            }
+            if (error instanceof HttpException) {
+                throw error;
+            }
+
+            throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Get()
     async getAllTeams(): Promise<Team[]> {
-        return this.teamService.getAllTeams();
+        try {
+            return await this.teamService.getAllTeams();
+        } catch (error) {
+            throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Get('/organization/:id')
     async getTeamsByOrganization(@Param('id') id: number): Promise<Team[]> {
-        return this.teamService.getTeamsByOrganization(id);
+        try {
+            return await this.teamService.getTeamsByOrganization(id);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Get(':id')
     async getTeamById(@Param('id') id: number): Promise<Team> {
-        return this.teamService.getTeamById(id);
+        try {
+            return await this.teamService.getTeamById(id);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Put(':id')
     async updateTeam(@Param('id') id: number, @Body() teamDto: TeamDto): Promise<Team> {
-        return this.teamService.updateTeam(id, teamDto);
+        try {
+            return await this.teamService.updateTeam(id, teamDto);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Delete(':id')
     async deleteTeam(@Param('id') id: number): Promise<boolean> {
-        return this.teamService.deleteTeam(id);
+        try {
+            return await this.teamService.deleteTeam(id);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, Or, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne, OneToMany, Or, OneToOne, JoinColumn, JoinTable } from 'typeorm';
 import { Team } from './team.entity';
 import { Task } from './task.entity';
 import { Project } from './project.entity';
@@ -49,10 +49,13 @@ export class User {
     @ManyToMany(() => Project, project => project.users)
     projects: Project[];
 
-    @ManyToMany(() => Team, team => team.users)
+    @ManyToMany(() => Team, (team) => team.users)
+    @JoinTable()
     teams: Team[];
 
+
     @ManyToMany(() => Meeting, meeting => meeting.assignedTo)
+    @JoinTable()
     meetings: Meeting[];
 
     @OneToMany(() => Meeting, meeting => meeting.createdBy)
