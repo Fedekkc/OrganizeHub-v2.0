@@ -174,7 +174,22 @@ const Attendance = () => {
             }).catch((error) => {
                 console.log(error)
                 });
+        }else{
+            axios.post('http://localhost:5000/meetings', {
+                title: title,
+                description: description,
+                createdBy: userId,
+                assignedToId: userId,
+                meetingDate: selectedDate,
+                endDate: endingDate,
+            }).then((response) => { 
+                console.log(response);
+            }).catch((error) => {
+                console.log(error)
+                });
         }
+
+
 
         addEvent(newEvent);
         setTitle('');

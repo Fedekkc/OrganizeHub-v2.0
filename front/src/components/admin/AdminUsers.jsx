@@ -4,6 +4,8 @@ import axios from 'axios';
 import Button from '../Button';
 import Modal from '../Modal'; // Asegúrate de tener un componente Modal
 import { useAuth } from '../../context/Context';
+import moment from 'moment';
+import { CiCalendar } from 'react-icons/ci';
 
 const Container = styled.div`
     padding: 20px;
@@ -40,6 +42,28 @@ const Td = styled.td`
     border: 1px solid #ddd;
 `;
 
+const Select = styled.select`
+    margin: 10px 0;
+    padding: 10px;
+`;
+
+const Option = styled.option``;
+
+const Input = styled.input`
+    margin: 10px 0;
+    padding: 10px;
+`;
+
+const TitulosContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const Titulo = styled.h2`
+    margin: 0;
+`;
+
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -54,6 +78,13 @@ const AdminUsers = () => {
     const [eventName, setEventName] = useState('');
     const [teamId, setTeamId] = useState('');
     const [roleId, setRoleId] = useState('');
+    const [description, setDescription] = useState('');
+    const [type, setType] = useState('task');
+    const [endingDate, setEndingDate] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [projects, setProjects] = useState([]);
+    const [project, setProject] = useState(null);
+    const [title, setTitle] = useState('');
 
     // Estados para roles y equipos
     const [teams, setTeams] = useState([]);
@@ -61,8 +92,7 @@ const AdminUsers = () => {
 
     useEffect(() => {
         getData();
-
-        }, []);
+    }, []);
 
     const getData = async () => {
         const organizationId = localStorage.getItem('organization');
@@ -81,7 +111,6 @@ const AdminUsers = () => {
                 setLoading(false);
             });
     };
-
 
     const handleAddEvent = () => {
         const eventData = {
@@ -172,6 +201,7 @@ const AdminUsers = () => {
                 </Thead>
                 <Tbody>
                     {users.map(user => (
+                        <>
                         <Tr key={user.userId}>
                             <Td>{user.firstName}</Td>
                             <Td>{user.email}</Td>
@@ -182,16 +212,14 @@ const AdminUsers = () => {
                                 <Button onClick={() => { setSelectedUser(user.userId); setIsRoleModalOpen(true); }}>Assign Role</Button>
                             </Td>
                         </Tr>
+                        </>
                     ))}
                 </Tbody>
             </Table>
 
             {/* Modales */}
             <Modal isOpen={isEventModalOpen} onClose={() => setIsEventModalOpen(false)}>
-                <TitulosContainer>
-                <Titulo>Agregar Evento - {moment(selectedDate).format('DD/MM/YYYY')} <CiCalendar/> </Titulo>
-                
-                </TitulosContainer>
+                    <Titulo>Agregar Evento - {moment(selectedDate).format('DD/MM/YYYY')} <CiCalendar /> </Titulo>
                 <Select onChange={(e) => setType(e.target.value)}>
                     <Option value="task">Tarea</Option>
                     <Option value="meeting">Reunión</Option>
@@ -202,7 +230,7 @@ const AdminUsers = () => {
                         <Option key={project.projectId} value={project.projectId}>{project.name}</Option>
                     ))}
                 </Select>
-                
+
                 <Input
                     type="text"
                     value={title}
@@ -222,7 +250,7 @@ const AdminUsers = () => {
                         onChange={(e) => {
                             const endDate = new Date(selectedDate);
                             const [hours, minutes] = e.target.value.split(':');
-                            
+
                             endDate.setHours(hours);
                             endDate.setMinutes(minutes);
                             setEndingDate(endDate);
@@ -238,20 +266,20 @@ const AdminUsers = () => {
                         min={moment().format('YYYY-MM-DDTHH:mm')}
                     />
                 )}
-                
+
                 <Button onClick={handleAddEvent}>Agregar Evento</Button>
             </Modal>
 
             <Modal isOpen={isTeamModalOpen} onClose={() => setIsTeamModalOpen(false)}>
                 <Title>Assign Team</Title>
-                <select value={teamId} onChange={(e) => setTeamId(e.target.value)}>
-                    <option value="">Select a team</option>
+                <Select value={teamId} onChange={(e) => setTeamId(e.target.value)}>
+                    <Option value="">Select a team</Option>
                     {teams.map(team => (
-                        <option key={team.teamId} value={team.teamId}>
+                        <Option key={team.teamId} value={team.teamId}>
                             {team.name}
-                        </option>
+                        </Option>
                     ))}
-                </select>
+                </Select>
                 <Button onClick={handleAssignTeam}>Confirm</Button>
             </Modal>
 
@@ -264,17 +292,18 @@ const AdminUsers = () => {
 
             <Modal isOpen={isRoleModalOpen} onClose={() => setIsRoleModalOpen(false)}>
                 <Title>Assign Role</Title>
-                <select value={roleId} onChange={(e) => setRoleId(e.target.value)}>
-                    <option value="">Select a role</option>
+                <Select value={roleId} onChange={(e) => setRoleId(e.target.value)}>
+                    <Option value="">Select a role</Option>
                     {roles.map(role => (
-                        <option key={role.roleId} value={role.roleId}>
+                        <Option key={role.roleId} value={role.roleId}>
                             {role.name}
-                        </option>
+                        </Option>
                     ))}
-                </select>
+                </Select>
                 <Button onClick={handleAssignRole}>Confirm</Button>
             </Modal>
         </Container>
+
     );
 };
 

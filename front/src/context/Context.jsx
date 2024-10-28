@@ -33,6 +33,7 @@ export const AppProvider = ({ children }) => {
 
                 
             } catch (error) {
+                console.log(error)
                 setIsAuthenticated(false);
                 setOrganization(null);
                 setAuthToken(null);
