@@ -6,6 +6,7 @@ import { Meeting } from './meeting.entity';
 import { Organization } from './organization.entity';
 import { IsOptional } from 'class-validator';
 import { Role } from './role.entity';
+import { Invitation } from './invitation.entity';
 
 @Entity()
 export class User {
@@ -32,6 +33,9 @@ export class User {
 
     @Column({ default: true })
     isActive: boolean;
+
+    @OneToMany(() => Invitation, invitation => invitation.email)
+    invitations: Invitation[];
 
     @ManyToOne(() => Organization, organization => organization.users)
     @JoinColumn()

@@ -3,6 +3,7 @@ import { Team } from './team.entity';
 import { Project } from './project.entity';
 import { User } from './user.entity';
 import { Role } from './role.entity';
+import { Invitation } from './invitation.entity';
 @Entity()
 export class Organization {
     @PrimaryGeneratedColumn()
@@ -40,10 +41,13 @@ export class Organization {
     @OneToMany(() => User, user => user.organization)
     users: User[];
 
+    @OneToMany(() => Invitation, invitation => invitation.organization)
+    invitations?: Invitation[];
+
     @CreateDateColumn()
     createdAt: Date;
 
     @UpdateDateColumn()
-    updatedAt: Date;
+    updatedAt?: Date;
 
 }

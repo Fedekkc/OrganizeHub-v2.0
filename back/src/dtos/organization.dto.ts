@@ -6,7 +6,6 @@ export class OrganizationDto {
     @IsOptional()
     organizationId?: number;
     
-    
     @ApiProperty({ required: false })
     @IsString()
     @Length(1, 100)

@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import Button from '../../components/Button';
 import CreateTeam from '../../components/admin/CreateTeam';
 import AdminUsers from '../../components/admin/AdminUsers';
+import InviteUser from '../../components/admin/InviteUser';
 
 const Container = styled.div`
     display: flex;
@@ -268,11 +269,7 @@ const Management = () => {
             <CreateTeam users={users} organizationId={organizationId} />
 
 
-            <Section>
-                <SectionTitle>Invite User</SectionTitle>
-                <Input type="email" placeholder="User Email" />
-                <Button>Invite User</Button>
-            </Section>
+            <InviteUser />
             <AdminUsers />
 
         </Container>
