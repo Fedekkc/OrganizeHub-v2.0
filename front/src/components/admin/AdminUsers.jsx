@@ -6,6 +6,7 @@ import Modal from '../Modal'; // Asegúrate de tener un componente Modal
 import { useAuth } from '../../context/Context';
 import moment from 'moment';
 import { CiCalendar } from 'react-icons/ci';
+import Input from '../Input';
 
 const Container = styled.div`
     padding: 20px;
@@ -49,10 +50,7 @@ const Select = styled.select`
 
 const Option = styled.option``;
 
-const Input = styled.input`
-    margin: 10px 0;
-    padding: 10px;
-`;
+
 
 const TitulosContainer = styled.div`
     display: flex;
