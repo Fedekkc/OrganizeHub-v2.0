@@ -8,6 +8,7 @@ import { hash } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { compare } from "bcrypt";
 import { Organization } from "src/entities/organization.entity";
+import { Logger } from "@nestjs/common";
 import { OrganizationService } from "./organization.service";
 
 @Injectable()
@@ -19,8 +20,12 @@ export class UserService {
         
     ) {}
 
+    private readonly logger = new Logger(UserService.name);
+
     async decodeToken(token: string) {
-        return this.jwtService.decode(token);
+        const decodedToken = await this.jwtService.decode(token);
+        this.logger.log(decodedToken);
+        return decodedToken;
     }
 
     async getUsersByOrganization(organization: Organization): Promise<User[]> {
@@ -163,6 +168,9 @@ export class UserService {
             if (userDTO.password) {
                 user.password = await hash(userDTO.password, 10);
             }
+            if (userDTO.role) user.role = userDTO.role;
+            
+
 
             return await this.userRepository.save(user);
         } catch (error) {

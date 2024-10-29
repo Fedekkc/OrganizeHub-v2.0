@@ -40,6 +40,11 @@ export class UserDTO {
     @IsOptional()
     updatedAt?: Date;
 
+    @ApiProperty({ description: 'Rol del usuario', enum: ['admin', 'user'], default: 'user' })
+    @IsOptional()
+    @IsString()
+    role?: string;
+
     @ApiProperty({ description: 'Organización a la que pertenece el usuario' })
     @IsOptional()
     @IsNumber()

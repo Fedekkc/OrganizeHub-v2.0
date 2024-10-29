@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { useAuth } from '../../context/Context';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import { CiCirclePlus } from 'react-icons/ci';
+import Input from '../Input';
 
 const Container = styled.div`
     display: flex;
@@ -11,14 +13,25 @@ const Container = styled.div`
     align-items: center;
     padding: 20px;
 `;
+const Circle = styled(CiCirclePlus)`
+    color: white;
+    font-size: 2rem;
 
+    &:hover {
+        cursor: pointer;
+        transition: ease 0.1s;
+        transform: scale(1.02);
+        color: #DBEEB4;
+        
+    }
+`;
 const Form = styled.form`
     display: flex;
     flex-direction: column;
     width: 300px;
 `;
 
-const Input = styled.input`
+const Input2 = styled(Input)`
     margin-bottom: 10px;
     padding: 8px;
     font-size: 16px;
@@ -36,6 +49,20 @@ const Button = styled.button`
         background-color: #0056b3;
     }
 `;
+
+const InputContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;   
+    margin-bottom: 10px;
+    height: 1rem;
+    align-items: center;
+`;
+
 
 const CreateProject = () => {
     const [image, setImage] = useState(null);
@@ -101,7 +128,7 @@ const CreateProject = () => {
         <Container>
             <h1>Create Project</h1>
             <Form onSubmit={handleSubmit}>
-                <Input
+                <Input2
                     type="text"
                     name="name"
                     placeholder="Project Name"
@@ -109,7 +136,7 @@ const CreateProject = () => {
                     onChange={handleChange}
                     required
                 />
-                <Input
+                <Input2
                     type="text"
                     name="description"
                     placeholder="Description"
@@ -117,11 +144,17 @@ const CreateProject = () => {
                     onChange={handleChange}
                     required
                 />
-                <Input
+
+                <InputContainer>
+                <Input2 style={{ display: 'none' }}
                     type="file"  
+                    id='logo'
+                    name='logo'
                     placeholder="Upload Image"
                     onChange={handleImageChange}
                 />
+                <label htmlFor="logo"> <Circle/></label>
+                </InputContainer>
                 <Button type="submit">Create</Button>
             </Form>
         </Container>

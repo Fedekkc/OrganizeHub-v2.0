@@ -40,7 +40,7 @@ export class OrganizationService {
             const organization = this.organizationRepository.create(orgData);
             await this.organizationRepository.save(organization);
 
-            await this.userService.updateUser(owner.userId, { organization: organization.organizationId });
+            await this.userService.updateUser(owner.userId, { role: 'admin', organization: organization.organizationId });
 
             return organization;
         } catch (error) {

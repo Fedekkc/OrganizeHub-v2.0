@@ -106,7 +106,6 @@ const DocItem = styled.div`
     padding: 1rem;
     display: flex;
     flex-direction: row;
-    
     height: 0.7rem;
     width: 90%;
     align-items: center;

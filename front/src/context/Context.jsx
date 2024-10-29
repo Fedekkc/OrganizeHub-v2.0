@@ -10,40 +10,46 @@ export const AppProvider = ({ children }) => {
     const [events, setEvents] = useState([]);
     const [userId, setUserId] = useState(null);
     const [userEmail, setUserEmail] = useState(null);
-    const checkUserStatus = async () => {
+    const [isAdmin, setIsAdmin] = useState(false);
+    const checkUserStatus = () => {
         const token = localStorage.getItem('authToken');
+        console.log(token);
         if (token) {
             setAuthToken(token);
-            try {
-                const response = await axios.post('http://localhost:5000/users/validate-token', {}, {
-                    headers: { Authorization: `Bearer ${token}` },
-                }).catch((err) => {
-                    console.log(err);
-                });
+            axios.post('http://localhost:5000/users/validate-token', {}, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
                 if (response.status === 201) {
                     setIsAuthenticated(true);
                     setUserId(response.data.user.userId);
+                    console.log(response.data.user);
+                    
                     if(response.data.user.organization !== null) {
                         setOrganization(true);
                         console.log(response.data.user.organization);
                         localStorage.setItem('organization', response.data.user.organization.organizationId);
+                        if(response.data.user.role == 'admin'){
+                            setIsAdmin(true);
+                        }else{
+                            setIsAdmin(false);
+                        }
                     }
-
                 }
-
-                
-            } catch (error) {
-                console.log(error)
+            })
+            .catch((error) => {
+                console.log(error);
                 setIsAuthenticated(false);
                 setOrganization(null);
                 setAuthToken(null);
                 setUserId(null);
                 localStorage.removeItem('authToken');
-            }
+            });
         } else {
             setIsAuthenticated(false);
         }
     };
+    
 
     useEffect(() => {
         checkUserStatus();
@@ -54,6 +60,11 @@ export const AppProvider = ({ children }) => {
         setAuthToken(user.token);
         setIsAuthenticated(true);
         setUserEmail(user.email);
+        if (user.role === 'admin') {
+            setIsAdmin(true);
+        } else {
+            setIsAdmin(false);
+        }
         if (user.organization) {
             
             setOrganization(user.organization);
@@ -79,6 +90,7 @@ export const AppProvider = ({ children }) => {
         setAuthToken(null);
         setIsAuthenticated(false);
         setOrganization(null);
+        localStorage.removeItem('organization');
     };
 
     const isInOrg = () => !!organization;
@@ -92,10 +104,12 @@ export const AppProvider = ({ children }) => {
             organization,
             addEvent,
             updateEvent,
+            isAdmin,
             setAuthToken,
             userId,
             userEmail,
             setOrganization,
+            setIsAdmin,
             setIsAuthenticated,
             isAuthenticated, 
             checkUserStatus,

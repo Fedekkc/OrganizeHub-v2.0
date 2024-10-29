@@ -4,18 +4,22 @@ import { UserService } from "../services/user.service";
 import { User } from "../entities/user.entity";
 import { EntityNotFoundError } from "typeorm";
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Logger } from "@nestjs/common";
 
 @Controller('users')
 export class UserController {
     constructor(private userService: UserService) { }
 
+    private readonly logger = new Logger(UserController.name);
+
     @UseGuards(JwtAuthGuard)
     @Post('validate-token')
-    validateToken(@Request() req: any) {
+    async validateToken(@Request() req: any) {
 
         // decode the token
         const token = req.headers.authorization.split(' ')[1];
-        const decoded = this.userService.decodeToken(token);
+        const decoded = await this.userService.decodeToken(token);
+        this.logger.log(req.user.userId);
         if (!decoded) {
             throw new HttpException('Token is invalid', HttpStatus.UNAUTHORIZED);
         }

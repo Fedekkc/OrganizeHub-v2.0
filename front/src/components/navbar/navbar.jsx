@@ -35,7 +35,7 @@ const Navbar = () => {
 
     const navigate = useNavigate();
     const { logout } = useAuth();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isAdmin } = useAuth();
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -48,7 +48,6 @@ const Navbar = () => {
 
             <NavbarContainer>
                 <List>
-
                     <Item>
                         <ItemText to="/attendance">Attendance</ItemText>
                     </Item>
@@ -70,9 +69,13 @@ const Navbar = () => {
                             <Item>
                                 <ItemText to="/logout" onClick={handleLogout} >Logout</ItemText>
                             </Item>
-                            <Item>
-                                <ItemText to="/admin">Admin</ItemText>
-                            </Item>
+
+                            {isAdmin ?
+                                <Item>
+                                    <ItemText to="/admin">Admin</ItemText>
+                                </Item>
+                            : null
+                            }
                         </>
 
                         : null

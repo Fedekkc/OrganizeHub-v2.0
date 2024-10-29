@@ -7,7 +7,7 @@ const HomeContainer = styled.div`
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #f0f0f0;
+    width: 100%;
 `;
 
 const Title = styled.h1`

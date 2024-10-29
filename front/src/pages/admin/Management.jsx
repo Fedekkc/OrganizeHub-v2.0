@@ -6,6 +6,7 @@ import Button from '../../components/Button';
 import CreateTeam from '../../components/admin/CreateTeam';
 import AdminUsers from '../../components/admin/AdminUsers';
 import InviteUser from '../../components/admin/InviteUser';
+import Input from '../../components/Input';
 
 const Container = styled.div`
     display: flex;
@@ -36,13 +37,7 @@ const SectionTitle = styled.h2`
     margin-bottom: 10px;
 `;
 
-const Input = styled.input`
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-`;
+
 
 
 
@@ -140,6 +135,7 @@ const Management = () => {
         try {
             const response = await axios.get(`http://localhost:5000/roles/organization/${organizationId}`);
             setRoles(response.data);
+            console.log(organizationId);
         } catch (error) {
             console.error(`Error getting roles: ${error}`);
         }

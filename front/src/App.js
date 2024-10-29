@@ -9,15 +9,24 @@ import { AppProvider } from './context/Context';
 import { useAuth } from './context/Context';
 
 const GlobalStyle = createGlobalStyle`
-  body {
-    background-color: #31322F;
+
+
+  html, body, #root {
+    width: 100vw;
+    min-height: 100vh;
+    overflow-x: hidden;
     margin: 0;
     padding: 0;
+  }
+
+  body {
+    background-color: #31322F;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 `;
+
 
 const Container = styled.div`
     display: flex;

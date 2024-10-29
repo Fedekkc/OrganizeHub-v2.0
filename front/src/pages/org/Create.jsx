@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import PhoneInput from 'react-phone-number-input';
 import { jwtDecode } from 'jwt-decode';
-
 import 'react-phone-number-input/style.css'
 import { useAuth } from '../../context/Context';
 import { useNavigate } from 'react-router-dom';
+import Input from '../../components/Input';
 
 const FormContainer = styled.div`
     display: flex;
@@ -34,12 +34,7 @@ const Label = styled.label`
     color: #555;
 `;
 
-const Input = styled.input`
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-`;
+
 
 const Button = styled.button`
     padding: 10px 20px;
@@ -56,7 +51,7 @@ const Button = styled.button`
 
 const CreateOrganization = () => {
     const navigate = useNavigate();
-    const { checkUserStatus } = useAuth();
+    const { checkUserStatus, setIsAdmin } = useAuth();
     useEffect(() => {
         checkUserStatus();
     }, []);
@@ -96,8 +91,9 @@ const CreateOrganization = () => {
         axios.post('http://localhost:5000/organizations', updatedFormData)
             .then((res) => {
                 if (res.status === 201 || res.status === 200) {
-                    
+                    setIsAdmin(true);
                     setOrganization(true);
+
                     navigate('/home');  
                     
                 }
