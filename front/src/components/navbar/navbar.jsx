@@ -49,6 +49,9 @@ const Navbar = () => {
             <NavbarContainer>
                 <List>
                     <Item>
+                        <ItemText to="/home">OrganizeHub</ItemText>
+                    </Item>
+                    <Item>
                         <ItemText to="/attendance">Attendance</ItemText>
                     </Item>
                     <Item>
