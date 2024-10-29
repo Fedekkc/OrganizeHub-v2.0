@@ -9,7 +9,7 @@ export const AppProvider = ({ children }) => {
     const [organization, setOrganization] = useState(null);
     const [events, setEvents] = useState([]);
     const [userId, setUserId] = useState(null);
-
+    const [userEmail, setUserEmail] = useState(null);
     const checkUserStatus = async () => {
         const token = localStorage.getItem('authToken');
         if (token) {
@@ -53,7 +53,9 @@ export const AppProvider = ({ children }) => {
         localStorage.setItem('authToken', user.token);
         setAuthToken(user.token);
         setIsAuthenticated(true);
+        setUserEmail(user.email);
         if (user.organization) {
+            
             setOrganization(user.organization);
             localStorage.setItem('organization', user.organization);
         }
@@ -92,6 +94,7 @@ export const AppProvider = ({ children }) => {
             updateEvent,
             setAuthToken,
             userId,
+            userEmail,
             setOrganization,
             setIsAuthenticated,
             isAuthenticated, 

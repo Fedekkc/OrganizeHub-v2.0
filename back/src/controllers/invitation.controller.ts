@@ -40,6 +40,15 @@ export class InvitationController {
         }
     }
 
+    @Get('email/:email')
+    async getInvitationByEmail(@Param('email') email: string): Promise<Invitation> {
+        try {
+            return await this.invitationService.getInvitationByEmail(email);
+        } catch (error) {
+            throw new HttpException('Failed to retrieve invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Put(':id')
     async update(@Param('id') id: number, @Body() updateInvitationDto: InvitationDto): Promise<Invitation> {
         try {

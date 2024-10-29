@@ -41,6 +41,15 @@ export class InvitationService {
         }
     }
 
+    async getInvitationByEmail(email: string): Promise<Invitation> {
+        try {
+            return await this.invitationRepository.findOne({ where: { email }, relations: ['organization'] });
+        } catch (error) {
+            throw new HttpException('Failed to retrieve invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     async findAll(): Promise<Invitation[]> {
         try {
             return await this.invitationRepository.find({ relations: ['users', 'organization'] });
