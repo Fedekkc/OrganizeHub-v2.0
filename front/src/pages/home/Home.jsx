@@ -13,7 +13,7 @@ const HomeContainer = styled.div`
 
 const Title = styled.h1`
     font-size: 2.5rem;
-    color: #333;
+    color: white;
     margin-bottom: 1rem;
 `;
 
@@ -26,21 +26,19 @@ const Description = styled.p`
 const CardContainer = styled.div`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    width: 80%;
+    gap: 1rem;
+    width: 90%;
     justify-content: center;
     align-items: center;
+    margin: auto; 
 
     div {
+        width: 50%; 
+        margin: auto; 
         display: flex;
         align-items: center;
         justify-content: center;
-        &:hover {
-            background-color: white;
-        }
-
     }
-
 `;
 
 const Card = styled.div`
