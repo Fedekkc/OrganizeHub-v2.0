@@ -48,7 +48,6 @@ const PermissionsContainer = styled.div`
     justify-content: center;
     border: 1px solid #ddd;
     border-radius: 5px;
-    
 
 `;
 
@@ -60,12 +59,12 @@ const Permission = styled(Section)`
     align-items: center;
     padding: 10px;
     width: 70%;
-    height: 1rem;
+    height: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 5px;
     
-    background-color: ${(props) => (props.isSelected ? 'grey' : '#f9f9f9')};
-    color: #333;
+    background-color: ${(props) => (props.isSelected ? 'grey' : 'transparent')};
+    color: lightgrey;
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
