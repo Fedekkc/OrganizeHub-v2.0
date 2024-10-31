@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import Button from '../Button';
 
 const Container = styled.div`
     display: flex;
@@ -21,18 +22,7 @@ const Input = styled.input`
     font-size: 16px;
 `;
 
-const Button = styled.button`
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    &:hover {
-        background-color: #0056b3;
-    }
-`;
+
 
 const InviteUser = () => {
     const [email, setEmail] = useState('');

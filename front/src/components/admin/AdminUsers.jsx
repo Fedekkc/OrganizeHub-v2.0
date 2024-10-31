@@ -28,17 +28,24 @@ const Thead = styled.thead`
 const Th = styled.th`
     padding: 10px;
     border: 1px solid #ddd;
+    background-color: grey;
 `;
 
-const Tbody = styled.tbody``;
+const Tbody = styled.tbody`
+border-radius: 5px;
+
+`;
 
 const Tr = styled.tr`
+    border-radius: 50px;
+    background-color: grey;
     &:nth-child(even) {
-        background-color: #f9f9f9;
+        background-color: #494041;
     }
 `;
 
 const Td = styled.td`
+
     padding: 10px;
     border: 1px solid #ddd;
 `;

@@ -7,6 +7,7 @@ import CreateTeam from '../../components/admin/CreateTeam';
 import AdminUsers from '../../components/admin/AdminUsers';
 import InviteUser from '../../components/admin/InviteUser';
 import Input from '../../components/Input';
+import InfoTooltip from '../../components/InfoTooltip';
 
 const Container = styled.div`
     display: flex;
@@ -37,10 +38,6 @@ const SectionTitle = styled.h2`
     margin-bottom: 10px;
 `;
 
-
-
-
-
 const PermissionsContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -48,9 +45,7 @@ const PermissionsContainer = styled.div`
     justify-content: center;
     border: 1px solid #ddd;
     border-radius: 5px;
-
 `;
-
 
 const Permission = styled(Section)`
     display: flex;
@@ -62,7 +57,6 @@ const Permission = styled(Section)`
     height: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 5px;
-    
     background-color: ${(props) => (props.isSelected ? 'grey' : 'transparent')};
     color: lightgrey;
     font-size: 1rem;
@@ -100,7 +94,6 @@ const Role = styled.div`
 
 const Button2 = styled(Button)`
     width: 100%;
-
 `;
 
 const Management = () => {
@@ -109,6 +102,24 @@ const Management = () => {
     const [permissions, setPermissions] = useState(new Set());
     const [existingPermissions, setExistingPermissions] = useState([]);
     const [users, setUsers] = useState([]);
+    const [roleInfo, setRoleInfo] = useState({
+        show: false,
+        text: '',
+        position: { top: 0, left: 0 }
+    });
+
+    const handleRoleInfo = (text, e) => {
+        const position = {
+            top: e.target.getBoundingClientRect().top + window.scrollY,
+            left: e.target.getBoundingClientRect().left + window.scrollX,
+        };
+        setRoleInfo({ show: true, text, position });
+    };
+
+    const hideRoleInfo = () => {
+        setRoleInfo({ show: false, text: '', position: { top: 0, left: 0 } });
+    };
+
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -150,8 +161,6 @@ const Management = () => {
         }
     };
 
-
-
     const getPermissions = async () => {
         try {
             const response = await axios.get('http://localhost:5000/permissions');
@@ -187,9 +196,6 @@ const Management = () => {
             console.log(error);
         }
     };
-
-    
-
 
     const handlePermissionClick = (permissionId) => {
         setPermissions((prevPermissions) => {
@@ -251,9 +257,13 @@ const Management = () => {
                     <SectionTitle>Roles</SectionTitle>
                     {roles.length > 0 ? (
                         roles.map((role) => (
-                            <Role key={role.roleId}>
+                            <Role key={role.roleId} onMouseEnter={(e) => handleRoleInfo(role.description, e)} onMouseLeave={hideRoleInfo}>
                                 <p>{role.name}</p>
-                                <p>{role.description}</p>
+                                {roleInfo.show && (
+                                    <InfoTooltip style={{ top: roleInfo.position.top + 30, left: roleInfo.position.left }}>
+                                        {roleInfo.text}
+                                    </InfoTooltip>
+                                )}
                             </Role>
                         ))
                     ) : (
@@ -262,11 +272,8 @@ const Management = () => {
                 </Section>
             </Section>
             <CreateTeam users={users} organizationId={organizationId} />
-
-
             <InviteUser />
             <AdminUsers />
-
         </Container>
     );
 };
