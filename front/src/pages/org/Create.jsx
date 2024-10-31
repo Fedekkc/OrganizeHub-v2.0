@@ -7,13 +7,14 @@ import 'react-phone-number-input/style.css'
 import { useAuth } from '../../context/Context';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/Input';
+import Button from '../../components/Button';
+
 
 const FormContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
@@ -36,18 +37,7 @@ const Label = styled.label`
 
 
 
-const Button = styled.button`
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
 
-    &:hover {
-        background-color: #0056b3;
-    }
-`;
 
 const CreateOrganization = () => {
     const navigate = useNavigate();
@@ -108,59 +98,59 @@ const CreateOrganization = () => {
             <FormTitle>Create Organization</FormTitle>
             <form onSubmit={handleSubmit}>
                 <FormField>
-                    <Label htmlFor="name">Organization Name</Label>
                     <Input
                         type="text"
                         id="name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        placeholder='Organization Name'
                         required
                     />
                 </FormField>
                 <FormField>
-                    <Label htmlFor="description">Description</Label>
                     <Input
                         type="text"
                         id="description"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
+                        placeholder='Description'
                         required
                     />
                 </FormField>
 
                 <FormField>
-                    <Label htmlFor="email">Email</Label>
                     <Input
                         type="email"
                         id="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
+                        placeholder='Email'
                         required
                     />
                 </FormField>
 
                 <FormField>
-                    <Label htmlFor="phone">Phone</Label>
                     <PhoneInput
                         defaultCountry={'AR'}
                         value={formData.phone}
                         onChange={phone => setFormData({ ...formData, phone })}
+                        placeholder='Phone'
                         required
 
                     />
                 </FormField>
 
                 <FormField>
-                    <Label htmlFor="address">Address</Label>
                     <Input
                         type="text"
                         id="address"
                         name="address"
                         value={formData.address}
                         onChange={handleChange}
+                        placeholder='Address'
                         required
                     />
                 </FormField>
