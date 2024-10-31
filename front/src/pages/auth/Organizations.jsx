@@ -93,7 +93,7 @@ const AssignOrg = () => {
     const [orgId, setOrgId] = useState('');
     const [invitation, setInvitation] = useState();
     const { userEmail } = useAuth();
-
+    
     useEffect(() => {
         console.log(userEmail);
         getInvitations();
@@ -130,6 +130,7 @@ const AssignOrg = () => {
         axios.post(`http://localhost:5000/invitations/accept/${invitation.invitationId}`)
             .then((res) => {
                 console.log(res.data);
+                localStorage.setItem('organization', invitation.organization.organizationId);
                 navigate('/home');
             })
             .catch((err) => {
@@ -169,7 +170,7 @@ const AssignOrg = () => {
                     <h2>Invitation</h2>
                     <Invitation>
                         <p>You have been invited to join the organization {invitation.organization.name}</p>
-                        <AcceptButton onClick={(e) => handleAccept}>
+                        <AcceptButton onClick={handleAccept}>
                             <FaCheck />
                         </AcceptButton>
                         <RejectButton onClick={(e) => handleReject }>   

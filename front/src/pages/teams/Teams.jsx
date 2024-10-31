@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { CiCirclePlus } from 'react-icons/ci';
 
 const TeamsContainer = styled.div`
     display: flex;
@@ -49,6 +50,13 @@ const UserListItem = styled.li`
     margin-bottom: 5px;
     color: #555;
 `;
+
+const Circle = styled(CiCirclePlus)`
+    color: #333;
+    font-size: 2em;
+    cursor: pointer;
+`;
+
 
 const Teams = () => {
     const [teams, setTeams] = useState([]);
@@ -102,7 +110,13 @@ const Teams = () => {
                     </TeamCard>
                 ))
             ) : (
-                <p>No se encontraron equipos para la organización.</p>
+                
+                <TeamCard>
+                    <Circle />
+                </TeamCard>   
+                    
+
+
             )}
         </TeamsContainer>
     );

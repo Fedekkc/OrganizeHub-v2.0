@@ -40,14 +40,11 @@ const CreateTeam = ({ users, organizationId }) => {
     });
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isUserListVisible, setIsUserListVisible] = useState(false);
 
-    const addSelectedUser = (userId) => {   
-        if (userId !== "" && userId !== "select-user") {
-            if (selectedUsers.includes(parseInt(userId))) {
-                setSelectedUsers(selectedUsers.filter((id) => id !== parseInt(userId)));
-            } else {
-                setSelectedUsers([...selectedUsers, parseInt(userId)]);
-            }
+    const handleAddUser = (userId) => {
+        if (!selectedUsers.includes(userId)) {
+            setSelectedUsers([...selectedUsers, userId]);
         }
     };
 
@@ -59,35 +56,26 @@ const CreateTeam = ({ users, organizationId }) => {
     };
 
     const handleCreateTeam = () => {
-        setFormData({
-            ...formData,
-            users: selectedUsers,
-        });
-        console.log(selectedUsers);
         const updatedFormData = {
             ...formData,
             users: selectedUsers,
         };
-        
 
         axios.post("http://localhost:5000/teams", updatedFormData)
             .then((response) => {
-            console.log(response.data);
-            setIsModalOpen(false);  // Close the modal on success
+                console.log(response.data);
+                setIsModalOpen(false);  // Close the modal on success
             })
             .catch((error) => {
-            console.error(error);
+                console.error(error);
             });
 
         setSelectedUsers([]);
-
-        
         setFormData({
             name: "",
             users: [],
             organization: parseInt(organizationId, 10),
         });
-
     };
 
     return (
@@ -98,20 +86,26 @@ const CreateTeam = ({ users, organizationId }) => {
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <Title>Add Team</Title>
                 <Input type="text" name="name" placeholder="Team Name" onChange={handleInputChange} />
-                <select onChange={(e) => {
-                    addSelectedUser(e.target.value);
-                    e.target.value = "select-user";  // Resetear el valor del select
-                }}>
-                    <option value="select-user">Select User</option>
-                    {users.map((user) => (
-                        <option key={user.userId} value={user.userId}>
-                            {user.email}
-                        </option>
-                    ))}
-                </select>
+
+                <Button onClick={() => setIsUserListVisible(!isUserListVisible)}>
+                    {isUserListVisible ? "Hide Users" : "Add Users"}
+                </Button>
+
+                {isUserListVisible && (
+                    <ul>
+                        {users.map((user) => (
+                            <li key={user.userId}>
+                                <span>{user.email}</span>
+                                <Button onClick={() => handleAddUser(user.userId)}>Add</Button>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                <h3>Selected Users:</h3>
                 <ul>
                     {selectedUsers.map((userId) => (
-                        <li key={userId}>{users.find( (user) => user.userId == userId)?.email}</li>
+                        <li key={userId}>{users.find(user => user.userId === userId)?.email}</li>
                     ))}
                 </ul>
 

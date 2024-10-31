@@ -19,6 +19,18 @@ export class InvitationController {
         }
     }
 
+    @Post('accept/:id')
+    async accept(@Param('id') id: number): Promise<Invitation> {
+        try {
+            return await this.invitationService.accept(id);
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Failed to accept invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Get()
     async findAll(): Promise<Invitation[]> {
         try {

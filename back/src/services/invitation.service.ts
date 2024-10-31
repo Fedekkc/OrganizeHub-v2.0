@@ -7,6 +7,7 @@ import { User } from '../entities/user.entity';
 import { Organization } from '../entities/organization.entity';
 import { UserService } from './user.service';
 import { OrganizationService } from './organization.service';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class InvitationService {
@@ -16,6 +17,8 @@ export class InvitationService {
         private readonly userService: UserService,
         private readonly organizationService: OrganizationService,
     ) {}
+
+    private readonly logger = new Logger(InvitationService.name);
 
     async create(createInvitationDto: InvitationDto): Promise<Invitation> {
         try {
@@ -49,6 +52,33 @@ export class InvitationService {
         }
     }
 
+    async accept(id: number): Promise<Invitation> {
+        try {
+            const invitation = await this.findOne(id);
+            const user = await this.userService.getUserByEmail(invitation.email);
+            this.logger.log('User: ', user);
+            if (!user) {
+                throw new NotFoundException('User not found');
+            }
+
+            const organization = await this.organizationService.getOrganizationById(invitation.organization.organizationId);
+            if (!organization) {
+                throw new NotFoundException('Organization not found');
+            }
+
+            const userDTO = {
+                ...user,
+                organization: organization.organizationId,
+            };
+            await this.userService.updateUser(user.userId, userDTO);
+            await this.invitationRepository.delete(id);
+            return invitation;
+        } catch (error) {
+            this.logger.error('Failed to accept invitation: ', error.message);
+            throw new HttpException('Failed to accept invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     async findAll(): Promise<Invitation[]> {
         try {
@@ -62,7 +92,7 @@ export class InvitationService {
         try {
             const invitation = await this.invitationRepository.findOne({
                 where: { invitationId: id },
-                relations: ['users', 'organization'],
+                relations: ['organization'],
             });
             if (!invitation) {
                 throw new NotFoundException(`Invitation with ID ${id} not found`);
