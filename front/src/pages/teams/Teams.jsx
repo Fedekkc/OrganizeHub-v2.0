@@ -57,7 +57,9 @@ const TeamUsersList = styled.ul`
 
 const TeamCard = styled.div`
     background-color: #f9f9f9;
-    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     border-radius: 8px;
     padding: 20px;
     margin: 10px;
