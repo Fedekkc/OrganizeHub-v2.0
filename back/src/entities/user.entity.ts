@@ -34,6 +34,9 @@ export class User {
     @Column({ default: true })
     isActive: boolean;
 
+    @Column()
+    avatar: string;
+
     @OneToMany(() => Invitation, invitation => invitation.email)
     invitations: Invitation[];
 

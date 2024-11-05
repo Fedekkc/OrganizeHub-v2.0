@@ -1,10 +1,14 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, SetMetadata, UseGuards, Request } from "@nestjs/common";
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, SetMetadata, UseGuards, Request, HttpCode, UseInterceptors } from "@nestjs/common";
 import { UserDTO } from "../dtos/user.dto";
 import { UserService } from "../services/user.service";
 import { User } from "../entities/user.entity";
 import { EntityNotFoundError } from "typeorm";
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Logger } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { extname } from "path";
+import { UploadedFile } from "@nestjs/common";
 
 @Controller('users')
 export class UserController {
@@ -46,6 +50,7 @@ export class UserController {
     async getUserById(@Param('userId') userId: number): Promise<User> {
         try {
             const user = await this.userService.getUserById(userId);
+
             if (!user) {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
             }
@@ -68,7 +73,30 @@ export class UserController {
     }
 
     @Post()
-    async createUser(@Body() userDTO: UserDTO): Promise<{ token: string }> {
+    @HttpCode(HttpStatus.CREATED)
+    @UseInterceptors(FileInterceptor('avatar', {
+        storage: diskStorage({
+            destination: './images',
+            filename: (req, file, callback) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = extname(file.originalname);
+                callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+            },
+        }),
+    }))
+    async createUser(@Body() userDTO: UserDTO, @UploadedFile() file: Express.Multer.File): Promise<{ token: String}> {
+        try {
+            const newUser = { ...userDTO, avatar: file.filename };
+            const user = await this.userService.createUser(newUser);
+            const jwtPayload = await this.userService.createJwtPayload(user);
+            return {token: jwtPayload.token }
+
+        } catch (error) {
+            throw new HttpException('[-] Failed to create user ' + error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /*
         try {
             const newUser = await this.userService.createUser(userDTO);
             const jwtPayload = await this.userService.createJwtPayload(newUser);
@@ -80,6 +108,8 @@ export class UserController {
             throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    */
+    
 
     @Put(':userId')
     @UseGuards(JwtAuthGuard) // Protege esta ruta

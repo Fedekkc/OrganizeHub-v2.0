@@ -31,18 +31,24 @@ const ItemText = styled(Link)`
     color: black;
 `;
 
+const UserAvatar = styled.img`
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    object-fit: cover;
+`;
+
+
 const Navbar = () => {
 
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, avatar } = useAuth();
     const { isAuthenticated, isAdmin } = useAuth();
     const handleLogout = () => {
         logout();
         navigate('/login');
 
     }
-
-
     return (
         <>
 
@@ -79,6 +85,13 @@ const Navbar = () => {
                                 </Item>
                             : null
                             }
+
+
+                            <Item>
+                                <UserAvatar src={avatar} alt='user avatar' />
+                            </Item>
+
+
                         </>
 
                         : null

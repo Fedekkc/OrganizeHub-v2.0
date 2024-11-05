@@ -6,7 +6,7 @@ import axios from 'axios';
 import { CiCirclePlus } from 'react-icons/ci';
 import { CiMail } from "react-icons/ci";
 import { CgSlack } from "react-icons/cg";
-
+import  Button  from '../../components/Button';
 import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
@@ -287,18 +287,7 @@ const InputContainer = styled.div`
 
 `;
 
-const Button = styled.button`
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
 
-    &:hover {
-        background-color: #0056b3;
-    }
-`;
 
 const AddUser = styled.div`
     display: flex;

@@ -11,6 +11,7 @@ export const AppProvider = ({ children }) => {
     const [userId, setUserId] = useState(null);
     const [userEmail, setUserEmail] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [avatar, setAvatar] = useState(null);
     const checkUserStatus = () => {
         const token = localStorage.getItem('authToken');
         console.log(token);
@@ -23,6 +24,7 @@ export const AppProvider = ({ children }) => {
                 if (response.status === 201) {
                     setIsAuthenticated(true);
                     setUserId(response.data.user.userId);
+                    setAvatar(response.data.user.avatar);
                     console.log(response.data.user);
                     
                     if(response.data.user.organization !== null) {
@@ -105,6 +107,7 @@ export const AppProvider = ({ children }) => {
             addEvent,
             updateEvent,
             isAdmin,
+            avatar,
             setAuthToken,
             userId,
             userEmail,

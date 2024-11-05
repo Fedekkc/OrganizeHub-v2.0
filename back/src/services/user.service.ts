@@ -81,6 +81,7 @@ export class UserService {
     async getUserById(userId: number): Promise<User> {
         try {
             const user = await this.userRepository.findOne({ where: { userId }, relations: ['organization'] });
+            user.avatar = `http://localhost:5000/${user.avatar}`;
             if (!user) {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
             }
@@ -101,10 +102,11 @@ export class UserService {
             user.lastName = userDTO.lastName;
             user.username = userDTO.username;
             user.email = userDTO.email;
+            user.avatar = userDTO.avatar;
             user.password = await hash(userDTO.password, 10);
             return await this.userRepository.save(user); 
         } catch (error) {
-            throw new HttpException('Failed to create user', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException('[-] Failed to create user ' + error , HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

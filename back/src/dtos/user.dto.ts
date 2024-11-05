@@ -45,6 +45,10 @@ export class UserDTO {
     @IsString()
     role?: string;
 
+    @ApiProperty({ description: 'Foto de perfil del usuario' })
+    @IsOptional()
+    avatar?: string;
+
     @ApiProperty({ description: 'Organización a la que pertenece el usuario' })
     @IsOptional()
     @IsNumber()

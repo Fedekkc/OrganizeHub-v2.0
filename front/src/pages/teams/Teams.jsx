@@ -78,6 +78,7 @@ const Teams = () => {
         if (organizationId) {
             axios.get(`http://localhost:5000/teams/organization/${organizationId}`)
                 .then(response => {
+                    console.log(response.data)
                     setTeams(response.data);
                     setLoading(false);
                 })
@@ -94,7 +95,7 @@ const Teams = () => {
 
     return (
         <TeamsContainer>
-            {teams.length > 0 ? (
+            {teams ? (
                 teams.map(team => (
                     <TeamCard key={team.teamId}>
                         <TeamName>{team.name}</TeamName>
