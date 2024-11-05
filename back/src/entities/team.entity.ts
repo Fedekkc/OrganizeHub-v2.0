@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany, ManyToOn
 import { Organization } from './organization.entity';
 import { User } from './user.entity';
 import { Task } from './task.entity';
+import { IsOptional } from 'class-validator';
 
 @Entity()
 export class Team {
@@ -21,7 +22,8 @@ export class Team {
     tasks?: Task[];
 
     @ManyToMany(() => User, (user) => user.teams)
+    @IsOptional()
     @JoinTable()
-    users: User[];
+    users?: User[];
 
 }

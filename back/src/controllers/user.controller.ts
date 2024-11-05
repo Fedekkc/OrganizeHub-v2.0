@@ -32,6 +32,22 @@ export class UserController {
         return { status: 200, user: req.user };
     }
 
+    //logout
+    @UseGuards(JwtAuthGuard)
+    @Post('logout')
+    async logout(@Request() req: any) {
+        // decode the token
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = await this.userService.decodeToken(token);
+        this.logger.log(req.user.userId);
+        this.userService.logout(req.user.userId);
+        if (!decoded) {
+            throw new HttpException('Token is invalid', HttpStatus.UNAUTHORIZED);
+        }
+        return { status: 200, message: 'Logout successful' };
+    }
+
+
     @Get()
     @UseGuards(JwtAuthGuard) // Protege esta ruta
     async getAllUsers(): Promise<User[]> {

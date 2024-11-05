@@ -17,6 +17,7 @@ export class TeamDto {
 
     @ApiProperty({ type: Number })
     @IsNumber()
+    @Type(() => Number)
     organization: number;
 
     @ApiProperty({ required: false, type: [Number] })

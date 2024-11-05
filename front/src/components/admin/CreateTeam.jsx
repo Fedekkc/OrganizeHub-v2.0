@@ -60,7 +60,7 @@ const CreateTeam = ({ users, organizationId }) => {
             ...formData,
             users: selectedUsers,
         };
-
+        console.log(updatedFormData);
         axios.post("http://localhost:5000/teams", updatedFormData)
             .then((response) => {
                 console.log(response.data);

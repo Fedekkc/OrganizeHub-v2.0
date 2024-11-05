@@ -65,7 +65,7 @@ const CreateOrganization = () => {
         });
     };
     const authToken = useAuth();
-    const { setOrganization } = useAuth();
+    const { setOrganization, setOrganizationId } = useAuth();
     const handleSubmit = (e) => {
         e.preventDefault();
         
@@ -83,6 +83,7 @@ const CreateOrganization = () => {
                 if (res.status === 201 || res.status === 200) {
                     setIsAdmin(true);
                     setOrganization(true);
+                    setOrganizationId(res.data.organizationId);
 
                     navigate('/home');  
                     

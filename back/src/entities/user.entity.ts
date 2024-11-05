@@ -57,7 +57,6 @@ export class User {
     projects: Project[];
 
     @ManyToMany(() => Team, (team) => team.users)
-    @JoinTable()
     teams: Team[];
 
 

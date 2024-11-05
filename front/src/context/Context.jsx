@@ -12,6 +12,7 @@ export const AppProvider = ({ children }) => {
     const [userEmail, setUserEmail] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [avatar, setAvatar] = useState(null);
+    const [organizationId, setOrganizationId] = useState(null);
     const checkUserStatus = () => {
         const token = localStorage.getItem('authToken');
         console.log(token);
@@ -31,6 +32,7 @@ export const AppProvider = ({ children }) => {
                         setOrganization(true);
                         console.log(response.data.user.organization);
                         localStorage.setItem('organization', response.data.user.organization.organizationId);
+                        setOrganizationId(response.data.user.organization.organizationId);
                         if(response.data.user.role == 'admin'){
                             setIsAdmin(true);
                         }else{
@@ -92,6 +94,16 @@ export const AppProvider = ({ children }) => {
         setAuthToken(null);
         setIsAuthenticated(false);
         setOrganization(null);
+        axios.post('http://localhost:5000/users/logout', {}, {
+            headers: { Authorization: `Bearer ${authToken}` },
+        })
+        .then((response) => {
+            console.log(response);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
         localStorage.removeItem('organization');
     };
 
@@ -104,6 +116,8 @@ export const AppProvider = ({ children }) => {
         <AppContext.Provider value={{
             authToken, 
             organization,
+            organizationId,
+            setOrganizationId,
             addEvent,
             updateEvent,
             isAdmin,

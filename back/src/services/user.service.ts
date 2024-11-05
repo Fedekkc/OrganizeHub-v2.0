@@ -28,6 +28,20 @@ export class UserService {
         return decodedToken;
     }
 
+    async setUserActive(userId: number, active: boolean): Promise<User> {
+        try {
+            const user = await this.userRepository.findOne({ where: { userId } });
+            if (!user) {
+                throw new NotFoundException('User not found');
+            }
+            user.isActive = active;
+            return await this.userRepository.save(user);
+        } catch (error) {
+            throw new HttpException('Failed to set user active', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     async getUsersByOrganization(organization: Organization): Promise<User[]> {
         try {
             const query = this.userRepository.createQueryBuilder('user');
@@ -129,6 +143,7 @@ export class UserService {
                 throw new HttpException('User not found', HttpStatus.NOT_FOUND);
             }
             if (await compare(password, user.password)) {
+                this.setUserActive(user.userId, true);
                 return this.createJwtPayload(user);
             } else {
                 throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
@@ -138,6 +153,20 @@ export class UserService {
         }
 
     }
+
+    async logout(userId: number): Promise<boolean> {
+        try {
+            const user = await this.userRepository.findOne({ where: { userId } });
+            if (!user) {
+                throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+            }
+            this.setUserActive(userId, false);
+            return true;
+        } catch (error) {
+            throw new HttpException('Failed to logout', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     async findByEmail(email: string): Promise<User> {
         try {
             const user = await this.userRepository.findOne({ where: { email: email } });

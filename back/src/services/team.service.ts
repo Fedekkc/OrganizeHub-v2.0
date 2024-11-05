@@ -30,11 +30,18 @@ export class TeamService {
 
             const team = this.teamRepository.create({
                 ...teamDto,
-                users,
+                users: [],
                 organization,
             });
-            this.logger.log("trying to create")
+
+            this.logger.log("trying to create");
+            this.logger.log(team);
+
             const createdTeam = await this.teamRepository.save(team);
+
+            createdTeam.users = users;
+            await this.teamRepository.save(createdTeam);
+
             this.logger.log(`Team with ID ${createdTeam.teamId} created`);
             return createdTeam;
         } catch (error) {
