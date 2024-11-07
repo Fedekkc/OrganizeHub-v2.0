@@ -4,6 +4,9 @@ import axios from 'axios';
 import { CiCirclePlus } from 'react-icons/ci';
 import UserList from '../../components/UserList';
 import StatusIndicator from '../../components/StatusIndicator';
+import { useAuth } from '../../context/Context';
+import CreateTeamModal from '../../components/CreateTeamModal';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
     display: flex;
@@ -18,8 +21,9 @@ const Container = styled.div`
 
 const TeamsContainer = styled.div`
     display: grid;
-    flex-direction: column;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
     align-items: center;
+    justify-content: center;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -27,6 +31,10 @@ const TeamsContainer = styled.div`
     width: 60%;
     min-height: 50vh;
     max-height: 80vh;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
 `;
 
 const TeamTitleContainer = styled.div`
@@ -50,6 +58,7 @@ const TeamUsersList = styled.ul`
     height: 80%;
     margin: 0;
     
+    
 
 `;
 
@@ -63,10 +72,11 @@ const TeamCard = styled.div`
     border-radius: 8px;
     padding: 20px;
     margin: 10px;
-    width: 10rem;
+    width: auto;
     height: 10rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     scroll-behavior: smooth;
+    cursor: pointer;
     
 
 `;
@@ -113,13 +123,41 @@ const Circle = styled(CiCirclePlus)`
     color: #333;
     font-size: 2em;
     cursor: pointer;
+    transition: transform 0.3s;
+    &:hover {
+        transform: scale(1.1);
+
+    }
+
 `;
+
+const CreateTeamCard = styled(TeamCard)`
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px;
+    
+    height: 10rem;
+    font-size: 3rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+
+`;
+
+
+    
 
 
 const Teams = () => {
     const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
     const [organizationId, setOrganizationId] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { isAdmin } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const storedOrganizationId = localStorage.getItem('organization');
@@ -147,6 +185,13 @@ const Teams = () => {
         }
     }, [organizationId]);
 
+    const handleOpenTeam = (teamId) => {
+        navigate(`/teams/${teamId}`);
+
+    };
+
+
+
     if (loading) {
         return <p>Cargando equipos...</p>;
     }
@@ -156,7 +201,7 @@ const Teams = () => {
         <TeamsContainer>
             {teams ? 
                 teams.map(team => (
-                    <TeamCard key={team.teamId}>
+                    <TeamCard key={team.teamId} onClick={() => handleOpenTeam(team.teamId)}>
                         <TeamTitleContainer>
                         <TeamName>{team.name}</TeamName>
                         </TeamTitleContainer>
@@ -171,10 +216,12 @@ const Teams = () => {
                 )): (
                     <p>No hay equipos en esta organización.</p>
                 )}
-            
-                <TeamCard>
-                    <Circle />
-                </TeamCard>
+                {isAdmin && (
+                    <CreateTeamCard>
+                        <Circle onClick={() => setIsModalOpen(true)}/>
+                        <CreateTeamModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} teams={teams} setTeams={setTeams} />
+                    </CreateTeamCard>
+                )}
                 </TeamsContainer>
             <UserListContainer>
                 <UserList />

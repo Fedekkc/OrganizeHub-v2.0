@@ -55,7 +55,7 @@ export class TeamController {
             if (error instanceof EntityNotFoundError) {
                 throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
             }
-            throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException( error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

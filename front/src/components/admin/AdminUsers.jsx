@@ -130,12 +130,10 @@ const AdminUsers = () => {
             .then(response => {
                 console.log(`Event "${eventName}" assigned to user ${selectedUser}`);
                 setIsEventModalOpen(false);
-                // Reinicia los estados del modal
                 setEventName('');
                 setDescription('');
                 setType('task');
                 setEndingDate(null);
-                // Actualiza la lista si es necesario
             })
             .catch(error => {
                 console.error('Error assigning event:', error);
@@ -151,7 +149,6 @@ const AdminUsers = () => {
                 console.log(`User ${selectedUser} assigned to team ID "${teamId}"`);
                 setIsTeamModalOpen(false);
                 setTeamId('');
-                // Actualiza la lista si es necesario
             })
             .catch(error => {
                 console.error('Error assigning team:', error);

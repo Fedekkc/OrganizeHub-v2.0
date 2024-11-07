@@ -8,6 +8,7 @@ import { CiMail } from "react-icons/ci";
 import { CgSlack } from "react-icons/cg";
 import  Button  from '../../components/Button';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
     padding: 20px;
@@ -309,10 +310,18 @@ const AddUser = styled.div`
     }
 `;
 
+const DeleteButton = styled(Button)`
+
+    &:hover {
+        background-color: red;
+    }
+`;
+
 
 
 const Project = () => {
     const [projectData, setProjectData] = useState(null);
+    const navigate = useNavigate();
 
     const { projectId } = useParams();
 
@@ -363,6 +372,21 @@ const Project = () => {
         };
         fetchData();
     }, []);
+
+    const deleteProject = async () => {
+        try {
+            await axios.delete(`http://localhost:5000/projects/${projectId}`).then((res) => {
+                console.log(res);
+                navigate('/documentation');
+            });
+
+
+
+        } catch (error) {
+            console.error('Error ', error);
+        }
+    };
+
 
     return (
         <Container>
@@ -452,6 +476,7 @@ const Project = () => {
                     </List>
                 </Box>
             </ProjectContent>
+            <DeleteButton onClick={deleteProject} >Delete</DeleteButton>
         </Container>
     );
 };

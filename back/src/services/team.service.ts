@@ -57,7 +57,18 @@ export class TeamService {
     }
 
     async getTeamById(id: number): Promise<Team> {
-        return this.teamRepository.findOne({ where: { teamId: id }, relations: ['assignedTo', 'project', 'createdBy'] });
+        try {
+            const team = await this.teamRepository.findOne({ where: { teamId: id }, relations: ['users', 'tasks'] });
+            if (!team) {
+                throw new NotFoundException(`Team with ID ${id} not found`);
+            }
+            return team;
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException(error);
+        }
     }
 
     async getTeamsByOrganization(id: number): Promise<Team[]> {

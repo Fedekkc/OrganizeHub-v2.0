@@ -12,6 +12,9 @@ const UserListContainer = styled.div`
     border: 1px solid #ccc;
     border-radius: 8px;
     gap: 5px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 `;
 
 const UserItem = styled.div`
@@ -48,7 +51,7 @@ const UserList = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                console.log("ORGANIZATION", organizationId);
+                
                 const response = await axios.get(`http://localhost:5000/organizations/${organizationId}/users`);
                 setUsers(response.data);
                 console.log(response.data);
