@@ -94,6 +94,7 @@ export const AppProvider = ({ children }) => {
         setAuthToken(null);
         setIsAuthenticated(false);
         setOrganization(null);
+        setAvatar(null);
         axios.post('http://localhost:5000/users/logout', {}, {
             headers: { Authorization: `Bearer ${authToken}` },
         })

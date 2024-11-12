@@ -15,7 +15,7 @@ const Container = styled.div`
     align-items: center;
     justify-content: center;
     padding: 20px;
-    width: 100vw;
+    width: 90vw;
 `;
 
 const Title = styled.h1`

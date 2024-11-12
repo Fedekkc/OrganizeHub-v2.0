@@ -7,12 +7,14 @@ import StatusIndicator from '../../components/StatusIndicator';
 import { useAuth } from '../../context/Context';
 import CreateTeamModal from '../../components/CreateTeamModal';
 import { useNavigate } from 'react-router-dom';
+import InfoTooltip from '../../components/InfoTooltip';
+
 
 const Container = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
+    align-items: center;    
     padding: 20px;
     gap: 2rem;
     width: 100vw;
@@ -39,10 +41,11 @@ const TeamsContainer = styled.div`
 
 const TeamTitleContainer = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: top;
     //hacer que el texto se vaya hacia arriba
     margin-top: -1rem;
+    width: 80%;
     
 `;
 
@@ -77,16 +80,18 @@ const TeamCard = styled.div`
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     scroll-behavior: smooth;
     cursor: pointer;
+        overflow: hidden;
+
     
 
 `;
 
 const TeamName = styled.h3`
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #333;
     text-align: center;
-
+    overflow: hidden;
 `;
 
 
@@ -148,7 +153,7 @@ const CreateTeamCard = styled(TeamCard)`
 `;
 
 
-    
+
 
 
 const Teams = () => {
@@ -156,6 +161,8 @@ const Teams = () => {
     const [loading, setLoading] = useState(true);
     const [organizationId, setOrganizationId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userInfo, setUserInfo] = useState({ show: false, text: '', position: {} });
+
     const { isAdmin } = useAuth();
     const navigate = useNavigate();
 
@@ -190,6 +197,17 @@ const Teams = () => {
 
     };
 
+    const handleUserInfo = (text, e) => {
+        const position = {
+            top: e.target.getBoundingClientRect().top + window.scrollY,
+            left: e.target.getBoundingClientRect().left + window.scrollX,
+        };
+        setUserInfo({ show: true, text, position });
+    };
+
+    const hideUserInfo = () => {
+        setUserInfo({ show: false, text: '', position: {} });
+    };
 
 
     if (loading) {
@@ -198,35 +216,40 @@ const Teams = () => {
 
     return (
         <Container>
-        <TeamsContainer>
-            {teams ? 
-                teams.map(team => (
-                    <TeamCard key={team.teamId} onClick={() => handleOpenTeam(team.teamId)}>
-                        <TeamTitleContainer>
-                        <TeamName>{team.name}</TeamName>
-                        </TeamTitleContainer>
-                        <TeamUsersList>
-                            {team.users.map(user => (
-                                <UserListItem key={user.userId}> 
-                                <StatusIndicator online={user.isActive} />
-                                 {user.firstName} {user.lastName}</UserListItem>
-                            ))}
-                        </TeamUsersList>
-                    </TeamCard>
-                )): (
-                    <p>No hay equipos en esta organización.</p>
-                )}
+            <TeamsContainer>
+                {teams ?
+                    teams.map(team => (
+                        <TeamCard key={team.teamId} onClick={() => handleOpenTeam(team.teamId)}>
+                            <TeamTitleContainer>
+                                <TeamName>{team.name}</TeamName>
+                            </TeamTitleContainer>
+                            <TeamUsersList>
+                                {team.users.map(user => (
+                                    <UserListItem key={user.userId} onMouseEnter={(e) => handleUserInfo(user.email, e)} onMouseLeave={hideUserInfo}>
+                                        <StatusIndicator online={user.isActive} />
+                                        {user.firstName} {user.lastName}</UserListItem>
+                                ))}
+                            </TeamUsersList>
+                            {userInfo.show && (
+                                <InfoTooltip style={{ top: userInfo.position.top + 30, left: userInfo.position.left }}  >
+                                    {userInfo.text}
+                                </InfoTooltip>
+                            )}
+                        </TeamCard>
+                    )) : (
+                        <p>No hay equipos en esta organización.</p>
+                    )}
                 {isAdmin && (
                     <CreateTeamCard>
-                        <Circle onClick={() => setIsModalOpen(true)}/>
+                        <Circle onClick={() => setIsModalOpen(true)} />
                         <CreateTeamModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} teams={teams} setTeams={setTeams} />
                     </CreateTeamCard>
                 )}
-                </TeamsContainer>
+            </TeamsContainer>
             <UserListContainer>
                 <UserList />
             </UserListContainer>
-        
+
         </Container>
     );
 };

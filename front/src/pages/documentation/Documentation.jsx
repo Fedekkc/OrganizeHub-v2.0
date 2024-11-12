@@ -14,6 +14,7 @@ const Container = styled.div`
     align-items: center;
     padding: 1rem;
     gap: 1rem;
+    width: 100vw;
 `;
 
 const UsersContainer = styled.div`

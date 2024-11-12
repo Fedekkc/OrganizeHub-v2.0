@@ -46,7 +46,13 @@ export class UserService {
         try {
             const query = this.userRepository.createQueryBuilder('user');
             query.where('user.organization = :organization', { organization: organization.organizationId });
-            return await query.getMany();
+            var users = await query.getMany();
+            for (var i = 0; i < users.length; i++) {
+                users[i].avatar = `http://localhost:5000/${users[i].avatar}`;
+            }
+            return users;
+
+
         } catch (error) {
             if (error instanceof HttpException) {
                 throw error;
