@@ -19,6 +19,7 @@ const Container = styled.div`
     gap: 1rem;
     justify-content: center;
     align-items: center;
+    width: 100vw;
 `;
 
 const InfoContainer = styled.div`

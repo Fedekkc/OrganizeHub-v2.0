@@ -26,8 +26,6 @@ const CirclePlus = styled(CiCirclePlus)`
     }
 `;
 
-
-
 const UserBrowserContainer = styled.div`
     display: flex;
     flex-direction: row;
@@ -41,35 +39,52 @@ const UserBrowserContainer = styled.div`
 `;
 
 const UserBrowser = styled(Input)`
-display: ${(props) => (props.isUserBrowserOpen ? 'flex' : 'none')};
-width: 80%;
-transition: ease 0.2s;
+    display: ${(props) => (props.isUserBrowserOpen ? 'flex' : 'none')};
+    width: 80%;
+    transition: ease 0.2s;
 `;
 
+const SuggestionsList = styled.ul`
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    width: 80%;
+    z-index: 1000;
+`;
 
+const SuggestionItem = styled.li`
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    width: 20%;
 
+    &:last-child {
+        border-bottom: none;
+    }
 
-
-
-
-
-
-
+    &:hover {
+        background-color: #f9f9f9;
+        cursor: pointer;
+    }
+`;
 
 const CreateTeamModal = ({ isModalOpen, setIsModalOpen, teams, setTeams }) => {
-
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [isUserBrowserOpen, setIsUserBrowserOpen] = useState(false);
     const [teamName, setTeamName] = useState('');
     const [users, setUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const { organizationId } = useAuth();
-
 
     const handleUserBrowser = () => {
         setIsUserBrowserOpen(!isUserBrowserOpen);
-
-
-    }
+    };
 
     const getOrganizationUsers = async () => {
         try {
@@ -79,7 +94,7 @@ const CreateTeamModal = ({ isModalOpen, setIsModalOpen, teams, setTeams }) => {
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     useEffect(() => {
         if (isModalOpen) {
@@ -89,13 +104,17 @@ const CreateTeamModal = ({ isModalOpen, setIsModalOpen, teams, setTeams }) => {
         }
     }, [isModalOpen]);
 
-
     const handleInputChange = (e) => {
         setTeamName(e.target.value);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
     const handleAddUser = (userId) => {
         setSelectedUsers([...selectedUsers, userId]);
+        setSearchTerm('');
     };
 
     const handleCreateTeam = (teamName, selectedUsers) => {
@@ -116,6 +135,10 @@ const CreateTeamModal = ({ isModalOpen, setIsModalOpen, teams, setTeams }) => {
             });
     };
 
+    const filteredUsers = users.filter(user =>
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
             <Title>Add Team</Title>
@@ -124,15 +147,32 @@ const CreateTeamModal = ({ isModalOpen, setIsModalOpen, teams, setTeams }) => {
                 <UserBrowser
                     type="text"
                     name="users"
-                    placeholder="Add Users"
-                    value={selectedUsers.join(', ')}
+                    placeholder="Search Users"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
                     isUserBrowserOpen={isUserBrowserOpen}
                 />
                 <CirclePlus
                     onClick={() => handleUserBrowser()}
-                    isUserBrowserOpen={isUserBrowserOpen}  /* Pasar el estado aquí */
+                    isUserBrowserOpen={isUserBrowserOpen}
                 />
+                {isUserBrowserOpen && searchTerm && (
+                    <SuggestionsList>
+                        {filteredUsers.map(user => (
+                            <SuggestionItem key={user.userId} onClick={() => handleAddUser(user.userId)}>
+                                {user.email}
+                            </SuggestionItem>
+                        ))}
+                    </SuggestionsList>
+                )}
             </UserBrowserContainer>
+
+            <h3>Selected Users:</h3>
+            <ul>
+                {selectedUsers.map(userId => (
+                    <li key={userId}>{users.find(user => user.userId === userId)?.email}</li>
+                ))}
+            </ul>
 
             <Button onClick={() => handleCreateTeam(teamName, selectedUsers)}>Add Team</Button>
         </Modal>
