@@ -60,9 +60,11 @@ const SuggestionsList = styled.ul`
 `;
 
 const SuggestionItem = styled.li`
-    padding: 10px;
+    padding: 2px;
     border-bottom: 1px solid #ddd;
     width: 20%;
+    max-width: 10rem;
+    
 
     &:last-child {
         border-bottom: none;
