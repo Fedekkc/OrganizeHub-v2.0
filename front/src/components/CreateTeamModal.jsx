@@ -76,6 +76,25 @@ const SuggestionItem = styled.li`
     }
 `;
 
+const UserAvatar = styled.img`
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    margin-right: -1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.1);
+        //sombra blanca neon suave
+        box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.5);
+        
+    }
+
+`;
+
+
 const CreateTeamModal = ({ isModalOpen, setIsModalOpen, teams, setTeams }) => {
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [isUserBrowserOpen, setIsUserBrowserOpen] = useState(false);
@@ -135,16 +154,22 @@ const CreateTeamModal = ({ isModalOpen, setIsModalOpen, teams, setTeams }) => {
             .catch((error) => {
                 console.error(error);
             });
+
+        setSelectedUsers([]);
+
     };
 
     const filteredUsers = users.filter(user =>
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !selectedUsers.includes(user.userId)
     );
 
     return (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
             <Title>Add Team</Title>
-            <Input type="text" name="name" placeholder="Team Name" onChange={handleInputChange} value={teamName} />
+            <div>
+                <Input type="text" name="name" placeholder="Team Name" onChange={handleInputChange} value={teamName} />
+            </div>
             <UserBrowserContainer>
                 <UserBrowser
                     type="text"
@@ -168,13 +193,13 @@ const CreateTeamModal = ({ isModalOpen, setIsModalOpen, teams, setTeams }) => {
                     </SuggestionsList>
                 )}
             </UserBrowserContainer>
-
-            <h3>Selected Users:</h3>
-            <ul>
+            <div>
                 {selectedUsers.map(userId => (
-                    <li key={userId}>{users.find(user => user.userId === userId)?.email}</li>
+                    
+                        <UserAvatar src={users.find(user => user.userId === userId)?.avatar} alt="avatar" />
+                    
                 ))}
-            </ul>
+            </div>
 
             <Button onClick={() => handleCreateTeam(teamName, selectedUsers)}>Add Team</Button>
         </Modal>
