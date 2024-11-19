@@ -9,10 +9,11 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 import { UploadedFile } from "@nestjs/common";
+import { CustomMailerService } from "../services/mail.service";
 
 @Controller('users')
 export class UserController {
-    constructor(private userService: UserService) { }
+    constructor(private userService: UserService, private mailerService: CustomMailerService) { }
 
     private readonly logger = new Logger(UserController.name);
 
@@ -24,6 +25,7 @@ export class UserController {
         const token = req.headers.authorization.split(' ')[1];
         const decoded = await this.userService.decodeToken(token);
         this.logger.log(req.user.userId);
+        this.mailerService.sendEmail( req.user.email, '¡Bienvenido!', 'Bienvenido a [Org Name]\n\nGracias por registrarte en nuestra plataforma. Esperamos que disfrutes de nuestros servicios.\n\nSaludos cordiales,\n\n[Org Name]'); 
         if (!decoded) {
             throw new HttpException('Token is invalid', HttpStatus.UNAUTHORIZED);
         }
@@ -105,6 +107,7 @@ export class UserController {
             const newUser = { ...userDTO, avatar: file.filename };
             const user = await this.userService.createUser(newUser);
             const jwtPayload = await this.userService.createJwtPayload(user);
+
             return {token: jwtPayload.token }
 
         } catch (error) {

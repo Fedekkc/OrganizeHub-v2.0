@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from '../guards/jwt.strategy';
 import { OrganizationModule } from './organization.module';
+import { MailerCustomModule } from './mailer.module';
 @Module({
     imports: [PassportModule,
         forwardRef(() => OrganizationModule),
@@ -14,7 +15,9 @@ import { OrganizationModule } from './organization.module';
         JwtModule.register({
         secret: 'secret', 
         signOptions: { expiresIn: '9h' }
-    })],
+    }),
+    MailerCustomModule
+],
     providers: [UserService, JwtStrategy],
     controllers: [UserController],
     exports: [UserService]

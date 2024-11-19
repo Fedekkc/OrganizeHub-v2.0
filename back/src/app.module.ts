@@ -13,25 +13,26 @@ import { ServeStaticModule } from '@nestjs/serve-static/dist/serve-static.module
 import { TeamModule } from './modules/team.module';
 import { MeetingModule } from './modules/meeting.module';
 import { InvitationModule } from './modules/invitation.module';
+import { MailerCustomModule } from './modules/mailer.module'; // Ajusta la ruta según tu estructura de directorios
 
 @Module({
-  imports: [ DatabaseModule,
-      UserModule,
-      TaskModule, 
-      ProjectModule, 
-      OrganizationModule,
-      PermissionModule,
-      RoleModule,
-      TeamModule,
-      MeetingModule,
-      InvitationModule,
+  imports: [
+    DatabaseModule,
+    UserModule,
+    TaskModule,
+    ProjectModule,
+    OrganizationModule,
+    PermissionModule,
+    RoleModule,
+    TeamModule,
+    MeetingModule,
+    InvitationModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'images'),
-    }
-  ),
+    }),
+    MailerCustomModule,
   ],
   controllers: [AppController],
   providers: [AppService],
-
 })
 export class AppModule {}

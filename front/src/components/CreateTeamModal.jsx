@@ -49,12 +49,14 @@ const SuggestionsList = styled.ul`
     padding: 0;
     margin: 0;
     max-height: 150px;
+    max-width: 10rem;
     overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: absolute;
+    top: 55%;
     width: 80%;
     z-index: 1000;
 `;
@@ -65,7 +67,6 @@ const SuggestionItem = styled.li`
     width: 20%;
     max-width: 10rem;
     
-
     &:last-child {
         border-bottom: none;
     }
