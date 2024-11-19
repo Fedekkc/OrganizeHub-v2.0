@@ -8,6 +8,7 @@ import { Organization } from '../entities/organization.entity';
 import { UserService } from './user.service';
 import { OrganizationService } from './organization.service';
 import { Logger } from '@nestjs/common';
+import { CustomMailerService } from './mail.service';
 
 @Injectable()
 export class InvitationService {
@@ -16,6 +17,7 @@ export class InvitationService {
         private readonly invitationRepository: Repository<Invitation>,
         private readonly userService: UserService,
         private readonly organizationService: OrganizationService,
+        private readonly mailerService: CustomMailerService,
     ) {}
 
     private readonly logger = new Logger(InvitationService.name);
@@ -34,13 +36,33 @@ export class InvitationService {
                 throw new NotFoundException('User not found');
             }
 
+            const invitationUrl = "http://localhost:3000/" + await this.createInvitationUrl();
+
             const invitation = this.invitationRepository.create({
                 ...createInvitationDto,
                 organization: organization,
+                url: invitationUrl,
             });
+
+
+
+            // Send invitation email
+            await this.mailerService.sendInvitationEmail(invitation.email,invitationUrl);
+
+
+
             return await this.invitationRepository.save(invitation);
         } catch (error) {
             throw new HttpException('Failed to create invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async createInvitationUrl(): Promise<string> {
+        try {
+            const randomString = Math.random().toString(36).substring(32,64 ) + Math.random().toString(36).substring(32, 64);
+            return randomString;            
+        } catch (error) {
+            throw new HttpException('Failed to create invitation URL: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

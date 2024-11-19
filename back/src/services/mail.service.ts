@@ -13,6 +13,18 @@ export class CustomMailerService {
     });
   }
 
+  async sendInvitationEmail(to: string, url: string) {
+
+    const msg = "You have been invited to join an organization. Click on the following link to accept the invitation: " + url;
+
+
+    await this.mailerService.sendMail({
+      to,
+      subject: '[Invitation] OHub',
+      text: msg,
+    });
+  }
+
   async sendWelcomeEmail(to: string, name: string) {
     await this.mailerService.sendMail({
       to,

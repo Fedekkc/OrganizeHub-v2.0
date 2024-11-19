@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Organization } from './organization.entity';
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
 
 @Entity()
 export class Invitation {
@@ -17,6 +17,11 @@ export class Invitation {
     @Column({ unique: true })
     @IsEmail()
     email: string;
+
+    @Column( { unique: true })
+    @IsString()
+    url: string;
+    
     
     @ManyToOne(() => Organization, organization => organization.invitations)
     organization: Organization;

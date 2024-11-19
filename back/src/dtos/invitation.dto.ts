@@ -17,6 +17,10 @@ export class CreateInvitationDto {
     @IsEmail()
     email: string;
 
+    @ApiProperty({ description: 'URL de la invitación' })
+    @IsString()
+    url: string;
+
     @ApiProperty({ type: Number, description: 'ID de la organización' })
     @Type(() => Number)
     organization: number;

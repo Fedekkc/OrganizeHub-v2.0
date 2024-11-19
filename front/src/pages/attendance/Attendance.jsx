@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/Context';
 import TaskListApp from '../../components/tasks/taskList';
 import { jwtDecode } from 'jwt-decode';
+import Timer from '../../components/Timer';
 
 
 const Container = styled.div`
@@ -205,6 +206,8 @@ const Attendance = () => {
     return (
         <Container>
             
+            <Timer/>
+
              <CalendarContainer>
                 <Title>Calendario + Tareas</Title>
                 <Calendar
