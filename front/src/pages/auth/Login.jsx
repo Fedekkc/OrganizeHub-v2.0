@@ -1,16 +1,14 @@
-import React from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import styled from 'styled-components';
-import { AppContext } from '../../context/Context';
-import { useContext, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../../context/Context';
 
 const LoginContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-
 `;
 
 const LoginForm = styled.form`
@@ -54,12 +52,21 @@ const NotSignedUp = styled.p`
 
 const Login = () => {
     const navigate = useNavigate();
-    const[formData, setFormData] = useState({
+    const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
 
-    const { login, checkUserStatus, setOrganization } = useContext(AppContext);
+    const { login, checkUserStatus, isAuthenticated } = useContext(AppContext);
+
+    useEffect(() => {
+        console.log(isAuthenticated)
+        const checkStatus = async () => {
+            await checkUserStatus();
+        };
+        checkStatus();
+        console.log(isAuthenticated)
+    }, [checkUserStatus]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -73,28 +80,26 @@ const Login = () => {
         }).catch((err) => {
             console.log(err);
         });
-    }; 
+    };
+
     const handleChange = (e) => {
         e.preventDefault();
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
         });
-    }
-
-
+    };
 
     return (
         <LoginContainer>
             <LoginForm onSubmit={handleSubmit}>
                 <h2>Login</h2>
                 <Input type="text" placeholder="Email" name='email' value={formData.email} onChange={handleChange} />
-                <Input type="password" placeholder="Password" name='password'value={formData.password} onChange={handleChange} />
+                <Input type="password" placeholder="Password" name='password' value={formData.password} onChange={handleChange} />
                 <Button type="submit">Login</Button>
                 <NotSignedUp>
                     Not signed up yet? <a href="/signup">Sign up</a>
                 </NotSignedUp>
-
             </LoginForm>
         </LoginContainer>
     );

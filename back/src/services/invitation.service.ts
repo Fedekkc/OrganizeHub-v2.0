@@ -24,19 +24,16 @@ export class InvitationService {
 
     async create(createInvitationDto: InvitationDto): Promise<Invitation> {
         try {
-            // Validate organization existence
             const organization = await this.organizationService.getOrganizationById(createInvitationDto.organization);
             if (!organization) {
                 throw new NotFoundException('Organization not found');
             }
-
-            // Validate user existence
             const user = await this.userService.getUserByEmail(createInvitationDto.email);
             if (!user) {
                 throw new NotFoundException('User not found');
             }
 
-            const invitationUrl = "http://localhost:3000/" + await this.createInvitationUrl();
+            const invitationUrl = "http://localhost:3000/invitation/url/" + await this.createInvitationUrl();
 
             const invitation = this.invitationRepository.create({
                 ...createInvitationDto,
@@ -45,10 +42,7 @@ export class InvitationService {
             });
 
 
-
-            // Send invitation email
             await this.mailerService.sendInvitationEmail(invitation.email,invitationUrl);
-
 
 
             return await this.invitationRepository.save(invitation);
@@ -57,20 +51,45 @@ export class InvitationService {
         }
     }
 
+    async getInvitationByUrl(url: string): Promise<Invitation> {
+        try {
+            return await this.invitationRepository.findOne({ where: { url }, relations: ['organization'] });
+        } catch (error) {
+            throw new HttpException('Failed to retrieve invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     async createInvitationUrl(): Promise<string> {
         try {
-            const randomString = Math.random().toString(36).substring(32,64 ) + Math.random().toString(36).substring(32, 64);
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let randomString = '';
+            for (let i = 0; i < 40; i++) {
+                randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
             return randomString;            
         } catch (error) {
             throw new HttpException('Failed to create invitation URL: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+
+
     async getInvitationByEmail(email: string): Promise<Invitation> {
         try {
             return await this.invitationRepository.findOne({ where: { email }, relations: ['organization'] });
         } catch (error) {
             throw new HttpException('Failed to retrieve invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async reject(id: number): Promise<Invitation> {
+        try {
+            const invitation = await this.findOne(id);
+            await this.invitationRepository.delete(id);
+            return invitation;
+        } catch (error) {
+            this.logger.error('Failed to reject invitation: ', error.message);
+            throw new HttpException('Failed to reject invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Home from '../pages/home/Home';
 import Attendance from '../pages/attendance/Attendance';
 import Documentation from '../pages/documentation/Documentation';
@@ -16,26 +16,43 @@ import CreateProject from '../components/projects/CreateProject';
 import Project from '../pages/documentation/Project';
 import Management from '../pages/admin/Management';
 import Team from '../pages/teams/Team';
+import Invitation from '../pages/Invitation';
 
 const AppRouter = () => {
+    const  { checkUserStatus } = useAuth();
     const { isAuthenticated, isInOrg } = useAuth();
+    const location = useLocation();
+    useEffect(() => {
+        console.log("ASDASDASDASD")
+        console.log(isAuthenticated);
+        const checkStatus = async () => {
+            await checkUserStatus();
+        };
+        checkStatus();
+        
+        
+        
+    }, [checkUserStatus, location]);
+
+
+    
 
     return (
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="*" element={<Home />} />
-            <Route path="/login" element={<Login/>} />
-            <Route path="/signup" element={<Signup/>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/logout" element={<Home />} />
-            
+
             {/* Rutas privadas */}
-            <Route 
-                path="/tasks" 
+            <Route
+                path="/tasks"
                 element={
                     <PrivateRoute isAuthenticated={isAuthenticated} >
                         <Tasks />
                     </PrivateRoute>
-                } 
+                }
             />
 
             <Route
@@ -47,21 +64,21 @@ const AppRouter = () => {
                 }
             />
 
-            <Route 
-                path="/attendance" 
+            <Route
+                path="/attendance"
                 element={
                     <PrivateRoute isAuthenticated={isAuthenticated}  >
                         <Attendance />
                     </PrivateRoute>
-                } 
+                }
             />
-            <Route 
-                path="/teams" 
+            <Route
+                path="/teams"
                 element={
                     <PrivateRoute isAuthenticated={isAuthenticated}  >
                         <Teams />
                     </PrivateRoute>
-                } 
+                }
             />
 
             <Route
@@ -72,22 +89,22 @@ const AppRouter = () => {
                     </PrivateRoute>
                 }
             />
-            
-            <Route 
-                path="/documentation" 
+
+            <Route
+                path="/documentation"
                 element={
                     <PrivateRoute isAuthenticated={isAuthenticated}  >
                         <Documentation />
                     </PrivateRoute>
-                } 
+                }
             />
-            <Route 
-                path="/passwords" 
+            <Route
+                path="/passwords"
                 element={
                     <PrivateRoute isAuthenticated={isAuthenticated}  >
                         <Passwords />
                     </PrivateRoute>
-                } 
+                }
             />
 
             <Route
@@ -107,7 +124,7 @@ const AppRouter = () => {
 
             <Route path="/projects/:projectId" element={
                 <PrivateRoute isAuthenticated={isAuthenticated && isInOrg()} >
-                    <Project/>
+                    <Project />
                 </PrivateRoute>
             } />
 
@@ -118,6 +135,11 @@ const AppRouter = () => {
                 </PrivateRoute>
             } />
 
+            <Route path="invitation/url/:url" element={
+                <PrivateRoute isAuthenticated={isAuthenticated} >
+                    <Invitation />
+                </PrivateRoute>
+            } />
 
         </Routes>
     );

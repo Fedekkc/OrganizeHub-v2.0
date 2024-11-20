@@ -12,7 +12,7 @@ const PrivateRoute = ({ children }) => {
     }, []);
 
     if (isAuthenticated) {
-        if (isInOrg() || location.pathname === "/organization" || location.pathname === "/organization/create") {
+        if (isInOrg() || location.pathname === "/organization" || location.pathname === "/organization/create" || location.pathname.startsWith("/invitation/url/")) {
             return children; // Permite el acceso a la ruta
         } else {
             return <Navigate to="/organization" />; // Redirige a la página de organización

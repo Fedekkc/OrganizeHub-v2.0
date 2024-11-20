@@ -31,6 +31,18 @@ export class InvitationController {
         }
     }
 
+    @Post('reject/:id')
+    async reject(@Param('id') id: number): Promise<Invitation> {
+        try {
+            return await this.invitationService.reject(id);
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Failed to reject invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Get()
     async findAll(): Promise<Invitation[]> {
         try {
@@ -49,6 +61,15 @@ export class InvitationController {
                 throw new HttpException(error.message, HttpStatus.NOT_FOUND);
             }
             throw new HttpException('Failed to retrieve invitation: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Get('url/:url')
+    async getInvitationByUrl(@Param('url') url: string): Promise<Invitation> {
+        try {
+            return await this.invitationService.getInvitationByUrl(url);
+        } catch (error) {
+            throw new HttpException('Failed to retrieve invitation URL: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

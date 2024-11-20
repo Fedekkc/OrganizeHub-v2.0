@@ -40,14 +40,9 @@ const Container = styled.div`
 `;
 
 function App() {
-  const { authToken, setAuthToken, setIsAuthenticated, setOrganization } = useAuth();
+  const { authToken, setAuthToken, setOrganization } = useAuth();
 
- window.onload = () => {
-    localStorage.removeItem('authToken');
-    setAuthToken(null);
-    setIsAuthenticated(false);
-    setOrganization(null);
- }
+ 
 
 
 

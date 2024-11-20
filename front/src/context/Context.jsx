@@ -13,47 +13,42 @@ export const AppProvider = ({ children }) => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [avatar, setAvatar] = useState(null);
     const [organizationId, setOrganizationId] = useState(null);
-    const checkUserStatus = () => {
+
+    const checkUserStatus = async () => {
         const token = localStorage.getItem('authToken');
         console.log(token);
         if (token) {
             setAuthToken(token);
-            axios.post('http://localhost:5000/users/validate-token', {}, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((response) => {
+            try {
+                const response = await axios.post('http://localhost:5000/users/validate-token', {}, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
                 if (response.status === 201) {
                     setIsAuthenticated(true);
                     setUserId(response.data.user.userId);
                     setAvatar(response.data.user.avatar);
-                    console.log(response.data.user);
-                    
-                    if(response.data.user.organization !== null) {
-                        setOrganization(true);
+                    setUserEmail(response.data.user.email);
+
+                    if (response.data.user.organization !== null) {
+                        setOrganization(response.data.user.organization);
                         console.log(response.data.user.organization);
                         localStorage.setItem('organization', response.data.user.organization.organizationId);
                         setOrganizationId(response.data.user.organization.organizationId);
-                        if(response.data.user.role == 'admin'){
-                            setIsAdmin(true);
-                        }else{
-                            setIsAdmin(false);
-                        }
+                        setIsAdmin(response.data.user.role === 'admin');
                     }
                 }
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.log(error);
                 setIsAuthenticated(false);
                 setOrganization(null);
                 setAuthToken(null);
                 setUserId(null);
                 localStorage.removeItem('authToken');
-            });
+            }
         } else {
             setIsAuthenticated(false);
         }
     };
-    
 
     useEffect(() => {
         checkUserStatus();
@@ -64,21 +59,24 @@ export const AppProvider = ({ children }) => {
         setAuthToken(user.token);
         setIsAuthenticated(true);
         setUserEmail(user.email);
+        setUserId(user.userId);
+        setAvatar(user.avatar);
         if (user.role === 'admin') {
             setIsAdmin(true);
         } else {
             setIsAdmin(false);
         }
         if (user.organization) {
-            
             setOrganization(user.organization);
-            localStorage.setItem('organization', user.organization);
+            localStorage.setItem('organization', user.organization.organizationId);
+            setOrganizationId(user.organization.organizationId);
         }
     };
 
     const addEvent = (event) => {
         setEvents((prevEvents) => [...prevEvents, event]);
-    }
+    };
+
     const updateEvent = (event) => {
         setEvents((prevEvents) => {
             const index = prevEvents.findIndex((e) => e.id === event.id);
@@ -87,7 +85,7 @@ export const AppProvider = ({ children }) => {
             newEvents[index] = event;
             return newEvents;
         });
-    }
+    };
 
     const logout = () => {
         localStorage.removeItem('authToken');
@@ -112,10 +110,9 @@ export const AppProvider = ({ children }) => {
 
     const isLoggedIn = () => !!authToken;
 
-
     return (
         <AppContext.Provider value={{
-            authToken, 
+            authToken,
             organization,
             organizationId,
             setOrganizationId,
@@ -129,13 +126,13 @@ export const AppProvider = ({ children }) => {
             setOrganization,
             setIsAdmin,
             setIsAuthenticated,
-            isAuthenticated, 
+            isAuthenticated,
             checkUserStatus,
-            login, 
-            logout, 
+            login,
+            logout,
             isLoggedIn,
             isInOrg,
-            events, 
+            events,
         }}>
             {children}
         </AppContext.Provider>
