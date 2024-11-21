@@ -49,7 +49,7 @@ const SuggestionsList = styled.ul`
     padding: 0;
     margin: 0;
     max-height: 150px;
-    max-width: 10rem;
+    max-width: 18.5rem;
     overflow-y: auto;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -64,8 +64,8 @@ const SuggestionsList = styled.ul`
 const SuggestionItem = styled.li`
     padding: 2px;
     border-bottom: 1px solid #ddd;
-    width: 20%;
-    max-width: 10rem;
+    width: 40%;
+    max-width: 15rem;
     
     &:last-child {
         border-bottom: none;

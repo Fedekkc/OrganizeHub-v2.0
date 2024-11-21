@@ -12,18 +12,18 @@ export const AppProvider = ({ children }) => {
     const [userEmail, setUserEmail] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [avatar, setAvatar] = useState(null);
+    const [loading, setLoading] = useState(true); 
     const [organizationId, setOrganizationId] = useState(null);
 
     const checkUserStatus = async () => {
         const token = localStorage.getItem('authToken');
-        console.log(token);
         if (token) {
             setAuthToken(token);
             try {
                 const response = await axios.post('http://localhost:5000/users/validate-token', {}, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                if (response.status === 201) {
+                if (response.status === 200 || response.status === 201) {
                     setIsAuthenticated(true);
                     setUserId(response.data.user.userId);
                     setAvatar(response.data.user.avatar);
@@ -31,7 +31,6 @@ export const AppProvider = ({ children }) => {
 
                     if (response.data.user.organization !== null) {
                         setOrganization(response.data.user.organization);
-                        console.log(response.data.user.organization);
                         localStorage.setItem('organization', response.data.user.organization.organizationId);
                         setOrganizationId(response.data.user.organization.organizationId);
                         setIsAdmin(response.data.user.role === 'admin');
@@ -48,11 +47,9 @@ export const AppProvider = ({ children }) => {
         } else {
             setIsAuthenticated(false);
         }
+        setLoading(false);  
     };
 
-    useEffect(() => {
-        checkUserStatus();
-    }, []);
 
     const login = (user) => {
         localStorage.setItem('authToken', user.token);
@@ -129,6 +126,7 @@ export const AppProvider = ({ children }) => {
             isAuthenticated,
             checkUserStatus,
             login,
+            loading,
             logout,
             isLoggedIn,
             isInOrg,

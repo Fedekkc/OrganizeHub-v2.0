@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/navbar/Navbar';
 import Tasks from './pages/tareas/Tasks';
@@ -40,10 +40,7 @@ const Container = styled.div`
 `;
 
 function App() {
-  const { authToken, setAuthToken, setOrganization } = useAuth();
-
- 
-
+  const { authToken, setAuthToken, setOrganization, checkUserStatus } = useAuth();
 
 
   return (

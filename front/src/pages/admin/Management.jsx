@@ -8,6 +8,7 @@ import AdminUsers from '../../components/admin/AdminUsers';
 import InviteUser from '../../components/admin/InviteUser';
 import Input from '../../components/Input';
 import InfoTooltip from '../../components/InfoTooltip';
+import { CiCirclePlus } from 'react-icons/ci';
 
 const Container = styled.div`
     display: flex;
@@ -96,17 +97,85 @@ const Button2 = styled(Button)`
     width: 100%;
 `;
 
+const Circle = styled(CiCirclePlus)`
+    font-size: 2em;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+        color: green;
+    }
+`;
+
+const PermissionHeader = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+    margin: 1rem;
+`;
+
+const SuggestionsList = styled.ul`
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 150px;
+    max-width: 20rem;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 85%;
+    width: 100%;
+    z-index: 1000;
+`;
+
+const SuggestionItem = styled.li`
+    padding: 2px;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+    max-width: 15rem;
+    
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background-color: #f9f9f9;
+        cursor: pointer;
+    }
+`;
+
+
+
+
 const Management = () => {
     const organizationId = localStorage.getItem('organization');
     const [roles, setRoles] = useState([]);
-    const [permissions, setPermissions] = useState(new Set());
+    const [permissions, setPermissions] = useState([]); 
     const [existingPermissions, setExistingPermissions] = useState([]);
     const [users, setUsers] = useState([]);
+    const [isBrowserOpen, setIsBrowserOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     const [roleInfo, setRoleInfo] = useState({
         show: false,
         text: '',
         position: { top: 0, left: 0 }
     });
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const suggestedPermissions = existingPermissions.filter(perm =>
+        perm.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    
 
     const handleRoleInfo = (text, e) => {
         const position = {
@@ -145,7 +214,7 @@ const Management = () => {
         try {
             const response = await axios.get(`http://localhost:5000/roles/organization/${organizationId}`);
             setRoles(response.data);
-            console.log(organizationId);
+            
         } catch (error) {
             console.error(`Error getting roles: ${error}`);
         }
@@ -155,7 +224,7 @@ const Management = () => {
         try {
             const response = await axios.get(`http://localhost:5000/organizations/${organizationId}/users`);
             setUsers(response.data);
-            console.log(response.data);
+            
         } catch (error) {
             console.log(error);
         }
@@ -164,6 +233,7 @@ const Management = () => {
     const getPermissions = async () => {
         try {
             const response = await axios.get('http://localhost:5000/permissions');
+            
             setExistingPermissions(response.data);
         } catch (error) {
             console.error(`Error getting permissions: ${error}`);
@@ -209,6 +279,10 @@ const Management = () => {
         });
     };
 
+    const handleBrowser = () => {
+        setIsBrowserOpen(!isBrowserOpen);
+    };
+
     return (
         <Container>
             <Title>Management</Title>
@@ -232,21 +306,39 @@ const Management = () => {
                             onChange={handleChange}
                             required
                         />
+
                         <PermissionsContainer>
-                            <SectionTitle>Permissions</SectionTitle>
-                            {existingPermissions.length > 0 ? (
-                                existingPermissions.map((permission) => (
-                                    <Permission
-                                        key={permission.permissionId}
-                                        isSelected={permissions.has(permission.permissionId.toString())}
-                                        onClick={() => handlePermissionClick(permission.permissionId)}
-                                    >
-                                        {permission.name}
-                                    </Permission>
-                                ))
-                            ) : (
-                                <p>No hay permisos, problema en la base de datos</p>
-                            )}
+                        <SectionTitle>Permissions</SectionTitle>
+                            <PermissionHeader>
+                              
+                                {isBrowserOpen && (
+                                    <Input
+                                        style={{ width: '20rem' }}
+                                        type="text"
+                                        placeholder="Search Permissions"
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+
+                                    />
+                                )}
+                                {isBrowserOpen && searchTerm && (
+                                    <SuggestionsList>
+                                        {suggestedPermissions.map((perm) => (
+                                            <SuggestionItem key={perm.permissionId} onClick={() => handlePermissionClick(perm.permissionId)}>
+                                                {perm.name}
+                                            </SuggestionItem>
+                                        ))}
+                                    </SuggestionsList>
+                                
+
+                                )
+                                }
+                                  <Circle onClick={handleBrowser} />
+
+                            </PermissionHeader>
+                            
+
+
                         </PermissionsContainer>
 
                         <Button2 type="submit">Create Role</Button2>

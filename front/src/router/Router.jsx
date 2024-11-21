@@ -19,23 +19,22 @@ import Team from '../pages/teams/Team';
 import Invitation from '../pages/Invitation';
 
 const AppRouter = () => {
-    const  { checkUserStatus } = useAuth();
-    const { isAuthenticated, isInOrg } = useAuth();
+    const { checkUserStatus, isAuthenticated, loading, isInOrg } = useAuth();
     const location = useLocation();
+
     useEffect(() => {
-        console.log("ASDASDASDASD")
-        console.log(isAuthenticated);
-        const checkStatus = async () => {
+        console.log("Cargando", loading)
+        async function checkStatus() {
             await checkUserStatus();
-        };
+        }
         checkStatus();
         
-        
-        
-    }, [checkUserStatus, location]);
+    }, [location]);
 
-
-    
+    if (loading) {
+        console.log('Loading...');
+        return <div>Loading...</div>;  
+    }
 
     return (
         <Routes>

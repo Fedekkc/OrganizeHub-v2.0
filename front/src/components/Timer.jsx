@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Button from './Button';
 import Modal from './Modal';
+import Input from './Input';
 
 const TimerContainer = styled.div`
     display: flex;
@@ -153,7 +154,7 @@ const Timer = () => {
                         <p>Configura tu jornada laboral</p>
                         <label>
                             Hora de finalización:
-                            <input
+                            <Input
                                 type="time"
                                 value={endTime}
                                 onChange={(e) => setEndTime(e.target.value)}
@@ -161,7 +162,7 @@ const Timer = () => {
                         </label>
                         <label>
                             Inicio del descanso:
-                            <input
+                            <Input
                                 type="time"
                                 value={breakStart}
                                 onChange={(e) => setBreakStart(e.target.value)}
@@ -169,7 +170,7 @@ const Timer = () => {
                         </label>
                         <label>
                             Fin del descanso:
-                            <input
+                            <Input
                                 type="time"
                                 value={breakEnd}
                                 onChange={(e) => setBreakEnd(e.target.value)}

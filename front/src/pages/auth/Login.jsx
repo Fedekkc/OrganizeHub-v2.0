@@ -59,14 +59,7 @@ const Login = () => {
 
     const { login, checkUserStatus, isAuthenticated } = useContext(AppContext);
 
-    useEffect(() => {
-        console.log(isAuthenticated)
-        const checkStatus = async () => {
-            await checkUserStatus();
-        };
-        checkStatus();
-        console.log(isAuthenticated)
-    }, [checkUserStatus]);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();

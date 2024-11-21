@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Button from "../Button";
 import Modal from "../Modal";
 import axios from "axios";
+import CreateTeamModal from "../CreateTeamModal";
 
 const Section = styled.div`
     width: 100%;
@@ -83,7 +84,7 @@ const CreateTeam = ({ users, organizationId }) => {
             <SectionTitle>Create Team</SectionTitle>
 
             <Button onClick={() => setIsModalOpen(true)}>Create Team</Button>
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <CreateTeamModal isModalOpen={isModalOpen} setIsModalOpen={() => setIsModalOpen(false)}>
                 <Title>Add Team</Title>
                 <Input type="text" name="name" placeholder="Team Name" onChange={handleInputChange} />
 
@@ -110,7 +111,7 @@ const CreateTeam = ({ users, organizationId }) => {
                 </ul>
 
                 <Button onClick={handleCreateTeam}>Add Team</Button>
-            </Modal>
+            </CreateTeamModal>
         </Section>
     );
 };
