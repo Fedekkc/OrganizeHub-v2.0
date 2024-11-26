@@ -53,6 +53,27 @@ const TaskList = styled.ul`
 
 const TaskItem = styled.li`
     margin-bottom: 10px;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+
+    &:active {
+        background-color: #444;
+    }
+`;
+
+const DropZone = styled.div`
+    margin-top: 20px;
+    padding: 20px;
+    border: 2px dashed #ccc;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    width: 100%;
+    min-height: 100px;
+    text-align: center;
+    color: #333;
 `;
 
 const TimerWrapper = styled.div`
@@ -131,6 +152,19 @@ const Timer = () => {
         return `${getHours}:${getMinutes}:${getSeconds}`;
     };
 
+    const handleDragStart = (e, task) => {
+        e.dataTransfer.setData('task', task);
+    };
+
+    const handleDrop = (e) => {
+        const task = e.dataTransfer.getData('task');
+        setTasks(prevTasks => prevTasks.filter(t => t !== task));
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
     return (
         <TimerWrapper>
             <TimerContainer>
@@ -191,9 +225,21 @@ const Timer = () => {
                 <Button onClick={handleAddTask}>Agregar Tarea</Button>
                 <TaskList>
                     {tasks.map((task, index) => (
-                        <TaskItem key={index}>{task}</TaskItem>
+                        <TaskItem
+                            key={index}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, task)}
+                        >
+                            {task}
+                        </TaskItem>
                     ))}
                 </TaskList>
+                <DropZone
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                >
+                    Arrastra para eliminar
+                </DropZone>
             </TaskContainer>
         </TimerWrapper>
     );

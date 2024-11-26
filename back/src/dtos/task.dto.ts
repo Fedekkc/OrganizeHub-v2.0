@@ -60,3 +60,5 @@ export class TaskDto {
     @IsOptional()
     updatedAt?: Date;
 }
+
+// Hacer que las tareas tengan sus templates creadas por el usuario para usarlas como quiera.
