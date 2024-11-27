@@ -96,13 +96,27 @@ const UserList = () => {
         setUserInfo({ show: false, text: {}, position: {} });
     };
 
+
+    //DyD
+    const handleDragStart = (e, userId, user) => {
+        e.dataTransfer.setData('userId', userId);
+        e.dataTransfer.setData('user', JSON.stringify(user));
+        
+    };
+
+
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+
     useEffect(() => {
         const fetchUsers = async () => {
             try {
                 
                 const response = await axios.get(`http://localhost:5000/organizations/${organizationId}/users`);
                 setUsers(response.data);
-                console.log(response.data);
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -113,9 +127,12 @@ const UserList = () => {
 
     return (
         <UserListContainer>
-            Lista de usuarios conectados
+            Lista de usuarios 
             {users.map(user => (
-                <UserItem key={user.userId} onMouseEnter={(e) => handleUserInfo({
+                <UserItem key={user.userId}
+                draggable
+                onDragStart={(e) => handleDragStart(e, user.userId,user)}
+                onMouseEnter={(e) => handleUserInfo({
                     avatar: user.avatar,
                     firstName: user.firstName,
                     email: user.email

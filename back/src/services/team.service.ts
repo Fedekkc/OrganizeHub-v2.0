@@ -82,14 +82,36 @@ export class TeamService {
 
     }
 
+    async addUserToTeam(teamId: number, userId: number): Promise<boolean> {
+        try {
+            const team = await this.getTeamById(teamId);
+            if (!team) {
+                return false;
+            }
+            const user = await this.userService.getUserById(userId);
+            if (!user) {
+                return false;
+            }
+            team.users.push(user);
+            await this.teamRepository.save(team);
+            return true;
+            
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException(error);
+
+            
+        }
+    }
 
     async updateTeam(id: number, teamDto: PartialTeamDto): Promise<Team> {
-        const team = await this.getTeamById(id);
+        try {
+            const team = await this.getTeamById(id);
         if (!team) {
             return null;
         }
-        
-        
         if (teamDto.users) {
             team.users = await this.userService.getUsersByIds(teamDto.users);
         }
@@ -100,14 +122,48 @@ export class TeamService {
             team.name = teamDto.name;
         }
 
-
         await this.teamRepository.update(id, team);
         return this.getTeamById(id);
-    }
-
-    async deleteTeam(id: number): Promise<boolean> {
-        const result = await this.teamRepository.delete(id);
-        return result.affected > 0;
+            
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException(error);
+            
+        }
         
     }
+
+    async deleteTeam(id: number): Promise<Boolean> {
+        
+        try {
+            
+            const team = await this.getTeamById(id);
+            if (!team) {
+                return null;
+            }
+            await this.teamRepository.delete(id);
+            return true;
+
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException(error);
+            
+        }
+        
+    }
+
+    async removeUserFromTeam(teamId: number, userId: number): Promise<Team> {
+        const team = await this.getTeamById(teamId);
+        if (!team) {
+            return null;
+        }
+        team.users = team.users.filter(user => user.userId !== userId);
+        await this.teamRepository.save(team);
+        return team;
+    }
+
 }

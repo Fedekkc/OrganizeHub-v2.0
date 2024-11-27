@@ -46,7 +46,7 @@ const TeamTitleContainer = styled.div`
 
 const TeamUsersList = styled.ul`
     display: flex;
-    align-items: top;
+    flex-direction: column;
     border-radius: 8px;
     padding: 10px;
     list-style-type: none;
@@ -290,12 +290,61 @@ const Teams = () => {
     };
 
     const handleDrop = (e) => {
+        if (!e.dataTransfer.getData('teamId')) {
+            return;
+        }else if(e.dataTransfer.getData('userId')){
+
+            
+            return;
+        }
+
         const teamId = e.dataTransfer.getData('teamId');
         handleDeleteTeam(teamId);
+        e.dataTransfer.clearData('teamId');
+
     };
 
     const handleDragOver = (e) => {
         e.preventDefault();
+        
+        if (e.dataTransfer.getData('userId')) {
+            console.log('Los usuarios no se pueden eliminar');
+            return;
+        }
+
+    };
+
+    const handleTeamDragOver = (e) => {
+        e.preventDefault();
+    };
+
+    const handleAddUser = (e) => {
+        const userId = e.dataTransfer.getData('userId');
+        if (!userId) {
+            return;
+        }
+        const teamId = e.target.parentElement.getAttribute('data-teamid');
+        console.log('Usuario', userId, 'añadido al equipo', teamId);
+        const team = teams.find(team => team.teamId == teamId);
+        const user = e.dataTransfer.getData('user') ? JSON.parse(e.dataTransfer.getData('user')) : null;
+        
+        if (team.users.find(user => user.userId == userId)) {
+            console.log('El usuario ya está en el equipo');
+            return;
+        }
+        const updatedTeam = {
+            ...team,
+            users: [...team.users, user]
+        };
+
+        axios.put(`http://localhost:5000/teams/${teamId}/users/${userId}`)
+            .then(response => {
+                setTeams(prevTeams => prevTeams.map(team => team.teamId == teamId ? updatedTeam : team));
+            })
+            .catch(error => {
+                console.error('Hubo un error al añadir el usuario al equipo', error);   
+            });
+        e.dataTransfer.clearData('userId');
     };
 
     const handleDeleteTeam = (teamId) => {
@@ -322,20 +371,24 @@ const Teams = () => {
                     teams.map(team => (
                         <TeamCard
                             key={team.teamId}
+                            data-teamid={team.teamId} 
                             onClick={() => handleOpenTeam(team.teamId)}
                             draggable
                             onDragStart={(e) => handleDragStart(e, team.teamId)}
                             onContextMenu={(e) => handleRightClick(e, team.teamId)}
-                        >
+                            onDrop={handleAddUser}
+                            onDragOver={handleTeamDragOver}                        >
                             <TeamTitleContainer>
                                 <TeamName>{team.name}</TeamName>
                             </TeamTitleContainer>
                             <TeamUsersList>
                                 {team.users.map(user => (
-                                    <UserListItem key={user.userId} onMouseEnter={(e) => handleUserInfo(user.email, e)} onMouseLeave={hideUserInfo}>
-                                        <StatusIndicator online={user.isActive} />
-                                        {user.firstName} {user.lastName}
-                                    </UserListItem>
+                                    user && (
+                                        <UserListItem key={user.userId} onMouseEnter={(e) => handleUserInfo(user.email, e)} onMouseLeave={hideUserInfo}>
+                                            <StatusIndicator online={user.isActive} />
+                                            {user.firstName} {user.lastName}
+                                        </UserListItem>
+                                    )
                                 ))}
                             </TeamUsersList>
                             {userInfo.show && (

@@ -9,6 +9,8 @@ import InviteUser from '../../components/admin/InviteUser';
 import Input from '../../components/Input';
 import InfoTooltip from '../../components/InfoTooltip';
 import { CiCirclePlus } from 'react-icons/ci';
+import { RxCross1 } from "react-icons/rx";
+
 
 const Container = styled.div`
     display: flex;
@@ -150,8 +152,45 @@ const SuggestionItem = styled.li`
     }
 `;
 
+const SelectedPermissionsList = styled.ul`
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    width: 100%;
+    display: grid;
+    gap: 5px;
+    grid-template-columns: 1fr 1fr;
 
 
+`;
+
+const SelectedPermissionItem = styled.li`
+    padding: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    margin: 5px 0;
+    color: grey;
+    font-size: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    
+    
+`;
+
+const Cross = styled(RxCross1)`
+    margin-top: 5px;
+    font-size: 0.7em;
+    color: white;
+    cursor: pointer;
+    border-radius: 50%;
+
+    &:hover {
+        background-color: grey;
+    }
+`;
 
 const Management = () => {
     const organizationId = localStorage.getItem('organization');
@@ -174,8 +213,6 @@ const Management = () => {
     const suggestedPermissions = existingPermissions.filter(perm =>
         perm.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    
 
     const handleRoleInfo = (text, e) => {
         const position = {
@@ -274,6 +311,7 @@ const Management = () => {
                 updatedPermissions.delete(permissionId.toString());
             } else {
                 updatedPermissions.add(permissionId.toString());
+                permissions.add(permissionId.toString());
             }
             return updatedPermissions;
         });
@@ -290,7 +328,7 @@ const Management = () => {
                 <Section>
                     <SectionTitle>Create Role</SectionTitle>
                     <form onSubmit={createRole}>
-                        <Input
+                        <Input  
                             type="text"
                             placeholder="Role Name"
                             name="name"
@@ -325,20 +363,24 @@ const Management = () => {
                                     <SuggestionsList>
                                         {suggestedPermissions.map((perm) => (
                                             <SuggestionItem key={perm.permissionId} onClick={() => handlePermissionClick(perm.permissionId)}>
-                                                {perm.name}
+                                                {perm.name} 
                                             </SuggestionItem>
                                         ))}
                                     </SuggestionsList>
-                                
-
-                                )
-                                }
-                                  <Circle onClick={handleBrowser} />
-
+                                )}
+                                <Circle onClick={handleBrowser} />
                             </PermissionHeader>
-                            
 
-
+                            <SelectedPermissionsList>
+                                {Array.from(permissions).map((permId) => {
+                                    const perm = existingPermissions.find(p => p.permissionId.toString() === permId);
+                                    return (
+                                        <SelectedPermissionItem key={permId}>
+                                            {perm ? perm.name : 'Unknown Permission'} <Cross />
+                                        </SelectedPermissionItem>
+                                    );
+                                })}
+                            </SelectedPermissionsList>
                         </PermissionsContainer>
 
                         <Button2 type="submit">Create Role</Button2>

@@ -71,10 +71,34 @@ export class TeamController {
         }
     }
 
+    @Put(':id/users/:userId')
+    async addUserToTeam(@Param('id') id: number, @Param('userId') userId: number): Promise<boolean> {
+        try {
+            return await this.teamService.addUserToTeam(id, userId);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Delete(':id')
-    async deleteTeam(@Param('id') id: number): Promise<boolean> {
+    async deleteTeam(@Param('id') id: number): Promise<Boolean> {
         try {
             return await this.teamService.deleteTeam(id);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Internal server error' + error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Delete(':id/users/:userId')
+    async removeUserFromTeam(@Param('id') id: number, @Param('userId') userId: number): Promise<Team> {
+        try {
+            return await this.teamService.removeUserFromTeam(id, userId);
         } catch (error) {
             if (error instanceof EntityNotFoundError) {
                 throw new HttpException('Entity not found', HttpStatus.NOT_FOUND);
