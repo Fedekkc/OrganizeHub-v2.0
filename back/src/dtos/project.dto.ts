@@ -2,6 +2,8 @@ import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { ManyToMany } from 'typeorm';
+import { User } from 'src/entities/user.entity';
 
 export class ProjectDto {
     @ApiProperty({ required: false })
@@ -19,11 +21,11 @@ export class ProjectDto {
     @IsNotEmpty()
     description: string;
 
-    @ApiProperty({required:false, type: [Number] })
-    @IsNumber({}, { each: true })
-    @IsOptional()
-    @Type(() => Number)
-    users?: number[];
+    @ApiProperty({type: [Number]})
+    @IsNumber()
+    @IsNotEmpty()
+    users: number[];
+
 
     @ApiProperty({type: Number})
     @IsNumber()
@@ -47,6 +49,7 @@ export class PartialProjectDto extends PartialType(ProjectDto) {
     @IsString()
     @IsNotEmpty()
     name: string;
+
 
     @ApiProperty()
     @IsString()

@@ -1,6 +1,9 @@
 import { IsEmail, IsNumber, IsOptional, IsString, Length } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { User } from 'src/entities/user.entity';
+import { ManyToMany } from 'typeorm';
+import { Project } from 'src/entities/project.entity';
+import { Type } from 'class-transformer';
 
 export class UserDTO {
     @ApiProperty({ description: 'Identificador único del usuario' })
@@ -36,7 +39,7 @@ export class UserDTO {
     @IsOptional()
     createdAt?: Date;
 
-    @ApiProperty({ description: 'Fecha de actualizacion de datos del usuario' })
+    @ApiProperty({ description: 'Fecha de actualización de datos del usuario' })
     @IsOptional()
     updatedAt?: Date;
 
@@ -44,6 +47,12 @@ export class UserDTO {
     @IsOptional()
     @IsString()
     role?: string;
+
+    @ApiProperty({ description: 'Proyectos a los que pertenece el usuario' })
+    @IsOptional()
+    @IsNumber({}, { each: true })
+    @Type(() => Number)
+    projects?: number[];
 
     @ApiProperty({ description: 'Foto de perfil del usuario' })
     @IsOptional()
@@ -53,12 +62,8 @@ export class UserDTO {
     @IsOptional()
     @IsNumber()
     organization?: number;
-
 }
 
 export class PartialUserDTO extends PartialType(UserDTO) {
-    // Al extender de PartialType, todos los campos se vuelven opcionales
-    
-
+    // No es necesario agregar nada adicional, ya que PartialType hace que todos los campos sean opcionales
 }
-

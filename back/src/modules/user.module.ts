@@ -8,10 +8,13 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from '../guards/jwt.strategy';
 import { OrganizationModule } from './organization.module';
 import { MailerCustomModule } from './mailer.module';
+import { Project } from 'src/entities/project.entity';
+import { ProjectModule } from './project.module';
 @Module({
     imports: [PassportModule,
         forwardRef(() => OrganizationModule),
         TypeOrmModule.forFeature([User]),
+        forwardRef(() => ProjectModule),
         JwtModule.register({
         secret: 'secret', 
         signOptions: { expiresIn: '9h' }

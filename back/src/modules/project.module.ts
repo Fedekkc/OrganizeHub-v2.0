@@ -6,10 +6,13 @@ import { ProjectService } from 'src/services/project.service';
 import { UserModule } from './user.module';
 import { TaskModule } from './task.module';
 import { OrganizationModule } from './organization.module';
+import { forwardRef } from '@nestjs/common';
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Project]), UserModule, TaskModule,OrganizationModule],
+    imports: [TypeOrmModule.forFeature([Project]), 
+    forwardRef(() => UserModule)
+    , TaskModule,OrganizationModule],
     providers: [ProjectService],
     controllers: [ProjectController],
     exports: [ProjectService]

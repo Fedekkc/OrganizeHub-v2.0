@@ -10,7 +10,16 @@ export class OrganizationController {
     @HttpCode(HttpStatus.CREATED)
     @UsePipes(new ValidationPipe({ transform: true }))
     createOrganization(@Body() organizationDto: OrganizationDto) {
-        return this.organizationService.createOrganization(organizationDto);
+        try{
+            return this.organizationService.createOrganization(organizationDto);
+            
+        }catch(error){
+            if(error instanceof Error){
+                throw new NotFoundException('Error creating organization: ' + error.message);
+            }
+            throw new NotFoundException('Error creating organization', error);
+        }
+
     }
 
     @Get()

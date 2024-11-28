@@ -99,6 +99,9 @@ const Calendar = ({ events, onDateSelect, onEventUpdate }) => {
     const [eventList, setEventList] = useState(events);
     const { addEvent, updateEvent, deleteEvent } = useAuth();
 
+    useEffect(() => {
+        console.log(events);
+    }, [events]);
 
 
     const handleEventResize = ({ event, start, end }) => {

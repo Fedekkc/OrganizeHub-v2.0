@@ -110,6 +110,7 @@ export class InvitationService {
             const userDTO = {
                 ...user,
                 organization: organization.organizationId,
+                projects: [],
             };
             await this.userService.updateUser(user.userId, userDTO);
             await this.invitationRepository.delete(id);

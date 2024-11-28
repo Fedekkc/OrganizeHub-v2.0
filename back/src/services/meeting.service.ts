@@ -33,6 +33,11 @@ export class MeetingService {
         }
     }
 
+    async getMeetingsByUserId(userId: number): Promise<Meeting[]> {
+        const user = await this.userService.getUserById(userId);
+        return this.meetingRepository.find({ where: { assignedTo: user }, relations: ['assignedTo', 'createdBy'] });
+    }
+
     async getAllMeetings(): Promise<Meeting[]> {
         return this.meetingRepository.find({ relations: ['assignedTo', 'createdBy'] });
     }

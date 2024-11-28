@@ -40,6 +40,19 @@ export class TaskController {
         }
     }
 
+    @Get('user/:userId')
+    @HttpCode(HttpStatus.OK)
+    async getTasksByUserId(@Param('userId') userId: number): Promise<Task[]> {
+        try {
+            return await this.taskService.getTasksByUserId(userId);
+        } catch (error) {
+            if (error instanceof EntityNotFoundError) {
+                throw new HttpException('Tasks not found', HttpStatus.NOT_FOUND);
+            }
+            throw new HttpException('Failed to get tasks', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @SetMetadata('isPublic', false)
     @Post()
     @HttpCode(HttpStatus.CREATED)
@@ -50,6 +63,7 @@ export class TaskController {
             throw new HttpException('Failed to create task', HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
 
     @SetMetadata('isPublic', false)
     @Put(':taskId')

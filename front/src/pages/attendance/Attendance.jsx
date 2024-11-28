@@ -3,11 +3,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Calendar from '../../components/Calendar';
 import moment from 'moment';
-import Modal from '../../components/Modal'; 
+import Modal from '../../components/Modal';
 import { CiCalendar } from 'react-icons/ci';
 import axios from 'axios';
 import { useAuth } from '../../context/Context';
-import TaskListApp from '../../components/tasks/taskList';
 import { jwtDecode } from 'jwt-decode';
 import Timer from '../../components/Timer';
 
@@ -120,21 +119,65 @@ const Attendance = () => {
     const [endingDate, setEndingDate] = useState(null);
     const [projects, setProjects] = useState([]);
     const [project, setProject] = useState(1);
+    const [tasks, setTasks] = useState([]);
+    const [meetings, setMeetings] = useState([]);
     const authToken = useAuth();
     const userId = jwtDecode(authToken.authToken).userId;
 
-        useEffect(() => {
-        getProjects();
-        }, []); 
+    useEffect(() => {
+        const fetchData = async () => {
+            await getProjects();
+            await getTasks();
+            await getMeetings();
+        };
+    
+        fetchData();
+    }, []);
+
+
     const getProjects = () => {
         axios.get(`http://localhost:5000/projects/all/${userId}`)
-        .then((response) => {
+            .then((response) => {
+                console.log(response.data);
+                setProjects(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const getTasks = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/tasks/user/${userId}`);
             console.log(response.data);
-            setProjects(response.data);
-        })
-        .catch((error) => {
+            setTasks(response.data);
+    
+            response.data.forEach((task) => {
+                addEvent({
+                    id: events.length + 1,
+                    title: task.title,
+                    start: new Date(task.dueDate),
+                    allDay: false,
+                    project: task.projectId,
+                    type: 'task',
+                    assignedToId: userId,
+                });
+                console.log(events);
+            });
+        } catch (error) {
             console.log(error);
-        });
+        }
+    };
+
+
+    const getMeetings = () => {
+        axios.get(`http://localhost:5000/meetings/user/${userId}`)
+            .then((response) => {
+                setMeetings(response.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
 
@@ -148,7 +191,7 @@ const Attendance = () => {
         if (!selectedDate || title.trim() === '') return;
         if (type === 'meeting' && !endingDate) return;
         if (endingDate && moment(endingDate).isBefore(selectedDate)) return;
-        
+
 
         const newEvent = {
             id: events.length + 1,
@@ -158,10 +201,11 @@ const Attendance = () => {
             allDay: false,
             project: project,
             type: type,
+            assignedToId: userId,
         };
         console.log(newEvent);
 
-        if(type === 'task'){
+        if (type == 'task') {
             axios.post('http://localhost:5000/tasks', {
                 title: title,
                 description: description,
@@ -171,12 +215,12 @@ const Attendance = () => {
                 priority: 'low',
                 status: 'pending',
                 dueDate: endingDate,
-            }).then((response) => { 
+            }).then((response) => {
                 console.log(response);
             }).catch((error) => {
                 console.log(error)
-                });
-        }else{
+            });
+        } else {
             axios.post('http://localhost:5000/meetings', {
                 title: title,
                 description: description,
@@ -184,11 +228,11 @@ const Attendance = () => {
                 assignedToId: userId,
                 meetingDate: selectedDate,
                 endDate: endingDate,
-            }).then((response) => { 
+            }).then((response) => {
                 console.log(response);
             }).catch((error) => {
                 console.log(error)
-                });
+            });
         }
 
 
@@ -199,28 +243,28 @@ const Attendance = () => {
         setSelectedDate(null);
         setEndingDate(null);
 
-        setIsModalOpen(false); 
+        setIsModalOpen(false);
     };
 
 
     return (
         <Container>
-            
-            <Timer/>
 
-             <CalendarContainer>
+            <Timer />
+
+            <CalendarContainer>
                 <Title>Calendario + Tareas</Title>
                 <Calendar
                     events={events}
-                    onDateSelect={handleDateSelect} 
-                    onEventUpdate={updateEvent} 
+                    onDateSelect={handleDateSelect}
+                    onEventUpdate={updateEvent}
                 />
             </CalendarContainer>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <TitulosContainer>
-                <Titulo>Agregar Evento - {moment(selectedDate).format('DD/MM/YYYY')} <CiCalendar/> </Titulo>
-                
+                    <Titulo>Agregar Evento - {moment(selectedDate).format('DD/MM/YYYY')} <CiCalendar /> </Titulo>
+
                 </TitulosContainer>
                 <Select onChange={(e) => setType(e.target.value)}>
                     <Option value="task">Tarea</Option>
@@ -232,7 +276,7 @@ const Attendance = () => {
                         <Option key={project.projectId} value={project.projectId}>{project.name}</Option>
                     ))}
                 </Select>
-                
+
                 <Input
                     type="text"
                     value={title}
@@ -252,7 +296,7 @@ const Attendance = () => {
                         onChange={(e) => {
                             const endDate = new Date(selectedDate);
                             const [hours, minutes] = e.target.value.split(':');
-                            
+
                             endDate.setHours(hours);
                             endDate.setMinutes(minutes);
                             setEndingDate(endDate);
@@ -268,7 +312,7 @@ const Attendance = () => {
                         min={moment().format('YYYY-MM-DDTHH:mm')}
                     />
                 )}
-                
+
                 <Button onClick={handleAddEvent}>Agregar Evento</Button>
             </Modal>
         </Container>

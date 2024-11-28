@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, SetMetadata, UseGuards, Request, HttpCode, UseInterceptors } from "@nestjs/common";
-import { UserDTO } from "../dtos/user.dto";
+import { PartialUserDTO, UserDTO } from "../dtos/user.dto";
 import { UserService } from "../services/user.service";
 import { User } from "../entities/user.entity";
 import { EntityNotFoundError } from "typeorm";
@@ -132,7 +132,7 @@ export class UserController {
 
     @Put(':userId')
     @UseGuards(JwtAuthGuard) // Protege esta ruta
-    async updateUser(@Param('userId') userId: number, @Body() userDTO: UserDTO): Promise<User> {
+    async updateUser(@Param('userId') userId: number, @Body() userDTO: PartialUserDTO): Promise<User> {
         try {
             const user = await this.userService.updateUser(userId, userDTO);
             if (!user) {

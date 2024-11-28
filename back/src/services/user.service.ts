@@ -10,12 +10,15 @@ import { compare } from "bcrypt";
 import { Organization } from "src/entities/organization.entity";
 import { Logger } from "@nestjs/common";
 import { OrganizationService } from "./organization.service";
+import { ProjectService } from "./project.service";
+import { Inject, forwardRef } from "@nestjs/common";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User) private readonly userRepository: Repository<User>,
         private organizationService: OrganizationService,
+        @Inject(forwardRef(() => ProjectService)) private projectService: ProjectService,
         private jwtService: JwtService
         
     ) {}
@@ -206,6 +209,13 @@ export class UserService {
                 user.password = await hash(userDTO.password, 10);
             }
             if (userDTO.role) user.role = userDTO.role;
+
+            if (userDTO.projects)
+            {
+                user.projects = await this.projectService.getProjectsByIds(userDTO.projects);
+
+            }
+            
             
 
 

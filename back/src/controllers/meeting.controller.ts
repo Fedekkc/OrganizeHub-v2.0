@@ -21,6 +21,11 @@ export class MeetingController {
         return this.meetingService.getMeetingById(id);
     }
 
+    @Get('user/:userId')
+    async getMeetingsByUserId(@Param('userId') userId: number): Promise<Meeting[]> {
+        return this.meetingService.getMeetingsByUserId(userId);
+    }
+
     @Put(':id')
     async updateMeeting(@Param('id') id: number, @Body() meetingDto: MeetingDto): Promise<Meeting> {
         return this.meetingService.updateMeeting(id, meetingDto);

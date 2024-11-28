@@ -9,6 +9,7 @@ import { CgSlack } from "react-icons/cg";
 import  Button  from '../../components/Button';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/Context';
 
 const Container = styled.div`
     padding: 20px;
@@ -325,6 +326,7 @@ const Project = () => {
     const navigate = useNavigate();
 
     const { projectId } = useParams();
+    const { organizationId } = useAuth();
 
     const [iconInfo, setIconInfo] = useState({
         show: false,
@@ -359,6 +361,26 @@ const Project = () => {
 
 
 
+    const handleUpdateProject = async () => {
+        try {
+            console.log(projectData);
+
+
+            const ApiProjectData = {
+                name: projectData.name,
+                description: projectData.description,
+                organizationId: organizationId,
+                users: projectData.users.map((user) => user.userId)
+                
+            };
+
+            await axios.put(`http://localhost:5000/projects/${projectId}`,ApiProjectData ).then((res) => {
+                console.log(res);
+            });
+        } catch (error) {
+            console.error('Error ', error);
+        }
+    }
 
 
     useEffect(() => {
@@ -392,7 +414,7 @@ const Project = () => {
     return (
         <Container>
             <Title>Project Documentation</Title>
-            <Button>Save</Button>
+            <Button onClick={handleUpdateProject}>Save</Button>
             <ProjectInfo>
                 
                 <TextsBox>
