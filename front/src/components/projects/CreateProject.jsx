@@ -104,7 +104,7 @@ const CreateProject = () => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             logo: image,
-            users: users,
+            users: users.map((user) => user.userId)
         }));
         
         console.log(formData);
@@ -112,7 +112,7 @@ const CreateProject = () => {
             const response = await axios.post('http://localhost:5000/projects', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                },
+                },  
 
             });
             navigate('/documentation');

@@ -210,6 +210,11 @@ const Management = () => {
         setSearchTerm(e.target.value);
     };
 
+    const addPermission = (permission) => {
+        setPermissions([...permissions, permission]);
+
+    };
+
     const suggestedPermissions = existingPermissions.filter(perm =>
         perm.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -256,6 +261,8 @@ const Management = () => {
             console.error(`Error getting roles: ${error}`);
         }
     };
+
+   
 
     const getOrganizationUsers = async () => {
         try {
@@ -311,11 +318,20 @@ const Management = () => {
                 updatedPermissions.delete(permissionId.toString());
             } else {
                 updatedPermissions.add(permissionId.toString());
-                permissions.add(permissionId.toString());
+                addPermission(permissionId.toString());
             }
             return updatedPermissions;
         });
     };
+
+    const handleRemovePermission  = (permissionId) => {
+        setPermissions((prevPermissions) => {
+            const updatedPermissions = new Set(prevPermissions);
+            updatedPermissions.delete(permissionId.toString());
+            return updatedPermissions;
+        });
+
+    }
 
     const handleBrowser = () => {
         setIsBrowserOpen(!isBrowserOpen);
@@ -376,7 +392,9 @@ const Management = () => {
                                     const perm = existingPermissions.find(p => p.permissionId.toString() === permId);
                                     return (
                                         <SelectedPermissionItem key={permId}>
-                                            {perm ? perm.name : 'Unknown Permission'} <Cross />
+                                            {perm ? perm.name : 'Unknown Permission'} 
+                                            <Cross onClick={() => handleRemovePermission(permId)}
+                                            />
                                         </SelectedPermissionItem>
                                     );
                                 })}

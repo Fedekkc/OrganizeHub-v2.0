@@ -22,8 +22,9 @@ export class ProjectDto {
     description: string;
 
     @ApiProperty({type: [Number]})
-    @IsNumber()
+    @IsNumber({}, { each: true })
     @IsNotEmpty()
+    @Type(() => Number)
     users: number[];
 
 
